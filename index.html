@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Outward — Dispatch Intelligence</title>
+  <meta name="description" content="Enterprise outward logistics dashboard — outward volume, bottlenecks, dispatch velocity and fulfilment, visualised live from a Google Sheet.">
+  <link rel="icon" href="data:,">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://unpkg.com/lucide@0.294.0/dist/umd/lucide.js"></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <header class="topnav">
+    <div class="topnav-inner">
+      <a class="brand" href="#" aria-label="Outward Dispatch home">
+        <span class="brand-mark"><i data-lucide="package"></i></span>
+        <span class="brand-name">Outward<span class="brand-slash">/</span>Dispatch</span>
+      </a>
+      <div class="topnav-right">
+        <span id="dataSourceBadge" class="status-badge">No data loaded</span>
+        <button type="button" id="syncBtn" class="btn btn-secondary btn-sm">
+          <i data-lucide="refresh-cw"></i>
+          <span>Sync Google Sheet</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="hero">
+      <p class="eyebrow">Outward Logistics · Enterprise Dashboard</p>
+      <h1 class="display">Dispatch Intelligence</h1>
+      <p class="subhead">Outward volume, open bottlenecks, dispatch velocity and fulfilment — across every customer, branch and location, in near-real time.</p>
+    </section>
+
+    <section class="panel ingest-panel" id="ingestPanel">
+      <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Upload an Excel or CSV file">
+        <div class="dz-icon"><i data-lucide="upload-cloud"></i></div>
+        <p class="dz-title" id="dzTitle">Drag &amp; drop your Excel file here</p>
+        <p class="dz-sub">.xlsx · .xls · .csv — parsed entirely in your browser, never uploaded</p>
+        <div class="dz-actions">
+          <button type="button" id="pickBtn" class="btn btn-secondary">
+            <i data-lucide="folder-open"></i>
+            <span>Browse files</span>
+          </button>
+          <span class="dz-or">or</span>
+          <button type="button" id="syncBtn2" class="btn btn-primary">
+            <i data-lucide="download-cloud"></i>
+            <span id="syncBtn2Label">Pull live from Google Sheet</span>
+          </button>
+        </div>
+        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" hidden>
+        <p class="dz-foot" id="dzFoot">Expected columns: Order Date · Customer Name · Branch · Location · Priority · Dispatch date · Ack</p>
+      </div>
+      <div id="localNotice" class="info-banner" hidden>
+        <i data-lucide="info"></i>
+        <span></span>
+        <button type="button" class="error-close" data-close aria-label="Dismiss"><i data-lucide="x"></i></button>
+      </div>
+      <div id="errorBanner" class="error-banner" hidden></div>
+    </section>
+
+    <section class="kpis" id="kpiGrid" aria-label="Key performance indicators">
+      <article class="kpi-card">
+        <div class="kpi-icon"><i data-lucide="package"></i></div>
+        <div class="kpi-body">
+          <p class="kpi-label">Total Outward Volume</p>
+          <p class="kpi-value" id="kpiVolume">—</p>
+          <p class="kpi-note" id="kpiVolumeNote">records in scope</p>
+        </div>
+      </article>
+      <article class="kpi-card">
+        <div class="kpi-icon kpi-icon-danger"><i data-lucide="alert-triangle"></i></div>
+        <div class="kpi-body">
+          <p class="kpi-label">Open Bottlenecks</p>
+          <p class="kpi-value" id="kpiBottleneck">—</p>
+          <p class="kpi-note">P1 orders without a Done ack</p>
+        </div>
+      </article>
+      <article class="kpi-card">
+        <div class="kpi-icon"><i data-lucide="gauge"></i></div>
+        <div class="kpi-body">
+          <p class="kpi-label">Dispatch Velocity</p>
+          <p class="kpi-value kpi-mono" id="kpiVelocity">—</p>
+          <p class="kpi-note">avg. order → dispatch, in days</p>
+        </div>
+      </article>
+      <article class="kpi-card">
+        <div class="kpi-icon kpi-icon-success"><i data-lucide="check-circle-2"></i></div>
+        <div class="kpi-body">
+          <p class="kpi-label">Fulfillment Rate</p>
+          <p class="kpi-value kpi-mono" id="kpiFulfillment">—</p>
+          <p class="kpi-note">rows acked as Done</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="filters" aria-label="Dashboard filters">
+      <div class="filter-group">
+        <span class="filter-label">Priority</span>
+        <div id="priorityFilter" class="pill-row">
+          <button type="button" class="pill is-active" data-priority="ALL">All</button>
+          <button type="button" class="pill" data-priority="P1"><span class="dot dot-p1"></span>P1</button>
+          <button type="button" class="pill" data-priority="P2"><span class="dot dot-p2"></span>P2</button>
+          <button type="button" class="pill" data-priority="P3"><span class="dot dot-p3"></span>P3</button>
+          <button type="button" class="pill" data-priority="P4"><span class="dot dot-p4"></span>P4</button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Ack state</span>
+        <div id="ackFilter" class="pill-row">
+          <button type="button" class="pill is-active" data-ack="ALL">All</button>
+          <button type="button" class="pill" data-ack="Done"><span class="dot dot-done"></span>Done</button>
+          <button type="button" class="pill" data-ack="In Transit"><span class="dot dot-transit"></span>In Transit</button>
+          <button type="button" class="pill" data-ack="Pending"><span class="dot dot-pending"></span>Pending</button>
+        </div>
+      </div>
+      <button type="button" id="resetFilters" class="btn btn-tertiary btn-sm">
+        <i data-lucide="rotate-ccw"></i>
+        <span>Reset</span>
+      </button>
+    </section>
+
+    <section class="charts-grid">
+      <article class="panel chart-card">
+        <header class="card-head">
+          <div>
+            <h3 class="card-title">Volume by Customer</h3>
+            <p class="card-sub">Order count per customer in current scope</p>
+          </div>
+          <span class="status-badge" id="barMeta">—</span>
+        </header>
+        <div class="chart-box" id="barChartBox">
+          <canvas id="barChart"></canvas>
+          <div id="barEmpty" class="chart-empty" hidden>
+            <i data-lucide="bar-chart-2"></i>
+            <p>No records to chart</p>
+          </div>
+        </div>
+      </article>
+      <article class="panel chart-card">
+        <header class="card-head">
+          <div>
+            <h3 class="card-title">Acknowledgement State</h3>
+            <p class="card-sub">Distribution across Done · In Transit · Pending</p>
+          </div>
+          <span class="status-badge" id="doughnutMeta">—</span>
+        </header>
+        <div class="chart-box" id="doughnutChartBox">
+          <canvas id="doughnutChart"></canvas>
+          <div id="doughnutEmpty" class="chart-empty" hidden>
+            <i data-lucide="pie-chart"></i>
+            <p>No records to chart</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel table-panel">
+      <header class="table-head">
+        <div>
+          <h3 class="card-title">Customer · Branch · Location Matrix</h3>
+          <p class="card-sub">Sort by clicking a column header, or search across customers, branches and locations</p>
+        </div>
+        <div class="table-actions">
+          <div class="search-box">
+            <i data-lucide="search"></i>
+            <input type="search" id="searchInput" placeholder="Search customer, branch or location…" autocomplete="off" spellcheck="false">
+          </div>
+          <span class="status-badge" id="rowCount">0 records</span>
+        </div>
+      </header>
+      <div class="table-wrap">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th data-key="orderDate" class="sortable">
+                <span class="th-label">Order Date</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="customer" class="sortable">
+                <span class="th-label">Customer Name</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="branch" class="sortable">
+                <span class="th-label">Branch</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="location" class="sortable">
+                <span class="th-label">Location</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="priority" class="sortable">
+                <span class="th-label">Priority</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="dispatchDate" class="sortable">
+                <span class="th-label">Dispatch Date</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="ack" class="sortable">
+                <span class="th-label">Ack</span><span class="sort-ind"></span>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>Outward/Dispatch · processed locally with SheetJS · cached in IndexedDB</span>
+      <span class="footer-meta">Linear-grade dark canvas · <span class="mono">#010102</span></span>
+    </footer>
+
+  </main>
+
+  <div id="toastStack" class="toast-stack" aria-live="polite"></div>
+
+</body>
+</html>
