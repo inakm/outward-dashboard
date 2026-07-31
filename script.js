@@ -1092,7 +1092,7 @@
   }
 
   function renderIngestPanel() {
-    var hasData = state.records.length > 0;
+    var hasData = state.records.length > 0 || state.customers.length > 0 || Object.keys(state.branches).length > 0;
     var panel = $('ingestPanel');
     if (panel) panel.hidden = hasData;
     var btn = $('showUploadBtn');
@@ -1282,6 +1282,7 @@
     state.customersSource = source || null;
     renderCustomers();
     renderDirectoryMeta();
+    renderIngestPanel();
     persistCustomers(list, source).catch(function (e) {
       console.warn('Could not persist customers to IndexedDB:', e);
     });
