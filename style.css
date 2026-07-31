@@ -174,19 +174,16 @@ textarea {
 }
 
 .brand-mark {
-  width: 28px;
   height: 28px;
-  border-radius: var(--r-md);
-  background: var(--primary);
-  color: var(--on-primary);
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
 }
 
-.brand-mark svg {
-  width: 15px;
-  height: 15px;
-  stroke-width: 2.25;
+.brand-logo {
+  height: 26px;
+  width: auto;
+  display: block;
+  object-fit: contain;
 }
 
 .brand-name {
@@ -194,11 +191,7 @@ textarea {
   font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.3px;
-}
-
-.brand-slash {
-  color: var(--primary);
-  margin: 0 1px;
+  white-space: nowrap;
 }
 
 .topnav-right {
@@ -914,6 +907,130 @@ tr.row-empty td {
 .badge-done { color: #7ce38f; background: rgba(39, 166, 68, 0.12); border-color: rgba(39, 166, 68, 0.35); }
 .badge-transit { color: #a5d4ff; background: rgba(74, 168, 255, 0.12); border-color: rgba(74, 168, 255, 0.35); }
 .badge-pending { color: #ffd591; background: rgba(245, 159, 11, 0.12); border-color: rgba(245, 159, 11, 0.35); }
+
+/* ---------- View tabs ---------- */
+.tabs {
+  display: flex;
+  gap: var(--s-xxs);
+  background: var(--surface-1);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-pill);
+  padding: 3px;
+  width: max-content;
+  max-width: 100%;
+  margin-top: var(--s-xl);
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  border-radius: var(--r-pill);
+  padding: 7px 16px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink-subtle);
+  min-height: 34px;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.tab svg {
+  width: 15px;
+  height: 15px;
+}
+
+.tab:hover {
+  color: var(--ink);
+}
+
+.tab.is-active {
+  background: var(--surface-2);
+  color: var(--ink);
+}
+
+/* ---------- Customer directory ---------- */
+.directory-panel {
+  margin-top: var(--s-md);
+  padding: 0;
+  overflow: hidden;
+}
+
+th.th-mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.3px;
+}
+
+td.td-mono {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+
+td.td-dim {
+  color: var(--ink-subtle);
+}
+
+tr.cust-row.is-clickable {
+  cursor: pointer;
+}
+
+tr.cust-row.is-clickable:hover {
+  background: var(--surface-2);
+}
+
+tr.cust-row.is-clickable:focus-visible {
+  outline-offset: -2px;
+}
+
+.cust-open {
+  font-weight: 500;
+  color: var(--p1);
+}
+
+.cust-open.is-zero {
+  color: var(--ink-subtle);
+}
+
+.count-chip {
+  display: inline-flex;
+  align-items: center;
+  min-width: 26px;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-muted);
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-pill);
+  padding: 1px 8px;
+}
+
+.count-chip.is-muted {
+  color: var(--ink-tertiary);
+}
+
+/* ---------- Branch drawer ---------- */
+.branch-drawer {
+  border-top: 1px solid var(--hairline);
+  background: var(--surface-1);
+}
+
+.drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-md);
+  padding: var(--s-md) var(--s-lg) 0;
+}
+
+.drawer-head .card-title {
+  font-size: 15px;
+}
 
 /* ---------- Footer ---------- */
 .footer {

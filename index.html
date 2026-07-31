@@ -3,9 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Outward — Dispatch Intelligence</title>
-  <meta name="description" content="Enterprise outward logistics dashboard — outward volume, bottlenecks, dispatch velocity and fulfilment, visualised live from a Google Sheet.">
-  <link rel="icon" href="data:,">
+
+  <!-- Primary SEO -->
+  <title>SkyLimit Outwards Dashboard — Dispatch Intelligence</title>
+  <meta name="description" content="SkyLimit Outwards Dashboard — enterprise outward logistics intelligence. Track outward volume, open bottlenecks, dispatch velocity and fulfilment across customers, branches and locations, visualised live from Google Sheets.">
+  <meta name="keywords" content="SkyLimit, outward logistics, dispatch dashboard, order tracking, fulfilment rate, dispatch velocity, logistics analytics, enterprise dashboard">
+  <meta name="author" content="SkyLimit">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="theme-color" content="#010102">
+  <link rel="canonical" href="https://inakm.github.io/outward-dashboard/">
+
+  <!-- Icons -->
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="apple-touch-icon" href="logo.png">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="SkyLimit Outwards Dashboard">
+  <meta property="og:title" content="SkyLimit Outwards Dashboard — Dispatch Intelligence">
+  <meta property="og:description" content="Track outward volume, open bottlenecks, dispatch velocity and fulfilment across every customer, branch and location — in near-real time.">
+  <meta property="og:image" content="https://newskylimit.techril.com/images/logo.png">
+  <meta property="og:image:width" content="1334">
+  <meta property="og:image:height" content="607">
+  <meta property="og:image:alt" content="SkyLimit logo">
+  <meta property="og:url" content="https://inakm.github.io/outward-dashboard/">
+  <meta property="og:locale" content="en_IN">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="SkyLimit Outwards Dashboard — Dispatch Intelligence">
+  <meta name="twitter:description" content="Enterprise outward logistics intelligence — volume, bottlenecks, dispatch velocity and fulfilment, visualised live from Google Sheets.">
+  <meta name="twitter:image" content="https://newskylimit.techril.com/images/logo.png">
+  <meta name="twitter:image:alt" content="SkyLimit logo">
+
+  <!-- Mobile web app -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SkyLimit Outwards">
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "SkyLimit Outwards Dashboard",
+    "url": "https://inakm.github.io/outward-dashboard/",
+    "image": "https://newskylimit.techril.com/images/logo.png",
+    "description": "Enterprise outward logistics dashboard tracking order volume, open bottlenecks (P1 not yet acknowledged), dispatch velocity and fulfilment rate across customers, branches and locations.",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Any (browser based)",
+    "browserRequirements": "Requires JavaScript. Client-side only — no server or data storage required.",
+    "inLanguage": "en-IN",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "publisher": { "@type": "Organization", "name": "SkyLimit", "logo": { "@type": "ImageObject", "url": "https://newskylimit.techril.com/images/logo.png" } }
+  }
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,9 +75,9 @@
 
   <header class="topnav">
     <div class="topnav-inner">
-      <a class="brand" href="#" aria-label="Outward Dispatch home">
-        <span class="brand-mark"><i data-lucide="package"></i></span>
-        <span class="brand-name">Outward<span class="brand-slash">/</span>Dispatch</span>
+      <a class="brand" href="index.html" aria-label="SkyLimit Outwards Dashboard home">
+        <span class="brand-mark"><img src="logo.png" alt="SkyLimit" class="brand-logo"></span>
+        <span class="brand-name">SkyLimit&nbsp;Outwards</span>
       </a>
       <div class="topnav-right">
         <span id="dataSourceBadge" class="status-badge">No data loaded</span>
@@ -39,15 +92,15 @@
   <main class="container">
 
     <section class="hero">
-      <p class="eyebrow">Outward Logistics · Enterprise Dashboard</p>
-      <h1 class="display">Dispatch Intelligence</h1>
+      <p class="eyebrow">Outward Logistics · Enterprise Intelligence</p>
+      <h1 class="display">SkyLimit Outwards Dashboard</h1>
       <p class="subhead">Outward volume, open bottlenecks, dispatch velocity and fulfilment — across every customer, branch and location, in near-real time.</p>
     </section>
 
     <section class="panel ingest-panel" id="ingestPanel">
       <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Upload an Excel or CSV file">
         <div class="dz-icon"><i data-lucide="upload-cloud"></i></div>
-        <p class="dz-title" id="dzTitle">Drag &amp; drop your Excel file here</p>
+        <p class="dz-title" id="dzTitle">Drop dispatch, customer or branch files here</p>
         <p class="dz-sub">.xlsx · .xls · .csv — parsed entirely in your browser, never uploaded</p>
         <div class="dz-actions">
           <button type="button" id="pickBtn" class="btn btn-secondary">
@@ -60,8 +113,8 @@
             <span id="syncBtn2Label">Pull live from Google Sheet</span>
           </button>
         </div>
-        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" hidden>
-        <p class="dz-foot" id="dzFoot">Expected columns: Order Date · Customer Name · Branch · Location · Priority · Dispatch date · Ack</p>
+        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" multiple hidden>
+        <p class="dz-foot" id="dzFoot">Dispatch: Order Date · Customer · Branch · Ack&nbsp; · Master: Code · Name · GST&nbsp; · Branches: Branch ID · Branch Name</p>
       </div>
       <div id="localNotice" class="info-banner" hidden>
         <i data-lucide="info"></i>
@@ -106,6 +159,16 @@
       </article>
     </section>
 
+    <section class="tabs" id="viewTabs" aria-label="Dashboard views">
+      <button type="button" class="tab is-active" data-view="dispatch">
+        <i data-lucide="layout-grid"></i><span>Dispatch</span>
+      </button>
+      <button type="button" class="tab" data-view="customers">
+        <i data-lucide="users"></i><span>Customers</span>
+      </button>
+    </section>
+
+    <div id="dispatchView">
     <section class="filters" aria-label="Dashboard filters">
       <div class="filter-group">
         <span class="filter-label">Priority</span>
@@ -178,6 +241,10 @@
             <i data-lucide="search"></i>
             <input type="search" id="searchInput" placeholder="Search customer, branch or location…" autocomplete="off" spellcheck="false">
           </div>
+          <button type="button" id="showUploadBtn" class="btn btn-secondary btn-sm" hidden>
+            <i data-lucide="upload-cloud"></i>
+            <span>Upload / replace data</span>
+          </button>
           <span class="status-badge" id="rowCount">0 records</span>
         </div>
       </header>
@@ -212,9 +279,70 @@
         </table>
       </div>
     </section>
+    </div>
+
+    <section class="panel directory-panel" id="customersView" hidden>
+      <header class="table-head">
+        <div>
+          <h3 class="card-title">Customer Directory</h3>
+          <p class="card-sub">Master list with branches and outward activity joined by customer name</p>
+        </div>
+        <div class="table-actions">
+          <div class="search-box">
+            <i data-lucide="search"></i>
+            <input type="search" id="customerSearch" placeholder="Search code, name, city or state…" autocomplete="off" spellcheck="false">
+          </div>
+          <span class="status-badge" id="customerMeta">No master loaded</span>
+          <span class="status-badge" id="branchMeta" hidden></span>
+        </div>
+      </header>
+      <div class="table-wrap">
+        <table id="customerTable">
+          <thead>
+            <tr>
+              <th class="th-mono">Code</th>
+              <th>Customer Name</th>
+              <th>City</th>
+              <th>Contact</th>
+              <th class="th-mono">GST No</th>
+              <th>Branches</th>
+              <th>Orders</th>
+              <th>Open</th>
+            </tr>
+          </thead>
+          <tbody id="customerBody"></tbody>
+        </table>
+      </div>
+      <div class="branch-drawer" id="branchDrawer" hidden>
+        <header class="drawer-head">
+          <div>
+            <h4 class="card-title" id="drawerTitle">Branches</h4>
+            <p class="card-sub" id="drawerSub"></p>
+          </div>
+          <button type="button" class="btn btn-tertiary btn-sm" id="drawerClose">
+            <i data-lucide="x"></i><span>Close</span>
+          </button>
+        </header>
+        <div class="table-wrap">
+          <table id="branchTable">
+            <thead>
+              <tr>
+                <th>Branch Name</th>
+                <th>Contact</th>
+                <th>Mobile</th>
+                <th>Address</th>
+                <th>State</th>
+                <th>Pincode</th>
+              </tr>
+            </thead>
+            <tbody id="branchBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
 
     <footer class="footer">
-      <span>Outward/Dispatch · processed locally with SheetJS · cached in IndexedDB</span>
+      <span>SkyLimit Outwards Dashboard · processed locally with SheetJS · cached in IndexedDB</span>
       <span class="footer-meta">Linear-grade dark canvas · <span class="mono">#010102</span></span>
     </footer>
 

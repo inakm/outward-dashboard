@@ -17,11 +17,59 @@
   var SHEET_GVIZ_URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:json&headers=1';
 
   var DB_NAME = 'outward-dashboard';
-  var DB_VERSION = 1;
+  var DB_VERSION = 2;
   var STORE = 'records';
   var META_STORE = 'meta';
+  var STORE_CUSTOMERS = 'customers';
+  var STORE_BRANCHES = 'branches';
 
   var REQUIRED_COLUMNS = ['Order Date', 'Customer Name', 'Branch', 'Location', 'Priority', 'Dispatch date', 'Ack'];
+
+  /* Customer master + branch list headers → canonical field names */
+  var CUSTOMER_HEADER_ALIASES = {
+    'code': 'code',
+    'id': 'id',
+    'name': 'name',
+    'type': 'type',
+    'organisation': 'org',
+    'organization': 'org',
+    'mobile': 'mobile',
+    'phone': 'mobile',
+    'contact number': 'mobile',
+    'gst number': 'gst',
+    'gst no': 'gst',
+    'gstin': 'gst',
+    'dr/cr': 'drcr',
+    'dr or cr': 'drcr',
+    'contact person': 'contact',
+    'contact': 'contact',
+    'address': 'address',
+    'city': 'city',
+    'state': 'state',
+    'pincode': 'pincode',
+    'pin code': 'pincode',
+    'postal code': 'pincode'
+  };
+
+  var BRANCH_HEADER_ALIASES = {
+    'branch id': 'branchId',
+    'branch name': 'branchName',
+    'contact person': 'contact',
+    'contact': 'contact',
+    'mobile': 'mobile',
+    'phone': 'mobile',
+    'email': 'email',
+    'address': 'address',
+    'state': 'state',
+    'pincode': 'pincode',
+    'pin code': 'pincode',
+    'postal code': 'pincode',
+    'gst number': 'gst',
+    'gst no': 'gst',
+    'gstin': 'gst',
+    'created at': 'createdAt',
+    'created': 'createdAt'
+  };
 
   /* Header aliases → canonical columns. Longest/most specific keys first
      so prefix-matching in the gviz fallback resolves correctly. */
@@ -127,11 +175,18 @@
   var state = {
     records: [],
     source: null,
+    customers: [],
+    customersSource: null,
+    branches: {},
+    branchesSource: null,
     priority: 'ALL',
     ack: 'ALL',
     query: '',
+    customerQuery: '',
     sortKey: 'orderDate',
-    sortDir: 'desc'
+    sortDir: 'desc',
+    view: 'dispatch',
+    openCustomer: null
   };
 
   var db = null;
@@ -155,6 +210,10 @@
 
   function cleanCustomer(v) {
     return String(v == null ? '' : v).trim().replace(/\s+/g, ' ').replace(/\r?\n/g, ' ');
+  }
+
+  function cleanCode(v) {
+    return String(v == null ? '' : v).trim();
   }
 
   function normalizePriority(v) {
@@ -283,6 +342,106 @@
     return { records: buildRecords(allRows, detection.headerMap, detection.startIndex), missing: [] };
   }
 
+  /* -------------------------------------------------------------
+     Customer master + branch workbook parsing
+     ------------------------------------------------------------- */
+  function findHeaderRow(rows) {
+    for (var i = 0; i < rows.length; i++) {
+      var row = rows[i];
+      if (!row) continue;
+      for (var j = 0; j < row.length; j++) {
+        if (String(row[j] == null ? '' : row[j]).trim() !== '') return i;
+      }
+    }
+    return -1;
+  }
+
+  /* Classify a workbook as 'dispatch', 'customers', 'branches' or null */
+  function classifyWorkbook(rows) {
+    var hr = findHeaderRow(rows);
+    if (hr === -1) return null;
+    var keys = {};
+    rows[hr].forEach(function (cell) {
+      var k = normHeaderKey(cell);
+      if (k) keys[k] = true;
+    });
+    if (keys['branch id'] && keys['branch name']) return 'branches';
+    if (keys['code'] && keys['name'] && (keys['gst number'] || keys['gst no'])) return 'customers';
+    var detection = detectHeaders(rows);
+    return detection.missing.length ? null : 'dispatch';
+  }
+
+  function codeFromFilename(name) {
+    var stem = String(name == null ? '' : name).replace(/\.(xlsx|xls|csv)$/i, '').trim();
+    var cl = stem.match(/(CL-\d{6}-\d{4})/i);
+    if (cl) return cl[1].toUpperCase();
+    var c = stem.match(/(C\d{3,})/i);
+    if (c) return c[1].toUpperCase();
+    return stem.toUpperCase();
+  }
+
+  function parseCustomerMaster(rows) {
+    var hr = findHeaderRow(rows);
+    if (hr === -1) return [];
+    var map = {};
+    rows[hr].forEach(function (cell, idx) {
+      var k = CUSTOMER_HEADER_ALIASES[normHeaderKey(cell)];
+      if (k && !(k in map)) map[k] = idx;
+    });
+    var out = [];
+    for (var i = hr + 1; i < rows.length; i++) {
+      var row = rows[i];
+      if (!row || !row.some(function (c) { return String(c == null ? '' : c).trim() !== ''; })) continue;
+      var code = cleanCode(row[map['code']]);
+      var name = cleanCustomer(row[map['name']]);
+      if (!code && !name) continue;
+      out.push({
+        code: code,
+        id: cleanCode(row[map['id']]),
+        name: name,
+        type: cleanCustomer(row[map['type']]),
+        org: cleanCustomer(row[map['org']]),
+        mobile: cleanCode(row[map['mobile']]),
+        gst: cleanCode(row[map['gst']]),
+        drcr: cleanCustomer(row[map['drcr']]),
+        contact: cleanCustomer(row[map['contact']]),
+        address: cleanCustomer(row[map['address']]),
+        city: cleanPlace(row[map['city']]),
+        state: cleanCustomer(row[map['state']]),
+        pincode: cleanCode(row[map['pincode']])
+      });
+    }
+    return out;
+  }
+
+  function parseBranchList(rows) {
+    var hr = findHeaderRow(rows);
+    if (hr === -1) return [];
+    var map = {};
+    rows[hr].forEach(function (cell, idx) {
+      var k = BRANCH_HEADER_ALIASES[normHeaderKey(cell)];
+      if (k && !(k in map)) map[k] = idx;
+    });
+    var out = [];
+    for (var i = hr + 1; i < rows.length; i++) {
+      var row = rows[i];
+      if (!row || !row.some(function (c) { return String(c == null ? '' : c).trim() !== ''; })) continue;
+      out.push({
+        branchId: cleanCode(row[map['branchId']]),
+        branchName: cleanCustomer(row[map['branchName']]),
+        contact: cleanCustomer(row[map['contact']]),
+        mobile: cleanCode(row[map['mobile']]),
+        email: cleanCustomer(row[map['email']]),
+        address: cleanCustomer(row[map['address']]),
+        state: cleanCustomer(row[map['state']]),
+        pincode: cleanCode(row[map['pincode']]),
+        gst: cleanCode(row[map['gst']]),
+        createdAt: cleanCustomer(row[map['createdAt']])
+      });
+    }
+    return out;
+  }
+
   /* gviz JSON fallback for the live sheet (best effort) */
   function parseGvizRows(text) {
     var json;
@@ -382,6 +541,18 @@
     return { labels: ['Done', 'In Transit', 'Pending'], data: [k.done, k.transit, k.pending], total: k.total };
   }
 
+  function customerOrderStats(customerName, records) {
+    var needle = cleanCustomer(customerName).toLowerCase();
+    var orders = 0, open = 0;
+    for (var i = 0; i < records.length; i++) {
+      if (records[i].customer.toLowerCase() === needle) {
+        orders++;
+        if (records[i].ack !== 'Done') open++;
+      }
+    }
+    return { orders: orders, open: open };
+  }
+
   function filteredRows() {
     var rows = state.records;
     if (state.priority !== 'ALL') rows = rows.filter(function (r) { return r.priority === state.priority; });
@@ -431,6 +602,8 @@
           var d = e.target.result;
           if (!d.objectStoreNames.contains(STORE)) d.createObjectStore(STORE, { keyPath: 'id' });
           if (!d.objectStoreNames.contains(META_STORE)) d.createObjectStore(META_STORE, { keyPath: 'key' });
+          if (!d.objectStoreNames.contains(STORE_CUSTOMERS)) d.createObjectStore(STORE_CUSTOMERS, { keyPath: 'code' });
+          if (!d.objectStoreNames.contains(STORE_BRANCHES)) d.createObjectStore(STORE_BRANCHES, { keyPath: 'code' });
         };
         req.onsuccess = function () { resolve(req.result); };
         req.onerror = function () { console.warn('IndexedDB open failed:', req.error); resolve(null); };
@@ -470,15 +643,69 @@
     });
   }
 
+  function persistCustomers(customers, source) {
+    if (!db) return Promise.resolve();
+    return new Promise(function (resolve, reject) {
+      try {
+        var tx = db.transaction([STORE_CUSTOMERS, META_STORE], 'readwrite');
+        tx.objectStore(STORE_CUSTOMERS).clear();
+        for (var i = 0; i < customers.length; i++) tx.objectStore(STORE_CUSTOMERS).put(customers[i]);
+        tx.objectStore(META_STORE).put({
+          key: 'customers_source',
+          name: source ? source.name : null,
+          syncedAt: source && source.syncedAt ? source.syncedAt : Date.now()
+        });
+        txDone(tx).then(resolve, reject);
+      } catch (e) {
+        console.warn('IndexedDB write failed:', e);
+        reject(e);
+      }
+    });
+  }
+
+  function persistBranches(branchesMap, source) {
+    if (!db) return Promise.resolve();
+    return new Promise(function (resolve, reject) {
+      try {
+        var tx = db.transaction([STORE_BRANCHES, META_STORE], 'readwrite');
+        tx.objectStore(STORE_BRANCHES).clear();
+        var codes = Object.keys(branchesMap);
+        for (var i = 0; i < codes.length; i++) {
+          tx.objectStore(STORE_BRANCHES).put({ code: codes[i], list: branchesMap[codes[i]] });
+        }
+        tx.objectStore(META_STORE).put({
+          key: 'branches_source',
+          name: source ? source.name : null,
+          syncedAt: source && source.syncedAt ? source.syncedAt : Date.now()
+        });
+        txDone(tx).then(resolve, reject);
+      } catch (e) {
+        console.warn('IndexedDB write failed:', e);
+        reject(e);
+      }
+    });
+  }
+
   function loadPersisted() {
     if (!db) return Promise.resolve(null);
     return new Promise(function (resolve) {
       try {
-        var tx = db.transaction([STORE, META_STORE], 'readonly');
+        var tx = db.transaction([STORE, META_STORE, STORE_CUSTOMERS, STORE_BRANCHES], 'readonly');
         var recsReq = tx.objectStore(STORE).getAll();
         var metaReq = tx.objectStore(META_STORE).get('source');
+        var custReq = tx.objectStore(STORE_CUSTOMERS).getAll();
+        var custMetaReq = tx.objectStore(META_STORE).get('customers_source');
+        var brReq = tx.objectStore(STORE_BRANCHES).getAll();
+        var brMetaReq = tx.objectStore(META_STORE).get('branches_source');
         txDone(tx).then(function () {
-          resolve({ records: recsReq.result || [], meta: metaReq.result || null });
+          resolve({
+            records: recsReq.result || [],
+            meta: metaReq.result || null,
+            customers: custReq.result || [],
+            customersMeta: custMetaReq.result || null,
+            branches: brReq.result || [],
+            branchesMeta: brMetaReq.result || null
+          });
         }, function (e) {
           console.warn('IndexedDB read failed:', e);
           resolve(null);
@@ -854,10 +1081,151 @@
      ------------------------------------------------------------- */
   function renderAll() {
     var rows = filteredRows();
+    renderIngestPanel();
     renderKpis(rows);
     renderCharts(rows);
     renderTable();
     renderSource();
+    renderCustomers();
+    renderDirectoryMeta();
+    refreshIcons();
+  }
+
+  function renderIngestPanel() {
+    var hasData = state.records.length > 0;
+    var panel = $('ingestPanel');
+    if (panel) panel.hidden = hasData;
+    var btn = $('showUploadBtn');
+    if (btn) btn.hidden = !hasData;
+  }
+
+  /* -------------------------------------------------------------
+     View tabs + customer directory
+     ------------------------------------------------------------- */
+  function setView(view) {
+    state.view = view;
+    var tabs = document.querySelectorAll('#viewTabs .tab');
+    for (var i = 0; i < tabs.length; i++) {
+      tabs[i].classList.toggle('is-active', tabs[i].getAttribute('data-view') === view);
+    }
+    var dv = $('dispatchView');
+    if (dv) dv.hidden = view !== 'dispatch';
+    var cv = $('customersView');
+    if (cv) cv.hidden = view !== 'customers';
+    refreshIcons();
+  }
+
+  function renderDirectoryMeta() {
+    var meta = $('customerMeta');
+    if (meta) {
+      if (!state.customers.length) {
+        meta.textContent = 'No master loaded';
+        meta.removeAttribute('title');
+      } else {
+        meta.textContent = formatNum(state.customers.length) + ' customers';
+        if (state.customersSource && state.customersSource.syncedAt) {
+          meta.title = (state.customersSource.name || 'Master') + ' · loaded at ' +
+            new Date(state.customersSource.syncedAt).toLocaleString();
+        } else {
+          meta.removeAttribute('title');
+        }
+      }
+    }
+    var bm = $('branchMeta');
+    if (bm) {
+      var count = Object.keys(state.branches).length;
+      if (count) {
+        bm.textContent = count + ' branch file' + (count === 1 ? '' : 's');
+        bm.hidden = false;
+      } else {
+        bm.hidden = true;
+      }
+    }
+  }
+
+  function renderCustomers() {
+    var tbody = $('customerBody');
+    if (!tbody) return;
+    if (!state.customers.length) {
+      tbody.innerHTML = '<tr class="row-empty"><td colspan="8">No customer data yet — use "Upload / replace data" and drop the ALL_Customers master file, plus per-customer branch workbooks.</td></tr>';
+      return;
+    }
+    var q = state.customerQuery.toLowerCase();
+    var list = state.customers.filter(function (c) {
+      if (!q) return true;
+      return String(c.code).toLowerCase().indexOf(q) !== -1 ||
+        String(c.name).toLowerCase().indexOf(q) !== -1 ||
+        String(c.city).toLowerCase().indexOf(q) !== -1 ||
+        String(c.state).toLowerCase().indexOf(q) !== -1 ||
+        String(c.contact).toLowerCase().indexOf(q) !== -1;
+    });
+    list.sort(function (a, b) {
+      return String(a.name).localeCompare(String(b.name), undefined, { numeric: true, sensitivity: 'base' });
+    });
+    var html = '';
+    for (var i = 0; i < list.length; i++) {
+      var c = list[i];
+      var branches = state.branches[c.code] || [];
+      var stats = customerOrderStats(c.name, state.records);
+      var clickable = branches.length > 0;
+      var aria = clickable ? ' role="button" tabindex="0" aria-label="View branches for ' + escapeHtml(c.name) + '"' : '';
+      html +=
+        '<tr class="cust-row' + (clickable ? ' is-clickable' : '') + '" data-code="' + escapeHtml(c.code) + '"' + aria + '>' +
+        '<td class="td-mono">' + escapeHtml(c.code || '—') + '</td>' +
+        '<td class="td-strong">' + escapeHtml(c.name || '—') + '</td>' +
+        '<td>' + escapeHtml(c.city || '—') + '</td>' +
+        '<td>' + escapeHtml(c.contact || '—') + (c.mobile ? '<span class="td-mono"><br>' + escapeHtml(c.mobile) + '</span>' : '') + '</td>' +
+        '<td class="td-mono td-dim">' + escapeHtml(c.gst || '—') + '</td>' +
+        '<td>' + (clickable
+          ? '<span class="count-chip">' + branches.length + '</span>'
+          : '<span class="count-chip is-muted">—</span>') + '</td>' +
+        '<td class="td-mono">' + (stats.orders ? formatNum(stats.orders) : '<span class="pending-date">—</span>') + '</td>' +
+        '<td class="td-mono ' + (stats.open ? 'cust-open' : 'cust-open is-zero') + '">' + formatNum(stats.open) + '</td>' +
+        '</tr>';
+    }
+    if (!list.length) {
+      tbody.innerHTML = '<tr class="row-empty"><td colspan="8">No customers match the current search.</td></tr>';
+    } else {
+      tbody.innerHTML = html;
+    }
+  }
+
+  function renderBranches(code) {
+    var drawer = $('branchDrawer');
+    if (!drawer) return;
+    var cust = null;
+    for (var i = 0; i < state.customers.length; i++) {
+      if (state.customers[i].code === code) { cust = state.customers[i]; break; }
+    }
+    var list = state.branches[code] || [];
+    var title = $('drawerTitle');
+    if (title) title.textContent = code + (cust && cust.name ? ' · ' + cust.name : '') + ' — Branches';
+    var sub = $('drawerSub');
+    if (sub) sub.textContent = formatNum(list.length) + ' branches';
+    var body = $('branchBody');
+    if (body) {
+      if (!list.length) {
+        body.innerHTML = '<tr class="row-empty"><td colspan="6">No branch file loaded for ' + escapeHtml(code) +
+          ' — drop its branch workbook (e.g. ' + escapeHtml(code) + '.xlsx) into the upload zone.</td></tr>';
+      } else {
+        var html = '';
+        for (var j = 0; j < list.length; j++) {
+          var b = list[j];
+          html +=
+            '<tr>' +
+            '<td class="td-strong">' + escapeHtml(b.branchName || '—') + '</td>' +
+            '<td>' + escapeHtml(b.contact || '—') + '</td>' +
+            '<td class="td-mono">' + escapeHtml(b.mobile || '—') + '</td>' +
+            '<td>' + escapeHtml(b.address || '—') + '</td>' +
+            '<td>' + escapeHtml(b.state || '—') + '</td>' +
+            '<td class="td-mono">' + escapeHtml(b.pincode || '—') + '</td>' +
+            '</tr>';
+        }
+        body.innerHTML = html;
+      }
+    }
+    drawer.hidden = false;
+    state.openCustomer = code;
     refreshIcons();
   }
 
@@ -909,14 +1277,42 @@
     });
   }
 
-  function handleFile(file) {
-    if (!file) return;
-    var ext = (file.name.split('.').pop() || '').toLowerCase();
-    var ok = ['xlsx', 'xls', 'csv'].indexOf(ext) !== -1 || file.type === 'text/csv';
-    if (!ok) {
-      showError('"' + file.name + '" is not a supported workbook. Please upload .xlsx, .xls or .csv.');
-      return;
-    }
+  function applyCustomers(list, source) {
+    state.customers = list;
+    state.customersSource = source || null;
+    renderCustomers();
+    renderDirectoryMeta();
+    persistCustomers(list, source).catch(function (e) {
+      console.warn('Could not persist customers to IndexedDB:', e);
+    });
+  }
+
+  function applyBranches(code, list, source) {
+    if (!code) return;
+    state.branches[code] = list;
+    state.branchesSource = source || null;
+    renderCustomers();
+    renderDirectoryMeta();
+    if (state.openCustomer === code) renderBranches(code);
+    persistBranches(state.branches, source).catch(function (e) {
+      console.warn('Could not persist branches to IndexedDB:', e);
+    });
+  }
+
+  function handleFiles(fileList) {
+    var files = Array.prototype.slice.call(fileList || []);
+    files.forEach(function (file) {
+      if (!file) return;
+      var ext = (file.name.split('.').pop() || '').toLowerCase();
+      if (['xlsx', 'xls', 'csv'].indexOf(ext) === -1 && file.type !== 'text/csv') {
+        showError('"' + file.name + '" is not a supported workbook. Please upload .xlsx, .xls or .csv.');
+        return;
+      }
+      processFile(file);
+    });
+  }
+
+  function processFile(file) {
     var title = $('dzTitle');
     var originalTitle = title ? title.textContent : '';
     if (title) title.textContent = 'Processing ' + file.name + '…';
@@ -926,13 +1322,33 @@
       try {
         if (typeof XLSX === 'undefined') throw new Error('SheetJS failed to load — check your internet connection.');
         var wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
-        var result = ingestWorkbook(wb);
-        if (result.missing.length) {
-          throw new Error('Required columns missing: ' + result.missing.join(', ') + '. Expected: ' + REQUIRED_COLUMNS.join(', '));
+        var rows = [];
+        for (var i = 0; i < wb.SheetNames.length; i++) {
+          var sheet = wb.Sheets[wb.SheetNames[i]];
+          if (!sheet || !sheet['!ref']) continue;
+          rows = rows.concat(XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: true }));
         }
-        if (!result.records.length) throw new Error('No data rows found in ' + file.name + '.');
-        applyRecords(result.records, { name: file.name, syncedAt: Date.now() });
-        toast('Imported ' + formatNum(result.records.length) + ' rows from ' + file.name, 'success');
+        var kind = classifyWorkbook(rows);
+        if (kind === 'customers') {
+          var custs = parseCustomerMaster(rows);
+          if (!custs.length) throw new Error('No customer rows found in ' + file.name + '.');
+          applyCustomers(custs, { name: file.name, syncedAt: Date.now() });
+          toast('Loaded ' + formatNum(custs.length) + ' customers from ' + file.name, 'success');
+        } else if (kind === 'branches') {
+          var code = codeFromFilename(file.name);
+          var branches = parseBranchList(rows);
+          if (!branches.length) throw new Error('No branch rows found in ' + file.name + '.');
+          applyBranches(code, branches, { name: file.name, syncedAt: Date.now() });
+          toast('Loaded ' + formatNum(branches.length) + ' branches for ' + code + ' from ' + file.name, 'success');
+        } else {
+          var result = ingestWorkbook(wb);
+          if (result.missing.length) {
+            throw new Error('Required columns missing: ' + result.missing.join(', ') + '. Expected: ' + REQUIRED_COLUMNS.join(', '));
+          }
+          if (!result.records.length) throw new Error('No data rows found in ' + file.name + '.');
+          applyRecords(result.records, { name: file.name, syncedAt: Date.now() });
+          toast('Imported ' + formatNum(result.records.length) + ' rows from ' + file.name, 'success');
+        }
       } catch (err) {
         showError(err.message || 'Failed to parse the uploaded file.');
       } finally {
@@ -948,6 +1364,10 @@
       if (input) input.value = '';
     };
     reader.readAsArrayBuffer(file);
+  }
+
+  function handleFile(file) {
+    handleFiles([file]);
   }
 
   function setSyncing(on) {
@@ -1036,8 +1456,8 @@
         });
       });
       dz.addEventListener('drop', function (e) {
-        var file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-        if (file) handleFile(file);
+        var files = e.dataTransfer && e.dataTransfer.files;
+        if (files && files.length) handleFiles(files);
       });
     }
 
@@ -1046,7 +1466,7 @@
     }
     if (fileInput) {
       fileInput.addEventListener('change', function () {
-        if (fileInput.files && fileInput.files[0]) handleFile(fileInput.files[0]);
+        if (fileInput.files && fileInput.files.length) handleFiles(fileInput.files);
       });
     }
 
@@ -1069,6 +1489,65 @@
     }
     var resetBtn = $('resetFilters');
     if (resetBtn) resetBtn.addEventListener('click', function () { resetFilters(false); });
+
+    var showUploadBtn = $('showUploadBtn');
+    if (showUploadBtn) {
+      showUploadBtn.addEventListener('click', function () {
+        var panel = $('ingestPanel');
+        if (panel) panel.hidden = false;
+        showUploadBtn.hidden = true;
+        if (panel && panel.scrollIntoView) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        var input = $('fileInput');
+        if (input) input.focus();
+      });
+    }
+
+    var tabs = document.querySelectorAll('#viewTabs .tab');
+    for (var t = 0; t < tabs.length; t++) {
+      tabs[t].addEventListener('click', function (ev) {
+        setView(ev.currentTarget.getAttribute('data-view'));
+      });
+    }
+
+    var customerSearch = $('customerSearch');
+    if (customerSearch) {
+      var cDebounce = null;
+      customerSearch.addEventListener('input', function () {
+        clearTimeout(cDebounce);
+        cDebounce = setTimeout(function () {
+          state.customerQuery = customerSearch.value.trim();
+          renderCustomers();
+        }, 140);
+      });
+    }
+
+    var customerBody = $('customerBody');
+    if (customerBody) {
+      customerBody.addEventListener('click', function (ev) {
+        var row = ev.target.closest && ev.target.closest('tr.cust-row');
+        if (row && row.getAttribute('data-code')) {
+          renderBranches(row.getAttribute('data-code'));
+        }
+      });
+      customerBody.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          var row = ev.target.closest && ev.target.closest('tr.cust-row');
+          if (row && row.getAttribute('data-code')) {
+            ev.preventDefault();
+            renderBranches(row.getAttribute('data-code'));
+          }
+        }
+      });
+    }
+
+    var drawerClose = $('drawerClose');
+    if (drawerClose) {
+      drawerClose.addEventListener('click', function () {
+        var drawer = $('branchDrawer');
+        if (drawer) drawer.hidden = true;
+        state.openCustomer = null;
+      });
+    }
 
     var search = $('searchInput');
     if (search) {
@@ -1113,14 +1592,27 @@
     }
 
     var cached = await loadPersisted();
-    if (cached && cached.records && cached.records.length) {
-      state.records = cached.records;
-      state.source = cached.meta && cached.meta.name ? { name: cached.meta.name, syncedAt: cached.meta.syncedAt } : null;
-      renderAll();
-      toast('Restored ' + formatNum(state.records.length) + ' rows from local cache', 'info');
-    } else {
-      renderAll();
+    if (cached) {
+      if (cached.records && cached.records.length) {
+        state.records = cached.records;
+        state.source = cached.meta && cached.meta.name ? { name: cached.meta.name, syncedAt: cached.meta.syncedAt } : null;
+        toast('Restored ' + formatNum(state.records.length) + ' rows from local cache', 'info');
+      }
+      if (cached.customers && cached.customers.length) {
+        state.customers = cached.customers;
+        state.customersSource = cached.customersMeta && cached.customersMeta.name
+          ? { name: cached.customersMeta.name, syncedAt: cached.customersMeta.syncedAt } : null;
+      }
+      if (cached.branches && cached.branches.length) {
+        cached.branches.forEach(function (entry) {
+          if (entry && entry.code) state.branches[entry.code] = entry.list || [];
+        });
+        state.branchesSource = cached.branchesMeta && cached.branchesMeta.name
+          ? { name: cached.branchesMeta.name, syncedAt: cached.branchesMeta.syncedAt } : null;
+      }
     }
+    renderAll();
+    setView(state.view);
   }
 
   /* Expose pure core for debugging + tests */
@@ -1138,9 +1630,14 @@
     buildRecords: buildRecords,
     ingestWorkbook: ingestWorkbook,
     parseGvizRows: parseGvizRows,
+    classifyWorkbook: classifyWorkbook,
+    codeFromFilename: codeFromFilename,
+    parseCustomerMaster: parseCustomerMaster,
+    parseBranchList: parseBranchList,
     computeKpis: computeKpis,
     buildBarData: buildBarData,
     buildDoughnutData: buildDoughnutData,
+    customerOrderStats: customerOrderStats,
     sortRows: sortRows,
     filteredRows: filteredRows
   };
