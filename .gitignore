@@ -5,3 +5,6 @@ Customers/
 .DS_Store
 Thumbs.db
 *.log
+
+# Excel temp / lock files
+~$*
