@@ -199,6 +199,7 @@
     sortDir: 'desc',
     view: 'dispatch',
     openCustomer: null,
+    abc: 'ALL',
     dateFrom: null,
     dateTo: null,
     trendGranularity: 'month',
@@ -216,6 +217,9 @@
   var lastUpdatedTick = null;
   var syncing = false;
   var routeMap = null;
+  var routeMapCircle = null;
+  var coordsIndex = {};
+  var routeNames = {};
 
   /* -------------------------------------------------------------
      Data cleaning layer (pure — unit-testable)
@@ -313,6 +317,21 @@
     return String(v == null ? '' : v).toLowerCase().replace(/[^a-z0-9]/g, '');
   }
 
+  function eachMapName(rec, fn) {
+    var raw = rec['GHMC Ward Number & Name'];
+    if (raw == null) return;
+    var s = String(raw).trim();
+    var names;
+    if (s.indexOf('- (') === 0) {
+      names = s.split(':').slice(1).join(':').trim()
+        .split(',').map(function (x) { return x.trim(); });
+    } else {
+      var m = s.match(/^\s*\d+\s*-\s*(.+)$/);
+      names = [m ? m[1].trim() : s];
+    }
+    names.forEach(fn);
+  }
+
   function buildRouteIndex(mapRecords) {
     var idx = {};
     var add = function (name, route) {
@@ -320,19 +339,26 @@
       if (slug && !(slug in idx)) idx[slug] = route;
     };
     (mapRecords || []).forEach(function (rec) {
-      var raw = rec['GHMC Ward Number & Name'];
-      if (raw == null) return;
-      var s = String(raw).trim();
-      var names;
-      if (s.indexOf('- (') === 0) {
-        names = s.split(':').slice(1).join(':').trim()
-          .split(',').map(function (x) { return x.trim(); });
-      } else {
-        var m = s.match(/^\s*\d+\s*-\s*(.+)$/);
-        names = [m ? m[1].trim() : s];
-      }
-      names.forEach(function (name) { add(name, rec['Route Code']); });
+      eachMapName(rec, function (name) { add(name, rec['Route Code']); });
       add(rec['GHMC Circle Name'], rec['Route Code']);
+    });
+    return idx;
+  }
+
+  function buildCircleIndex(mapRecords) {
+    var idx = {};
+    var add = function (name, info) {
+      var slug = routeNameSlug(name);
+      if (slug && !(slug in idx)) idx[slug] = info;
+    };
+    (mapRecords || []).forEach(function (rec) {
+      var info = {
+        route: rec['Route Code'],
+        circle: rec['GHMC Circle Name'],
+        note: rec['Logistics Sorting Note']
+      };
+      eachMapName(rec, function (name) { add(name, info); });
+      add(info.circle, info);
     });
     return idx;
   }
@@ -713,6 +739,160 @@
     });
     open.sort(function (a, b) { return b.age - a.age; });
     return { total: open.length, buckets: buckets, oldest: open.slice(0, 10) };
+  }
+
+  /* -------------------------------------------------------------
+     SLA escalation (editable thresholds, persisted in localStorage)
+     ------------------------------------------------------------- */
+  var SLA_DEFAULTS = {
+    P1: { atRisk: 2, breach: 5 },
+    P2: { atRisk: 4, breach: 7 },
+    P3: { atRisk: 6, breach: 10 },
+    P4: { atRisk: 8, breach: 12 }
+  };
+  var SLA_KEY = 'outward-sla-tiers';
+
+  function loadSlaTiers() {
+    var out = {};
+    ['P1', 'P2', 'P3', 'P4'].forEach(function (p) {
+      var d = SLA_DEFAULTS[p];
+      out[p] = { atRisk: d.atRisk, breach: d.breach };
+    });
+    try {
+      var raw = localStorage.getItem(SLA_KEY);
+      if (!raw) return out;
+      var parsed = JSON.parse(raw);
+      ['P1', 'P2', 'P3', 'P4'].forEach(function (p) {
+        var c = parsed[p] || {};
+        if (Number(c.atRisk) > 0) out[p].atRisk = Number(c.atRisk);
+        if (Number(c.breach) > 0) out[p].breach = Number(c.breach);
+        if (out[p].breach < out[p].atRisk) out[p].breach = out[p].atRisk + 1;
+      });
+    } catch (e) { /* keep defaults */ }
+    return out;
+  }
+
+  var slaTiers = loadSlaTiers();
+
+  function saveSlaTiers() {
+    try {
+      localStorage.setItem(SLA_KEY, JSON.stringify(slaTiers));
+      return true;
+    } catch (e) { return false; }
+  }
+
+  function slaTier(rec, now) {
+    if (rec.ack === 'Done' || !rec.orderDate) return { level: 'none', age: -1, atRisk: 0, breach: 0 };
+    var t = slaTiers[rec.priority] || SLA_DEFAULTS.P1;
+    var today = now ? new Date(now.getTime()) : new Date();
+    today.setHours(0, 0, 0, 0);
+    var start = new Date(rec.orderDate);
+    start.setHours(0, 0, 0, 0);
+    var age = Math.max(0, Math.floor((today.getTime() - start.getTime()) / 86400000));
+    var level = 'on-track';
+    if (age > t.breach) level = 'breached';
+    else if (age > t.atRisk) level = 'at-risk';
+    return { level: level, age: age, atRisk: t.atRisk, breach: t.breach };
+  }
+
+  function buildEscalationQueue(rows, now) {
+    var out = [];
+    rows.forEach(function (r) {
+      if (r.ack === 'Done') return;
+      var s = slaTier(r, now);
+      if (s.level === 'none') return;
+      out.push({ rec: r, sla: s });
+    });
+    var weight = { breached: 3, 'at-risk': 2, 'on-track': 1 };
+    out.sort(function (a, b) {
+      return (weight[b.sla.level] - weight[a.sla.level]) || (b.sla.age - a.sla.age);
+    });
+    return out;
+  }
+
+  /* -------------------------------------------------------------
+     Customer ABC (priority-weighted Pareto)
+     ------------------------------------------------------------- */
+  var PRIORITY_WEIGHT = { P1: 3, P2: 2, P3: 1.5, P4: 1 };
+
+  function abcClassify(rows) {
+    var w = {};
+    rows.forEach(function (r) {
+      if (!r.customer) return;
+      w[r.customer] = (w[r.customer] || 0) + (PRIORITY_WEIGHT[r.priority] || 1);
+    });
+    var list = Object.keys(w).map(function (k) { return { customer: k, weight: w[k] }; })
+      .sort(function (a, b) { return b.weight - a.weight; });
+    var total = list.reduce(function (s, x) { return s + x.weight; }, 0);
+    var cum = 0;
+    var classes = {};
+    var counts = { A: 0, B: 0, C: 0 };
+    list.forEach(function (x) {
+      cum += x.weight;
+      var share = total ? cum / total : 0;
+      var cls = share <= 0.2 ? 'A' : (share <= 0.5 ? 'B' : 'C');
+      classes[x.customer] = cls;
+      counts[cls]++;
+    });
+    return { classes: classes, list: list, total: total, counts: counts };
+  }
+
+  /* -------------------------------------------------------------
+     Route load plans (group by route -> circle, ordered by time buckets)
+     ------------------------------------------------------------- */
+  var BUCKET_ORDER = { early: 0, morning: 1, truck: 2, offpeak: 3, any: 4 };
+
+  function timeBucketFromNote(note) {
+    var n = String(note || '').toLowerCase();
+    if (/08\s*[:.]?\s*30|first batch/.test(n)) return 'early';
+    if (/off[- ]?peak/.test(n)) return 'offpeak';
+    if (/10\s*am|10\s*[-–]?\s*4\s*pm|noon|2\s*pm/.test(n)) return 'truck';
+    if (/morning/.test(n)) return 'morning';
+    return 'any';
+  }
+
+  function bucketLabel(b) {
+    return { early: 'Early', morning: 'Morning', truck: 'Truck window', offpeak: 'Off-peak', any: 'Any time' }[b] || b;
+  }
+
+  function buildLoadPlan(rows, circleIdx) {
+    circleIdx = circleIdx || routeMapCircle;
+    var plan = {};
+    rows.forEach(function (r) {
+      var info = circleIdx && circleIdx[routeNameSlug(cleanPlace(r.branch))];
+      var route = r.route || (info && info.route) || 'Unknown';
+      var circle = (info && info.circle) || '—';
+      if (!plan[route]) plan[route] = {};
+      if (!plan[route][circle]) {
+        plan[route][circle] = {
+          note: (info && info.note) || '',
+          bucket: (info && info.note) ? timeBucketFromNote(info.note) : 'any',
+          rows: []
+        };
+      }
+      plan[route][circle].rows.push(r);
+    });
+    var routes = Object.keys(plan).map(function (route) {
+      var circles = Object.keys(plan[route]).map(function (c) {
+        var o = plan[route][c];
+        o.circle = c;
+        o.total = o.rows.length;
+        o.open = o.rows.filter(function (r) { return r.ack !== 'Done'; }).length;
+        o.p1 = o.rows.filter(function (r) { return r.priority === 'P1' && r.ack !== 'Done'; }).length;
+        return o;
+      });
+      circles.sort(function (a, b) {
+        return (BUCKET_ORDER[a.bucket] - BUCKET_ORDER[b.bucket]) || (b.total - a.total) || String(a.circle).localeCompare(String(b.circle));
+      });
+      var routeTotal = circles.reduce(function (s, c) { return s + c.total; }, 0);
+      var routeOpen = circles.reduce(function (s, c) { return s + c.open; }, 0);
+      var routeP1 = circles.reduce(function (s, c) { return s + c.p1; }, 0);
+      return { route: route, circles: circles, total: routeTotal, open: routeOpen, p1: routeP1 };
+    });
+    routes.sort(function (a, b) {
+      return String(a.route).localeCompare(String(b.route), undefined, { numeric: true });
+    });
+    return routes;
   }
 
   function auditData(records) {
@@ -1425,6 +1605,306 @@
     setRouteFilter(state.route === r ? 'ALL' : r);
   }
 
+  /* -------------------------------------------------------------
+     Route Ops: SLA escalation queue
+     ------------------------------------------------------------- */
+  function renderSla(rows) {
+    var body = $('slaBody');
+    var meta = $('slaMeta');
+    if (!body) return;
+    var q = buildEscalationQueue(rows, null);
+    if (meta) {
+      if (!q.length) {
+        meta.textContent = 'No SLA issues';
+      } else {
+        var breached = q.filter(function (x) { return x.sla.level === 'breached'; }).length;
+        var atRisk = q.filter(function (x) { return x.sla.level === 'at-risk'; }).length;
+        meta.textContent = (breached ? breached + ' breached' : '') +
+          (breached && atRisk ? ' · ' : '') +
+          (atRisk ? atRisk + ' at risk' : '') +
+          (q.length ? ' · ' + q.length + ' open' : '');
+      }
+    }
+    if (!q.length) {
+      body.innerHTML = '<tr class="row-empty"><td colspan="8">No open orders outside SLA in the current scope.</td></tr>';
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < q.length; i++) {
+      var x = q[i];
+      var r = x.rec;
+      html +=
+        '<tr class="row-sla-' + x.sla.level + '">' +
+        '<td><span class="sla-chip sla-' + x.sla.level + '">' + x.sla.level + '</span></td>' +
+        '<td class="td-mono">' + x.sla.age + 'd</td>' +
+        '<td>' + priorityBadge(r.priority) + '</td>' +
+        '<td>' + escapeHtml(r.route || '—') + '</td>' +
+        '<td class="td-strong">' + escapeHtml(r.customer || '—') + '</td>' +
+        '<td>' + escapeHtml(r.branch || '—') + '</td>' +
+        '<td>' + escapeHtml(r.location || '—') + '</td>' +
+        '<td>' + ackBadge(r.ack) + '</td>' +
+        '</tr>';
+    }
+    body.innerHTML = html;
+  }
+
+  function populateSlaSettings() {
+    ['P1', 'P2', 'P3', 'P4'].forEach(function (p) {
+      var at = $('sla' + p + 'At');
+      var br = $('sla' + p + 'Br');
+      if (at) at.value = slaTiers[p].atRisk;
+      if (br) br.value = slaTiers[p].breach;
+    });
+  }
+
+  function readSlaSettings() {
+    ['P1', 'P2', 'P3', 'P4'].forEach(function (p) {
+      var at = $('sla' + p + 'At');
+      var br = $('sla' + p + 'Br');
+      var av = at ? parseInt(at.value, 10) : NaN;
+      var bv = br ? parseInt(br.value, 10) : NaN;
+      if (av >= 1 && av <= 90) slaTiers[p].atRisk = av;
+      if (bv >= 1 && bv <= 90 && bv > slaTiers[p].atRisk) slaTiers[p].breach = bv;
+    });
+  }
+
+  /* -------------------------------------------------------------
+     Route Ops: interactive route map (Leaflet)
+     ------------------------------------------------------------- */
+  var ROUTE_COLOR = { R1: '#5e6ad2', R2: '#27a644', R3: '#b87800', R4: '#e5484d', R5: '#6b7280' };
+  var routeMapObj = null;
+  var routeMapLayer = null;
+
+  function routeCircleFor(r) {
+    if (!routeMapCircle) return null;
+    return routeMapCircle[routeNameSlug(cleanPlace(r.branch))] || null;
+  }
+
+  function renderRouteMap(rows) {
+    var host = $('routeMap');
+    var meta = $('mapMeta');
+    if (!host) return;
+    if (typeof L === 'undefined') {
+      host.innerHTML = '<p class="backlog-empty">Map library unavailable offline — load plan and export still work.</p>';
+      if (meta) meta.textContent = 'Offline';
+      return;
+    }
+    if (!routeMapObj) {
+      host.innerHTML = '';
+      routeMapObj = L.map('routeMap').setView([17.42, 78.42], 11);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      }).addTo(routeMapObj);
+    } else {
+      host.innerHTML = '';
+      routeMapObj.setView([17.42, 78.42], 11);
+    }
+    if (routeMapLayer) {
+      routeMapObj.removeLayer(routeMapLayer);
+      routeMapLayer = null;
+    }
+    var counts = {};
+    rows.forEach(function (r) {
+      var info = routeCircleFor(r);
+      if (!info) return;
+      var circle = info.circle;
+      if (!counts[circle]) counts[circle] = { route: r.route || info.route || '—', total: 0, open: 0, p1: 0 };
+      counts[circle].total++;
+      if (r.ack !== 'Done') counts[circle].open++;
+      if (r.priority === 'P1' && r.ack !== 'Done') counts[circle].p1++;
+    });
+    var layer = L.layerGroup();
+    var nMarkers = 0;
+    Object.keys(counts).forEach(function (circle) {
+      var c = counts[circle];
+      var coord = coordsIndex[circle];
+      if (!coord) return;
+      nMarkers++;
+      var color = ROUTE_COLOR[c.route] || '#5e6ad2';
+      var radius = 6 + Math.min(18, 2 + c.open * 1.5);
+      var marker = L.circleMarker([coord.lat, coord.lng], {
+        radius: radius,
+        color: color,
+        weight: 2,
+        fillColor: color,
+        fillOpacity: 0.6
+      }).addTo(layer);
+      marker.bindPopup(
+        '<b>' + escapeHtml(circle) + '</b><br>' +
+        'Route ' + escapeHtml(c.route) + '<br>' +
+        'Orders: ' + c.total + ' · Open: ' + c.open + '<br>' +
+        'P1 open: ' + c.p1
+      );
+    });
+    if (nMarkers) {
+      layer.addTo(routeMapObj);
+      routeMapLayer = layer;
+      try {
+        routeMapObj.fitBounds(layer.getBounds().pad(0.15));
+      } catch (e) { /* bounds unavailable */ }
+      if (meta) meta.textContent = nMarkers + ' circles · ' + rows.length + ' orders';
+    } else {
+      if (meta) meta.textContent = 'No mapped circles in scope';
+      host.innerHTML = '<p class="backlog-empty">No circles in the current scope have map coordinates.</p>';
+    }
+  }
+
+  /* -------------------------------------------------------------
+     Route Ops: load plans + exports
+     ------------------------------------------------------------- */
+  function renderLoadPlan(rows) {
+    var host = $('loadPlan');
+    if (!host) return;
+    var plan = buildLoadPlan(rows);
+    if (!plan.length) {
+      host.innerHTML = '<p class="backlog-empty">No routed orders in the current scope.</p>';
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < plan.length; i++) {
+      var r = plan[i];
+      var name = routeNames[r.route] ? ' · ' + routeNames[r.route] : '';
+      html += '<div class="lp-route">' +
+        '<header class="lp-head">' +
+        '<span class="route-chip">' + escapeHtml(r.route) + '</span>' +
+        '<span class="lp-name">' + escapeHtml(name.replace(/^ · /, '')) +
+        '<span class="lp-dim"> — ' + r.total + ' orders · ' + r.open + ' open' + (r.p1 ? ' · ' + r.p1 + ' P1' : '') + '</span></span>' +
+        '</header>';
+      for (var c = 0; c < r.circles.length; c++) {
+        var circle = r.circles[c];
+        html += '<div class="lp-circle">' +
+          '<div class="lp-circle-head">' +
+          '<span class="lp-bucket lp-bucket-' + circle.bucket + '">' + bucketLabel(circle.bucket) + '</span>' +
+          '<span class="lp-circle-name">' + escapeHtml(circle.circle) + '</span>' +
+          '<span class="lp-count">' + circle.total + ' · ' + circle.open + ' open' + (circle.p1 ? ' · ' + circle.p1 + ' P1' : '') + '</span>' +
+          '</div>';
+        if (circle.note) html += '<p class="lp-note">' + escapeHtml(circle.note) + '</p>';
+        html += '<div class="lp-rows">';
+        for (var k = 0; k < circle.rows.length; k++) {
+          var row = circle.rows[k];
+          html += '<div class="lp-row">' +
+            '<span>' + priorityBadge(row.priority) + '</span>' +
+            '<span class="lp-row-c">' + escapeHtml(row.customer || '—') + '</span>' +
+            '<span class="lp-row-b">' + escapeHtml(row.location || row.branch || '—') + '</span>' +
+            '<span>' + ackBadge(row.ack) + '</span>' +
+            '</div>';
+        }
+        html += '</div></div>';
+      }
+      html += '</div>';
+    }
+    host.innerHTML = html;
+  }
+
+  function sheetName(v) {
+    var s = String(v == null ? '' : v).replace(/[\\\/\?\*\[\]:]/g, ' ').slice(0, 31);
+    return s || 'Sheet';
+  }
+
+  function fmtDateShort(d) {
+    if (!d) return '';
+    var pad = function (n) { return n < 10 ? '0' + n : '' + n; };
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  }
+
+  function exportPlanXlsx() {
+    if (typeof XLSX === 'undefined' || !XLSX.writeFile) {
+      toast('SheetJS not available', 'error');
+      return;
+    }
+    var plan = buildLoadPlan(filteredRows());
+    if (!plan.length) { toast('Nothing to export in current scope', 'info'); return; }
+    var wb = XLSX.utils.book_new();
+    var summary = [['Route', 'Route Name', 'Total', 'Open', 'P1 Open', 'Circles']];
+    plan.forEach(function (r) {
+      summary.push([r.route, routeNames[r.route] || '', r.total, r.open, r.p1, r.circles.length]);
+    });
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summary), 'Load Plan');
+    plan.forEach(function (r) {
+      var aoa = [['Sort #', 'Circle', 'Time bucket', 'Branch', 'Customer', 'Location', 'Priority', 'Order Date', 'Dispatch Date', 'Ack', 'Sorting Note']];
+      var n = 0;
+      r.circles.forEach(function (c) {
+        c.rows.forEach(function (row) {
+          n++;
+          aoa.push([
+            n, c.circle, bucketLabel(c.bucket), row.branch, row.customer, row.location,
+            row.priority, fmtDateShort(row.orderDate), fmtDateShort(row.dispatchDate), row.ack, c.note
+          ]);
+        });
+      });
+      var ws = XLSX.utils.aoa_to_sheet(aoa);
+      ws['!cols'] = [{ wch: 6 }, { wch: 18 }, { wch: 12 }, { wch: 16 }, { wch: 26 }, { wch: 22 }, { wch: 8 }, { wch: 11 }, { wch: 11 }, { wch: 10 }, { wch: 60 }];
+      XLSX.utils.book_append_sheet(wb, ws, sheetName(r.route));
+    });
+    XLSX.writeFile(wb, 'outward-dispatch-plan-' + fmtDateShort(new Date()) + '.xlsx');
+    toast('Exported dispatch plan (XLSX)', 'success');
+  }
+
+  function csvCell(v) {
+    var s = String(v == null ? '' : v);
+    if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }
+
+  function exportCsv() {
+    var rows = sortRows(filteredRows(), state.sortKey, state.sortDir);
+    if (!rows.length) { toast('Nothing to export in current scope', 'info'); return; }
+    var headers = ['Order Date', 'Customer Name', 'Branch', 'Location', 'Route', 'Priority', 'Dispatch Date', 'Ack'];
+    var lines = [headers.map(csvCell).join(',')];
+    rows.forEach(function (r) {
+      lines.push([
+        fmtDateShort(r.orderDate), r.customer, r.branch, r.location, r.route, r.priority,
+        fmtDateShort(r.dispatchDate), r.ack
+      ].map(csvCell).join(','));
+    });
+    var blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'outward-dispatch-' + fmtDateShort(new Date()) + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    toast('Exported ' + rows.length + ' rows (CSV)', 'success');
+  }
+
+  function printManifest() {
+    var plan = buildLoadPlan(filteredRows());
+    var area = $('printArea');
+    if (!area) return;
+    if (!plan.length) { toast('Nothing to print in current scope', 'info'); return; }
+    var html =
+      '<div class="pm-header">' +
+      '<div class="pm-title">SkyLimit Outward Dispatch Manifest</div>' +
+      '<div class="pm-sub">Generated ' + new Date().toLocaleString() + ' · ' +
+      state.records.length + ' records · ' + filteredRows().length + ' in scope</div>' +
+      '</div>';
+    plan.forEach(function (r) {
+      html += '<div class="pm-route">' +
+        '<h4>' + escapeHtml(r.route) + (routeNames[r.route] ? ' — ' + escapeHtml(routeNames[r.route]) : '') +
+        ' <span style="font-weight:400;color:#444">(' + r.total + ' orders · ' + r.open + ' open)</span></h4>';
+      var n = 0;
+      r.circles.forEach(function (c) {
+        c.rows.forEach(function (row) {
+          n++;
+          html += '<div class="pm-row">' +
+            '<span class="pm-seq">' + n + '.</span>' +
+            '<span class="pm-circle">' + escapeHtml(c.circle) + '</span>' +
+            '<span class="pm-cust">' + escapeHtml(row.customer || '—') + '</span>' +
+            '<span class="pm-loc">' + escapeHtml(row.location || row.branch || '—') + '</span>' +
+            '<span class="pm-prio">' + escapeHtml(row.priority) + '</span>' +
+            '<span class="pm-ack">' + escapeHtml(row.ack) + '</span>' +
+            '</div>';
+        });
+      });
+      html += '</div>';
+    });
+    area.innerHTML = html;
+    area.hidden = false;
+    window.print();
+  }
+
   function renderQuality(rows) {
     var meta = $('qualityMeta');
     var report = $('qualityReport');
@@ -1501,13 +1981,17 @@
     var html = '';
     for (var i = 0; i < rows.length; i++) {
       var r = rows[i];
+      var s = slaTier(r, null);
+      var slaCls = s.level === 'breached' ? ' row-sla-breached' : (s.level === 'at-risk' ? ' row-sla-at-risk' : '');
       html +=
-        '<tr>' +
+        '<tr class="' + slaCls + '">' +
         '<td class="td-date">' + formatDate(r.orderDate) + '</td>' +
         '<td class="td-strong">' + escapeHtml(r.customer || '—') + '</td>' +
         '<td>' + escapeHtml(r.branch || '—') + '</td>' +
         '<td>' + escapeHtml(r.location || '—') + '</td>' +
-        '<td>' + escapeHtml(r.route || '—') + '</td>' +
+        '<td>' + (s.level !== 'none' && s.level !== 'on-track'
+          ? '<span class="sla-chip sla-' + s.level + '">' + s.level + '</span> ' + escapeHtml(r.route || '—')
+          : escapeHtml(r.route || '—')) + '</td>' +
         '<td>' + priorityBadge(r.priority) + '</td>' +
         '<td class="td-date">' + formatDate(r.dispatchDate) + '</td>' +
         '<td>' + ackBadge(r.ack) + '</td>' +
@@ -1577,6 +2061,9 @@
     renderAging(rows);
     renderRouteOverview(filteredRows(true));
     renderQuality(rows);
+    renderSla(rows);
+    renderRouteMap(rows);
+    renderLoadPlan(rows);
     refreshIcons();
   }
 
@@ -1601,6 +2088,11 @@
     if (dv) dv.hidden = view !== 'dispatch';
     var cv = $('customersView');
     if (cv) cv.hidden = view !== 'customers';
+    var rv = $('routeopsView');
+    if (rv) rv.hidden = view !== 'routeops';
+    if (view === 'routeops' && routeMapObj && typeof routeMapObj.invalidateSize === 'function') {
+      setTimeout(function () { routeMapObj.invalidateSize(); }, 60);
+    }
     refreshIcons();
   }
 
@@ -1635,12 +2127,23 @@
   function renderCustomers() {
     var tbody = $('customerBody');
     if (!tbody) return;
+    var abc = abcClassify(state.records);
+    var meta = $('abcMeta');
+    if (meta) {
+      if (state.customers.length) {
+        meta.hidden = false;
+        meta.textContent = 'A ' + abc.counts.A + ' · B ' + abc.counts.B + ' · C ' + abc.counts.C;
+      } else {
+        meta.hidden = true;
+      }
+    }
     if (!state.customers.length) {
-      tbody.innerHTML = '<tr class="row-empty"><td colspan="8">No customer data yet — use "Upload / replace data" and drop the ALL_Customers master file, plus per-customer branch workbooks.</td></tr>';
+      tbody.innerHTML = '<tr class="row-empty"><td colspan="9">No customer data yet — use "Upload / replace data" and drop the ALL_Customers master file, plus per-customer branch workbooks.</td></tr>';
       return;
     }
     var q = state.customerQuery.toLowerCase();
     var list = state.customers.filter(function (c) {
+      if (state.abc !== 'ALL' && abc.classes[c.name] !== state.abc) return false;
       if (!q) return true;
       return String(c.code).toLowerCase().indexOf(q) !== -1 ||
         String(c.name).toLowerCase().indexOf(q) !== -1 ||
@@ -1656,10 +2159,12 @@
       var c = list[i];
       var branches = state.branches[c.code] || [];
       var stats = customerOrderStats(c.name, state.records);
+      var cls = abc.classes[c.name] || 'C';
       var clickable = branches.length > 0;
       var aria = clickable ? ' role="button" tabindex="0" aria-label="View branches for ' + escapeHtml(c.name) + '"' : '';
       html +=
         '<tr class="cust-row' + (clickable ? ' is-clickable' : '') + '" data-code="' + escapeHtml(c.code) + '"' + aria + '>' +
+        '<td><span class="abc-chip abc-' + cls + '" title="Class ' + cls + '">' + cls + '</span></td>' +
         '<td class="td-mono">' + escapeHtml(c.code || '—') + '</td>' +
         '<td class="td-strong">' + escapeHtml(c.name || '—') + '</td>' +
         '<td>' + escapeHtml(c.city || '—') + '</td>' +
@@ -1673,7 +2178,7 @@
         '</tr>';
     }
     if (!list.length) {
-      tbody.innerHTML = '<tr class="row-empty"><td colspan="8">No customers match the current search.</td></tr>';
+      tbody.innerHTML = '<tr class="row-empty"><td colspan="9">No customers match the current search.</td></tr>';
     } else {
       tbody.innerHTML = html;
     }
@@ -1778,6 +2283,15 @@
       pills[i].classList.toggle('is-active', pills[i].getAttribute('data-ack') === a);
     }
     renderAll();
+  }
+
+  function setAbcFilter(a) {
+    state.abc = a;
+    var pills = document.querySelectorAll('#abcFilter .pill');
+    for (var i = 0; i < pills.length; i++) {
+      pills[i].classList.toggle('is-active', pills[i].getAttribute('data-abc') === a);
+    }
+    renderCustomers();
   }
 
   function setBarDimension(d) {
@@ -2128,6 +2642,53 @@
       });
     }
 
+    var slaSettingsBtn = $('slaSettingsBtn');
+    if (slaSettingsBtn) {
+      slaSettingsBtn.addEventListener('click', function () {
+        var panel = $('slaSettings');
+        if (!panel) return;
+        var open = panel.hidden;
+        if (open) populateSlaSettings();
+        panel.hidden = !open;
+        var label = slaSettingsBtn.querySelector('span');
+        if (label) label.textContent = open ? 'Hide thresholds' : 'SLA thresholds';
+      });
+    }
+    var slaSaveBtn = $('slaSaveBtn');
+    if (slaSaveBtn) {
+      slaSaveBtn.addEventListener('click', function () {
+        readSlaSettings();
+        if (saveSlaTiers()) toast('SLA thresholds saved', 'success');
+        else toast('Could not save thresholds', 'error');
+        renderAll();
+      });
+    }
+    var slaResetBtn = $('slaResetBtn');
+    if (slaResetBtn) {
+      slaResetBtn.addEventListener('click', function () {
+        ['P1', 'P2', 'P3', 'P4'].forEach(function (p) {
+          slaTiers[p] = { atRisk: SLA_DEFAULTS[p].atRisk, breach: SLA_DEFAULTS[p].breach };
+        });
+        saveSlaTiers();
+        populateSlaSettings();
+        renderAll();
+      });
+    }
+
+    var abcPills = document.querySelectorAll('#abcFilter .pill');
+    for (var ab = 0; ab < abcPills.length; ab++) {
+      abcPills[ab].addEventListener('click', function (ev) {
+        setAbcFilter(ev.currentTarget.getAttribute('data-abc'));
+      });
+    }
+
+    var exportPlanBtn = $('exportPlanBtn');
+    if (exportPlanBtn) exportPlanBtn.addEventListener('click', exportPlanXlsx);
+    var exportCsvBtn = $('exportCsvBtn');
+    if (exportCsvBtn) exportCsvBtn.addEventListener('click', exportCsv);
+    var printBtn = $('printBtn');
+    if (printBtn) printBtn.addEventListener('click', printManifest);
+
     var showUploadBtn = $('showUploadBtn');
     if (showUploadBtn) {
       showUploadBtn.addEventListener('click', function () {
@@ -2272,6 +2833,18 @@
       if (!res.ok) throw new Error('HTTP ' + res.status);
       var data = await res.json();
       routeMap = buildRouteIndex(data.records || []);
+      routeMapCircle = buildCircleIndex(data.records || []);
+      coordsIndex = {};
+      routeNames = {};
+      (data.records || []).forEach(function (rec) {
+        var circle = rec['GHMC Circle Name'];
+        if (circle) {
+          if (rec['Circle Lat'] != null && rec['Circle Lng'] != null && !(circle in coordsIndex)) {
+            coordsIndex[circle] = { lat: Number(rec['Circle Lat']), lng: Number(rec['Circle Lng']) };
+          }
+          if (!(rec['Route Code'] in routeNames)) routeNames[rec['Route Code']] = rec['Route Name'];
+        }
+      });
       var hadRoute = 0;
       for (var i = 0; i < state.records.length; i++) if (state.records[i].route) hadRoute++;
       enrichRoutes(state.records, routeMap);
@@ -2316,8 +2889,16 @@
     sortRows: sortRows,
     filteredRows: filteredRows,
     buildRouteIndex: buildRouteIndex,
+    buildCircleIndex: buildCircleIndex,
     routeFromBranch: routeFromBranch,
-    enrichRoutes: enrichRoutes
+    enrichRoutes: enrichRoutes,
+    slaTier: slaTier,
+    buildEscalationQueue: buildEscalationQueue,
+    loadSlaTiers: loadSlaTiers,
+    abcClassify: abcClassify,
+    buildLoadPlan: buildLoadPlan,
+    timeBucketFromNote: timeBucketFromNote,
+    bucketLabel: bucketLabel
   };
 
   init();
