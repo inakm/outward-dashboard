@@ -10,7 +10,7 @@
   <meta name="keywords" content="SkyLimit, outward logistics, dispatch dashboard, order tracking, fulfilment rate, dispatch velocity, logistics analytics, enterprise dashboard">
   <meta name="author" content="SkyLimit">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-  <meta name="theme-color" content="#010102">
+  <meta name="theme-color" content="#f7f8fa">
   <link rel="canonical" href="https://inakm.github.io/outward-dashboard/">
 
   <!-- Icons -->
@@ -77,10 +77,15 @@
     <div class="topnav-inner">
       <a class="brand" href="index.html" aria-label="SkyLimit Outwards Dashboard home">
         <span class="brand-mark"><img src="logo.png" alt="SkyLimit" class="brand-logo" width="57" height="26"></span>
-        <span class="brand-name">SkyLimit&nbsp;Outwards</span>
+        <span class="brand-name">Outwards</span>
       </a>
       <div class="topnav-right">
+        <span id="lastUpdated" class="status-badge" hidden>Updated —</span>
         <span id="dataSourceBadge" class="status-badge">No data loaded</span>
+        <button type="button" id="autoRefreshBtn" class="btn btn-secondary btn-sm" hidden>
+          <i data-lucide="refresh-cw"></i>
+          <span id="autoRefreshLabel">Auto-refresh: Off</span>
+        </button>
         <button type="button" id="syncBtn" class="btn btn-secondary btn-sm">
           <i data-lucide="refresh-cw"></i>
           <span>Sync Google Sheet</span>
@@ -189,20 +194,57 @@
           <button type="button" class="pill" data-ack="Pending"><span class="dot dot-pending"></span>Pending</button>
         </div>
       </div>
+      <div class="filter-group">
+        <span class="filter-label">Order date</span>
+        <input type="date" id="dateFrom" class="date-input" aria-label="From order date">
+        <span class="date-sep">→</span>
+        <input type="date" id="dateTo" class="date-input" aria-label="To order date">
+      </div>
       <button type="button" id="resetFilters" class="btn btn-tertiary btn-sm">
         <i data-lucide="rotate-ccw"></i>
         <span>Reset</span>
       </button>
     </section>
 
+    <section class="panel chart-card trend-card">
+      <header class="card-head">
+        <div>
+          <h3 class="card-title">Outward Volume Over Time</h3>
+          <p class="card-sub">Orders vs dispatched per period in current scope</p>
+        </div>
+        <div class="table-actions">
+          <div id="trendGranularity" class="pill-row">
+            <button type="button" class="pill is-active" data-granularity="day">Day</button>
+            <button type="button" class="pill" data-granularity="week">Week</button>
+            <button type="button" class="pill" data-granularity="month">Month</button>
+          </div>
+          <span class="status-badge" id="trendMeta">—</span>
+        </div>
+      </header>
+      <div class="chart-box" id="trendChartBox">
+        <canvas id="trendChart"></canvas>
+        <div id="trendEmpty" class="chart-empty" hidden>
+          <i data-lucide="trending-up"></i>
+          <p>No records to chart</p>
+        </div>
+      </div>
+    </section>
+
     <section class="charts-grid">
       <article class="panel chart-card">
         <header class="card-head">
           <div>
-            <h3 class="card-title">Volume by Customer</h3>
-            <p class="card-sub">Order count per customer in current scope</p>
+            <h3 class="card-title" id="barTitle">Volume by Customer</h3>
+            <p class="card-sub" id="barSub">Order count per customer in current scope</p>
           </div>
-          <span class="status-badge" id="barMeta">—</span>
+          <div class="table-actions">
+            <div id="barDimension" class="pill-row">
+              <button type="button" class="pill is-active" data-dim="customer">Customer</button>
+              <button type="button" class="pill" data-dim="location">Location</button>
+              <button type="button" class="pill" data-dim="branch">Branch</button>
+            </div>
+            <span class="status-badge" id="barMeta">—</span>
+          </div>
         </header>
         <div class="chart-box" id="barChartBox">
           <canvas id="barChart"></canvas>
@@ -279,6 +321,45 @@
         </table>
       </div>
     </section>
+
+    <section class="panel backlog-panel" id="backlogPanel">
+      <header class="card-head">
+        <div>
+          <h3 class="card-title">Backlog Aging</h3>
+          <p class="card-sub">Open P1 bottlenecks aged by days since order date</p>
+        </div>
+        <span class="status-badge" id="backlogMeta">—</span>
+      </header>
+      <div class="backlog-grid">
+        <div class="chart-box compact" id="agingChartBox">
+          <canvas id="agingChart"></canvas>
+          <div id="agingEmpty" class="chart-empty" hidden>
+            <i data-lucide="hourglass"></i>
+            <p>No open bottlenecks in scope</p>
+          </div>
+        </div>
+        <div class="backlog-list" id="backlogList"></div>
+      </div>
+    </section>
+
+    <section class="panel quality-panel">
+      <header class="card-head">
+        <div>
+          <h3 class="card-title">Data Quality Report</h3>
+          <p class="card-sub">Rows that may need attention in the source sheet</p>
+        </div>
+        <div class="table-actions">
+          <span class="status-badge" id="qualityMeta">No issues</span>
+          <button type="button" id="qualityToggle" class="btn btn-tertiary btn-sm">
+            <i data-lucide="chevron-down"></i><span id="qualityToggleLabel">Show report</span>
+          </button>
+        </div>
+      </header>
+      <div id="qualityReport" class="quality-report" hidden>
+        <p class="backlog-empty" id="qualityEmpty">No issues found — data looks clean.</p>
+        <div id="qualityIssues"></div>
+      </div>
+    </section>
     </div>
 
     <section class="panel directory-panel" id="customersView" hidden>
@@ -343,7 +424,7 @@
 
     <footer class="footer">
       <span>SkyLimit Outwards Dashboard · processed locally with SheetJS · cached in IndexedDB</span>
-      <span class="footer-meta">Linear-grade dark canvas · <span class="mono">#010102</span></span>
+      <span class="footer-meta">Linear-grade light canvas · <span class="mono">#f7f8fa</span></span>
     </footer>
 
   </main>

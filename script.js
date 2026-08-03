@@ -23,6 +23,9 @@
   var STORE_CUSTOMERS = 'customers';
   var STORE_BRANCHES = 'branches';
 
+  var AUTO_REFRESH_MS = 300000;
+  var AUTO_REFRESH_KEY = 'outward-auto-refresh';
+
   var REQUIRED_COLUMNS = ['Order Date', 'Customer Name', 'Branch', 'Location', 'Priority', 'Dispatch date', 'Ack'];
 
   /* Customer master + branch list headers → canonical field names */
@@ -186,12 +189,22 @@
     sortKey: 'orderDate',
     sortDir: 'desc',
     view: 'dispatch',
-    openCustomer: null
+    openCustomer: null,
+    dateFrom: null,
+    dateTo: null,
+    trendGranularity: 'month',
+    barDimension: 'customer',
+    autoRefresh: false,
+    lastSyncAt: null
   };
 
   var db = null;
   var barChart = null;
   var doughnutChart = null;
+  var trendChart = null;
+  var agingChart = null;
+  var autoRefreshTimer = null;
+  var lastUpdatedTick = null;
   var syncing = false;
 
   /* -------------------------------------------------------------
@@ -520,10 +533,14 @@
     };
   }
 
-  function buildBarData(rows) {
+  function buildBarData(rows, dimension) {
+    var dim = dimension || 'customer';
     var counts = {};
     rows.forEach(function (r) {
-      var c = r.customer || 'Unknown';
+      var c;
+      if (dim === 'location') c = r.location || 'Unknown';
+      else if (dim === 'branch') c = r.branch || 'Unknown';
+      else c = r.customer || 'Unknown';
       counts[c] = (counts[c] || 0) + 1;
     });
     var entries = Object.keys(counts).map(function (k) { return [k, counts[k]]; })
@@ -539,6 +556,110 @@
   function buildDoughnutData(rows) {
     var k = computeKpis(rows);
     return { labels: ['Done', 'In Transit', 'Pending'], data: [k.done, k.transit, k.pending], total: k.total };
+  }
+
+  function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+
+  function startOfDay(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+
+  function startOfWeek(d) {
+    var day = (d.getDay() + 6) % 7;
+    var s = startOfDay(d);
+    s.setDate(s.getDate() - day);
+    return s;
+  }
+
+  function startOfMonth(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
+
+  function buildTrendData(rows, granularity) {
+    var g = granularity || 'month';
+    var buckets = {};
+    function add(key, count) { buckets[key] = (buckets[key] || 0) + count; }
+    rows.forEach(function (r) {
+      var oKey = null, dKey = null;
+      if (r.orderDate) {
+        var os = g === 'day' ? startOfDay(r.orderDate) : (g === 'week' ? startOfWeek(r.orderDate) : startOfMonth(r.orderDate));
+        oKey = os.getTime();
+        if (buckets[oKey] == null) buckets[oKey] = { key: os, orders: 0, dispatched: 0 };
+        buckets[oKey].orders++;
+      }
+      if (r.dispatchDate) {
+        var ds = g === 'day' ? startOfDay(r.dispatchDate) : (g === 'week' ? startOfWeek(r.dispatchDate) : startOfMonth(r.dispatchDate));
+        dKey = ds.getTime();
+        if (buckets[dKey] == null) buckets[dKey] = { key: ds, orders: 0, dispatched: 0 };
+        buckets[dKey].dispatched++;
+      }
+    });
+    var keys = Object.keys(buckets).map(Number).sort(function (a, b) { return a - b; });
+    var labels = [], orders = [], dispatched = [];
+    for (var i = 0; i < keys.length; i++) {
+      var b = buckets[keys[i]];
+      labels.push(b.key.toLocaleDateString(undefined, g === 'month'
+        ? { month: 'short', year: '2-digit' }
+        : { month: 'short', day: 'numeric' }));
+      orders.push(b.orders);
+      dispatched.push(b.dispatched);
+    }
+    return { labels: labels, orders: orders, dispatched: dispatched };
+  }
+
+  var AGING_BUCKETS = [
+    { key: '0-3d', label: '0–3 days', min: 0, max: 3 },
+    { key: '4-7d', label: '4–7 days', min: 4, max: 7 },
+    { key: '8-14d', label: '8–14 days', min: 8, max: 14 },
+    { key: '15-30d', label: '15–30 days', min: 15, max: 30 },
+    { key: '31d+', label: '31+ days', min: 31, max: Infinity }
+  ];
+
+  function buildAgingData(rows, now) {
+    var today = now ? new Date(now.getTime()) : new Date();
+    today.setHours(0, 0, 0, 0);
+    var buckets = AGING_BUCKETS.map(function (b) { return { key: b.key, label: b.label, count: 0 }; });
+    var open = [];
+    rows.forEach(function (r) {
+      if (r.priority !== 'P1' || r.ack === 'Done' || !r.orderDate) return;
+      var start = new Date(r.orderDate);
+      start.setHours(0, 0, 0, 0);
+      var age = Math.floor((today.getTime() - start.getTime()) / 86400000);
+      if (age < 0) age = 0;
+      for (var j = 0; j < AGING_BUCKETS.length; j++) {
+        if (age >= AGING_BUCKETS[j].min && age <= AGING_BUCKETS[j].max) {
+          buckets[j].count++;
+          break;
+        }
+      }
+      open.push({ age: age, customer: r.customer, branch: r.branch, location: r.location, orderDate: r.orderDate, ack: r.ack });
+    });
+    open.sort(function (a, b) { return b.age - a.age; });
+    return { total: open.length, buckets: buckets, oldest: open.slice(0, 10) };
+  }
+
+  function auditData(records) {
+    var cats = [
+      { key: 'noOrderDate', label: 'Missing order date', rows: [] },
+      { key: 'noDispatchDate', label: 'Missing dispatch date', rows: [] },
+      { key: 'noCustomer', label: 'Missing customer name', rows: [] },
+      { key: 'noBranch', label: 'Missing branch', rows: [] },
+      { key: 'noPriority', label: 'Unrecognised priority', rows: [] },
+      { key: 'dispatchBeforeOrder', label: 'Dispatch before order date', rows: [] },
+      { key: 'futureOrder', label: 'Future-dated orders', rows: [] }
+    ];
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    records.forEach(function (r) {
+      if (!r.orderDate) cats[0].rows.push(r);
+      if (!r.dispatchDate) cats[1].rows.push(r);
+      if (!r.customer) cats[2].rows.push(r);
+      if (!r.branch) cats[3].rows.push(r);
+      if (r.priority === '—') cats[4].rows.push(r);
+      if (r.orderDate && r.dispatchDate && r.dispatchDate.getTime() < r.orderDate.getTime()) cats[5].rows.push(r);
+      if (r.orderDate && r.orderDate.getTime() > today.getTime() + 86400000) cats[6].rows.push(r);
+    });
+    var issues = cats
+      .filter(function (c) { return c.rows.length > 0; })
+      .map(function (c) { return { key: c.key, label: c.label, count: c.rows.length, rows: c.rows.slice(0, 10) }; })
+      .sort(function (a, b) { return b.count - a.count; });
+    return { total: records.length, issues: issues };
   }
 
   function customerOrderStats(customerName, records) {
@@ -557,6 +678,15 @@
     var rows = state.records;
     if (state.priority !== 'ALL') rows = rows.filter(function (r) { return r.priority === state.priority; });
     if (state.ack !== 'ALL') rows = rows.filter(function (r) { return r.ack === state.ack; });
+    if (state.dateFrom) {
+      var from = new Date(state.dateFrom);
+      rows = rows.filter(function (r) { return r.orderDate && r.orderDate.getTime() >= from.getTime(); });
+    }
+    if (state.dateTo) {
+      var to = new Date(state.dateTo);
+      to.setHours(23, 59, 59, 999);
+      rows = rows.filter(function (r) { return r.orderDate && r.orderDate.getTime() <= to.getTime(); });
+    }
     if (state.query) {
       var q = state.query.toLowerCase();
       rows = rows.filter(function (r) {
@@ -869,10 +999,10 @@
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.font = "600 24px 'Inter', sans-serif";
-      ctx.fillStyle = '#f7f8f8';
+      ctx.fillStyle = '#1a1d21';
       ctx.fillText(Number(opts.total).toLocaleString('en-IN'), x, y - 7);
       ctx.font = "400 11px 'Inter', sans-serif";
-      ctx.fillStyle = '#8a8f98';
+      ctx.fillStyle = '#6b7078';
       ctx.fillText('records', x, y + 12);
       ctx.restore();
     }
@@ -909,11 +1039,11 @@
           plugins: {
             legend: { display: false },
             tooltip: {
-              backgroundColor: '#18191a',
-              borderColor: '#34343a',
+              backgroundColor: '#ffffff',
+              borderColor: '#e5e8ec',
               borderWidth: 1,
-              titleColor: '#f7f8f8',
-              bodyColor: '#d0d6e0',
+              titleColor: '#1a1d21',
+              bodyColor: '#3f454d',
               padding: 10,
               cornerRadius: 8,
               displayColors: false
@@ -922,14 +1052,14 @@
           scales: {
             x: {
               beginAtZero: true,
-              grid: { color: '#23252a' },
-              border: { color: '#23252a' },
-              ticks: { color: '#8a8f98', precision: 0, callback: function (v) { return Number(v).toLocaleString('en-IN'); } }
+              grid: { color: '#eceff3' },
+              border: { color: '#d4d8de' },
+              ticks: { color: '#6b7078', precision: 0, callback: function (v) { return Number(v).toLocaleString('en-IN'); } }
             },
             y: {
               grid: { display: false },
-              border: { color: '#23252a' },
-              ticks: { color: '#d0d6e0', autoSkip: false, font: { size: 12 } }
+              border: { color: '#d4d8de' },
+              ticks: { color: '#3f454d', autoSkip: false, font: { size: 12 } }
             }
           }
         }
@@ -945,7 +1075,7 @@
           datasets: [{
             data: [],
             backgroundColor: ['#27a644', '#4aa8ff', '#f59e0b'],
-            borderColor: '#0f1011',
+            borderColor: '#ffffff',
             borderWidth: 4,
             hoverOffset: 8
           }]
@@ -958,14 +1088,14 @@
             centerText: { total: 0 },
             legend: {
               position: 'bottom',
-              labels: { color: '#d0d6e0', usePointStyle: true, pointStyle: 'circle', boxWidth: 8, padding: 18 }
+              labels: { color: '#3f454d', usePointStyle: true, pointStyle: 'circle', boxWidth: 8, padding: 18 }
             },
             tooltip: {
-              backgroundColor: '#18191a',
-              borderColor: '#34343a',
+              backgroundColor: '#ffffff',
+              borderColor: '#e5e8ec',
               borderWidth: 1,
-              titleColor: '#f7f8f8',
-              bodyColor: '#d0d6e0',
+              titleColor: '#1a1d21',
+              bodyColor: '#3f454d',
               padding: 10,
               cornerRadius: 8
             }
@@ -974,10 +1104,131 @@
         plugins: [centerTextPlugin]
       });
     }
+
+    var trendCtx = $('trendChart');
+    if (trendCtx) {
+      trendChart = new Chart(trendCtx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: 'Orders',
+              data: [],
+              borderColor: '#5e6ad2',
+              backgroundColor: 'rgba(94, 106, 210, 0.10)',
+              fill: true,
+              tension: 0.35,
+              pointRadius: 2,
+              pointHoverRadius: 4,
+              borderWidth: 2
+            },
+            {
+              label: 'Dispatched',
+              data: [],
+              borderColor: '#27a644',
+              backgroundColor: 'rgba(39, 166, 68, 0.05)',
+              fill: false,
+              tension: 0.35,
+              pointRadius: 2,
+              pointHoverRadius: 4,
+              borderWidth: 2
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { labels: { color: '#3f454d', usePointStyle: true, pointStyle: 'circle', boxWidth: 8, padding: 16 } },
+            tooltip: {
+              backgroundColor: '#ffffff',
+              borderColor: '#e5e8ec',
+              borderWidth: 1,
+              titleColor: '#1a1d21',
+              bodyColor: '#3f454d',
+              padding: 10,
+              cornerRadius: 8
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              border: { color: '#d4d8de' },
+              ticks: { color: '#6b7078', maxTicksLimit: 12, maxRotation: 45 }
+            },
+            y: {
+              beginAtZero: true,
+              grid: { color: '#eceff3' },
+              border: { color: '#d4d8de' },
+              ticks: { color: '#6b7078', precision: 0, callback: function (v) { return Number(v).toLocaleString('en-IN'); } }
+            }
+          }
+        }
+      });
+    }
+
+    var agingCtx = $('agingChart');
+    if (agingCtx) {
+      agingChart = new Chart(agingCtx, {
+        type: 'bar',
+        data: {
+          labels: [],
+          datasets: [{
+            data: [],
+            backgroundColor: '#f5a623',
+            hoverBackgroundColor: '#e99b16',
+            borderRadius: 5,
+            borderSkipped: false,
+            maxBarThickness: 20
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#ffffff',
+              borderColor: '#e5e8ec',
+              borderWidth: 1,
+              titleColor: '#1a1d21',
+              bodyColor: '#3f454d',
+              padding: 10,
+              cornerRadius: 8,
+              displayColors: false
+            }
+          },
+          scales: {
+            x: {
+              beginAtZero: true,
+              grid: { color: '#eceff3' },
+              border: { color: '#d4d8de' },
+              ticks: { color: '#6b7078', precision: 0 }
+            },
+            y: {
+              grid: { display: false },
+              border: { color: '#d4d8de' },
+              ticks: { color: '#3f454d', autoSkip: false, font: { size: 12 } }
+            }
+          }
+        }
+      });
+    }
   }
 
   function renderCharts(rows) {
-    var barData = buildBarData(rows);
+    var dimLabel = state.barDimension === 'location'
+      ? 'Volume by Location'
+      : (state.barDimension === 'branch' ? 'Volume by Branch' : 'Volume by Customer');
+    var dimSub = state.barDimension === 'location'
+      ? 'Order count per location in current scope'
+      : (state.barDimension === 'branch' ? 'Order count per branch in current scope' : 'Order count per customer in current scope');
+    setText('barTitle', dimLabel);
+    setText('barSub', dimSub);
+    var barData = buildBarData(rows, state.barDimension);
     setText('barMeta', rows.length ? barData.labels.length + ' segments' : '—');
     setChartEmpty('barEmpty', rows.length === 0);
     if (barChart) {
@@ -1003,6 +1254,99 @@
       doughnutChart.options.plugins.centerText.total = dData.total;
       doughnutChart.update();
     }
+
+    renderTrendChart(rows);
+  }
+
+  function renderTrendChart(rows) {
+    var tData = buildTrendData(rows, state.trendGranularity);
+    setText('trendMeta', rows.length ? formatNum(tData.labels.length) + ' periods' : '—');
+    setChartEmpty('trendEmpty', rows.length === 0);
+    if (!trendChart) return;
+    trendChart.data.labels = tData.labels;
+    trendChart.data.datasets[0].data = tData.orders;
+    trendChart.data.datasets[1].data = tData.dispatched;
+    trendChart.update();
+  }
+
+  /* -------------------------------------------------------------
+     Backlog aging + data quality
+     ------------------------------------------------------------- */
+  function renderAging(rows) {
+    var panel = $('backlogPanel');
+    if (!panel) return;
+    var list = $('backlogList');
+    var aData = buildAgingData(rows);
+    var has = aData.total > 0;
+    setText('backlogMeta', has ? formatNum(aData.total) + ' open' : '0 open');
+    setChartEmpty('agingEmpty', !has);
+    if (agingChart) {
+      agingChart.data.labels = aData.buckets.map(function (b) { return b.label; });
+      agingChart.data.datasets[0].data = aData.buckets.map(function (b) { return b.count; });
+      agingChart.update();
+    }
+    if (!list) return;
+    if (!has) {
+      list.innerHTML = '<p class="backlog-empty">No open P1 bottlenecks in current scope</p>';
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < aData.oldest.length; i++) {
+      var r = aData.oldest[i];
+      var ageCls = r.age >= 15 ? ' is-old' : '';
+      html +=
+        '<div class="backlog-item">' +
+        '<span class="bl-cust">' + escapeHtml(r.customer || '—') + '</span>' +
+        '<span class="bl-meta">' + escapeHtml((r.branch || '—') + (r.location ? ' · ' + r.location : '')) + '</span>' +
+        '<span class="bl-date">' + formatDate(r.orderDate) + '</span>' +
+        '<span class="bl-age' + ageCls + '">' + formatNum(r.age) + 'd</span>' +
+        '</div>';
+    }
+    list.innerHTML =
+      '<div class="backlog-list-head"><span class="bl-title">Oldest open P1 bottlenecks</span>' +
+      '<span class="mono">' + formatNum(aData.total) + ' total</span></div>' +
+      html;
+  }
+
+  function renderQuality(rows) {
+    var meta = $('qualityMeta');
+    var report = $('qualityReport');
+    var empty = $('qualityEmpty');
+    var issuesBox = $('qualityIssues');
+    if (!meta || !report) return;
+    var aData = auditData(rows);
+    if (!aData.issues.length) {
+      meta.textContent = 'No issues';
+      meta.className = 'status-badge';
+      if (empty) empty.hidden = false;
+      if (issuesBox) issuesBox.innerHTML = '';
+      return;
+    }
+    meta.textContent = aData.issues.reduce(function (s, c) { return s + c.count; }, 0) + ' flagged rows';
+    meta.className = 'status-badge';
+    if (empty) empty.hidden = true;
+    if (!issuesBox) return;
+    var html = '';
+    for (var i = 0; i < aData.issues.length; i++) {
+      var cat = aData.issues[i];
+      html += '<div class="quality-cat">' +
+        '<div class="quality-cat-head"><span class="qc-label">' + escapeHtml(cat.label) + '</span>' +
+        '<span class="qc-count">' + formatNum(cat.count) + (cat.count > cat.rows.length ? ' · showing ' + cat.rows.length : '') + '</span></div>' +
+        '<div class="table-wrap"><table class="quality-table">';
+      for (var j = 0; j < cat.rows.length; j++) {
+        var r = cat.rows[j];
+        html += '<tr>' +
+          '<td class="qc-strong">' + escapeHtml(r.customer || '—') + '</td>' +
+          '<td>' + escapeHtml(r.branch || '—') + '</td>' +
+          '<td>' + escapeHtml(r.location || '—') + '</td>' +
+          '<td>' + formatDate(r.orderDate) + '</td>' +
+          '<td>' + priorityBadge(r.priority) + '</td>' +
+          '<td>' + formatDate(r.dispatchDate) + '</td>' +
+          '</tr>';
+      }
+      html += '</table></div></div>';
+    }
+    issuesBox.innerHTML = html;
   }
 
   /* -------------------------------------------------------------
@@ -1063,6 +1407,7 @@
     if (!state.records.length) {
       el.textContent = 'No data loaded';
       el.removeAttribute('title');
+      updateLastUpdated();
       return;
     }
     var label = state.source && state.source.name
@@ -1070,9 +1415,31 @@
       : formatNum(state.records.length) + ' rows';
     el.textContent = label;
     if (state.source && state.source.syncedAt) {
+      state.lastSyncAt = state.source.syncedAt;
       el.title = 'Loaded at ' + new Date(state.source.syncedAt).toLocaleString();
     } else {
       el.removeAttribute('title');
+    }
+    updateLastUpdated();
+  }
+
+  function updateLastUpdated() {
+    var el = $('lastUpdated');
+    var btn = $('autoRefreshBtn');
+    if (el) {
+      if (!state.lastSyncAt) {
+        el.hidden = true;
+      } else {
+        el.hidden = false;
+        var mins = Math.max(0, Math.floor((Date.now() - state.lastSyncAt) / 60000));
+        el.textContent = mins < 1 ? 'Updated just now' : (mins < 60 ? 'Updated ' + mins + ' min ago' : 'Updated ' + formatNum(Math.floor(mins / 60)) + 'h ago');
+      }
+    }
+    if (btn) {
+      btn.hidden = !state.records.length;
+      var label = $('autoRefreshLabel');
+      if (label) label.textContent = state.autoRefresh ? 'Auto-refresh: On' : 'Auto-refresh: Off';
+      btn.classList.toggle('is-on', state.autoRefresh);
     }
   }
 
@@ -1088,6 +1455,8 @@
     renderSource();
     renderCustomers();
     renderDirectoryMeta();
+    renderAging(rows);
+    renderQuality(rows);
     refreshIcons();
   }
 
@@ -1233,8 +1602,14 @@
     state.priority = 'ALL';
     state.ack = 'ALL';
     state.query = '';
+    state.dateFrom = null;
+    state.dateTo = null;
     var search = $('searchInput');
     if (search) search.value = '';
+    var df = $('dateFrom');
+    if (df) df.value = '';
+    var dt = $('dateTo');
+    if (dt) dt.value = '';
     var priorityPills = document.querySelectorAll('#priorityFilter .pill');
     for (var i = 0; i < priorityPills.length; i++) {
       priorityPills[i].classList.toggle('is-active', priorityPills[i].getAttribute('data-priority') === 'ALL');
@@ -1262,6 +1637,50 @@
       pills[i].classList.toggle('is-active', pills[i].getAttribute('data-ack') === a);
     }
     renderAll();
+  }
+
+  function setBarDimension(d) {
+    state.barDimension = d;
+    var pills = document.querySelectorAll('#barDimension .pill');
+    for (var i = 0; i < pills.length; i++) {
+      pills[i].classList.toggle('is-active', pills[i].getAttribute('data-dim') === d);
+    }
+    renderAll();
+  }
+
+  function setTrendGranularity(g) {
+    state.trendGranularity = g;
+    var pills = document.querySelectorAll('#trendGranularity .pill');
+    for (var i = 0; i < pills.length; i++) {
+      pills[i].classList.toggle('is-active', pills[i].getAttribute('data-granularity') === g);
+    }
+    renderTrendChart(filteredRows());
+  }
+
+  function setAutoRefresh(on) {
+    state.autoRefresh = !!on;
+    try { localStorage.setItem(AUTO_REFRESH_KEY, state.autoRefresh ? '1' : '0'); } catch (e) {}
+    if (state.autoRefresh) {
+      if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+      autoRefreshTimer = setInterval(function () {
+        if (!navigator.onLine) return;
+        syncFromSheet();
+      }, AUTO_REFRESH_MS);
+    } else {
+      if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null; }
+    }
+    updateLastUpdated();
+  }
+
+  function startLastUpdatedTick() {
+    if (lastUpdatedTick) clearInterval(lastUpdatedTick);
+    lastUpdatedTick = setInterval(function () {
+      updateLastUpdated();
+      if (state.records.length) {
+        renderAging(filteredRows());
+        renderQuality(filteredRows());
+      }
+    }, 60000);
   }
 
   /* -------------------------------------------------------------
@@ -1491,6 +1910,58 @@
     var resetBtn = $('resetFilters');
     if (resetBtn) resetBtn.addEventListener('click', function () { resetFilters(false); });
 
+    var dateFrom = $('dateFrom');
+    var dateTo = $('dateTo');
+    if (dateFrom) {
+      dateFrom.addEventListener('change', function () {
+        state.dateFrom = dateFrom.value ? new Date(dateFrom.value + 'T00:00:00') : null;
+        renderAll();
+      });
+    }
+    if (dateTo) {
+      dateTo.addEventListener('change', function () {
+        state.dateTo = dateTo.value ? new Date(dateTo.value + 'T00:00:00') : null;
+        renderAll();
+      });
+    }
+
+    var dimPills = document.querySelectorAll('#barDimension .pill');
+    for (var d = 0; d < dimPills.length; d++) {
+      dimPills[d].addEventListener('click', function (ev) {
+        setBarDimension(ev.currentTarget.getAttribute('data-dim'));
+      });
+    }
+
+    var granPills = document.querySelectorAll('#trendGranularity .pill');
+    for (var gr = 0; gr < granPills.length; gr++) {
+      granPills[gr].addEventListener('click', function (ev) {
+        setTrendGranularity(ev.currentTarget.getAttribute('data-granularity'));
+      });
+    }
+
+    var autoRefreshBtn = $('autoRefreshBtn');
+    if (autoRefreshBtn) {
+      autoRefreshBtn.addEventListener('click', function () {
+        setAutoRefresh(!state.autoRefresh);
+        if (state.autoRefresh && state.records.length) syncFromSheet();
+      });
+    }
+
+    var qualityToggle = $('qualityToggle');
+    if (qualityToggle) {
+      qualityToggle.addEventListener('click', function () {
+        var report = $('qualityReport');
+        var label = $('qualityToggleLabel');
+        if (!report) return;
+        var open = report.hidden;
+        report.hidden = !open;
+        var icon = qualityToggle.querySelector('i');
+        if (icon) icon.setAttribute('data-lucide', open ? 'chevron-up' : 'chevron-down');
+        if (label) label.textContent = open ? 'Hide report' : 'Show report';
+        refreshIcons();
+      });
+    }
+
     var showUploadBtn = $('showUploadBtn');
     if (showUploadBtn) {
       showUploadBtn.addEventListener('click', function () {
@@ -1583,7 +2054,13 @@
     wireEvents();
     createCharts();
     renderSortIcons();
+    startLastUpdatedTick();
     if (isFileProtocol()) showLocalNotice();
+
+    try {
+      var pref = localStorage.getItem(AUTO_REFRESH_KEY);
+      state.autoRefresh = pref === '1';
+    } catch (e) { state.autoRefresh = false; }
 
     try {
       db = await openDB();
@@ -1614,6 +2091,11 @@
     }
     renderAll();
     setView(state.view);
+
+    if (state.autoRefresh) {
+      setAutoRefresh(true);
+      if (state.records.length && navigator.onLine && !isFileProtocol()) syncFromSheet();
+    }
   }
 
   /* Expose pure core for debugging + tests */
@@ -1638,6 +2120,9 @@
     computeKpis: computeKpis,
     buildBarData: buildBarData,
     buildDoughnutData: buildDoughnutData,
+    buildTrendData: buildTrendData,
+    buildAgingData: buildAgingData,
+    auditData: auditData,
     customerOrderStats: customerOrderStats,
     sortRows: sortRows,
     filteredRows: filteredRows
