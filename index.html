@@ -64,11 +64,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
   <link rel="stylesheet" href="style.css">
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://unpkg.com/lucide@0.294.0/dist/umd/lucide.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="script.js" defer></script>
 </head>
 <body>
@@ -170,6 +173,9 @@
       </button>
       <button type="button" class="tab" data-view="customers">
         <i data-lucide="users"></i><span>Customers</span>
+      </button>
+      <button type="button" class="tab" data-view="routeops">
+        <i data-lucide="truck"></i><span>Route Ops</span>
       </button>
     </section>
 
@@ -406,6 +412,13 @@
             <i data-lucide="search"></i>
             <input type="search" id="customerSearch" placeholder="Search code, name, city or state…" autocomplete="off" spellcheck="false">
           </div>
+          <div id="abcFilter" class="pill-row" aria-label="Filter by ABC class">
+            <button type="button" class="pill is-active" data-abc="ALL">All</button>
+            <button type="button" class="pill" data-abc="A"><span class="dot dot-abc-a"></span>A</button>
+            <button type="button" class="pill" data-abc="B"><span class="dot dot-abc-b"></span>B</button>
+            <button type="button" class="pill" data-abc="C"><span class="dot dot-abc-c"></span>C</button>
+          </div>
+          <span class="status-badge" id="abcMeta" hidden></span>
           <span class="status-badge" id="customerMeta">No master loaded</span>
           <span class="status-badge" id="branchMeta" hidden></span>
         </div>
@@ -414,6 +427,7 @@
         <table id="customerTable">
           <thead>
             <tr>
+              <th class="th-mono">Class</th>
               <th class="th-mono">Code</th>
               <th>Customer Name</th>
               <th>City</th>
@@ -454,6 +468,206 @@
         </div>
       </div>
     </section>
+
+    <div id="routeopsView" hidden>
+      <section class="panel sla-panel">
+        <header class="card-head">
+          <div>
+            <h3 class="card-title">Needs Attention</h3>
+            <p class="card-sub">Open orders scored against SLA thresholds — breached first, then at risk</p>
+          </div>
+          <div class="table-actions">
+            <span class="status-badge" id="slaMeta">—</span>
+            <button type="button" id="slaSettingsBtn" class="btn btn-tertiary btn-sm">
+              <i data-lucide="sliders-horizontal"></i><span>SLA thresholds</span>
+            </button>
+          </div>
+        </header>
+        <div id="slaSettings" class="sla-settings" hidden>
+          <div class="sla-grid">
+            <label class="sla-field"><span>P1 at-risk (days)</span><input type="number" id="slaP1At" min="1" max="90"></label>
+            <label class="sla-field"><span>P1 breach (days)</span><input type="number" id="slaP1Br" min="1" max="90"></label>
+            <label class="sla-field"><span>P2 at-risk (days)</span><input type="number" id="slaP2At" min="1" max="90"></label>
+            <label class="sla-field"><span>P2 breach (days)</span><input type="number" id="slaP2Br" min="1" max="90"></label>
+            <label class="sla-field"><span>P3 at-risk (days)</span><input type="number" id="slaP3At" min="1" max="90"></label>
+            <label class="sla-field"><span>P3 breach (days)</span><input type="number" id="slaP3Br" min="1" max="90"></label>
+            <label class="sla-field"><span>P4 at-risk (days)</span><input type="number" id="slaP4At" min="1" max="90"></label>
+            <label class="sla-field"><span>P4 breach (days)</span><input type="number" id="slaP4Br" min="1" max="90"></label>
+          </div>
+          <div class="sla-actions">
+            <button type="button" id="slaSaveBtn" class="btn btn-secondary btn-sm">
+              <i data-lucide="check"></i><span>Save thresholds</span>
+            </button>
+            <button type="button" id="slaResetBtn" class="btn btn-tertiary btn-sm">
+              <i data-lucide="rotate-ccw"></i><span>Reset to defaults</span>
+            </button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table id="slaTable">
+            <thead>
+              <tr>
+                <th>Severity</th>
+                <th>Age</th>
+                <th>Priority</th>
+                <th>Route</th>
+                <th>Customer Name</th>
+                <th>Branch</th>
+                <th>Location</th>
+                <th>Ack</th>
+              </tr>
+            </thead>
+            <tbody id="slaBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel map-panel">
+        <header class="card-head">
+          <div>
+            <h3 class="card-title">Route Map</h3>
+            <p class="card-sub">Circle-level view of orders in scope, colored by route — click a circle for details</p>
+          </div>
+          <div class="table-actions">
+            <span class="status-badge" id="mapMeta">—</span>
+          </div>
+        </header>
+        <div id="routeMap" class="route-map"><p class="backlog-empty">Map loading…</p></div>
+      </section>
+
+      <section class="panel loadplan-panel">
+        <header class="card-head">
+          <div>
+            <h3 class="card-title">Route Load Plans</h3>
+            <p class="card-sub">Per-route dispatch batches ordered by the sorting guidance in the GHMC map</p>
+          </div>
+          <div class="table-actions">
+            <button type="button" id="exportPlanBtn" class="btn btn-secondary btn-sm">
+              <i data-lucide="download"></i><span>Export XLSX</span>
+            </button>
+            <button type="button" id="exportCsvBtn" class="btn btn-secondary btn-sm">
+              <i data-lucide="file-text"></i><span>Export CSV</span>
+            </button>
+            <button type="button" id="printBtn" class="btn btn-secondary btn-sm">
+              <i data-lucide="printer"></i><span>Print manifest</span>
+            </button>
+          </div>
+        </header>
+        <div id="loadPlan"></div>
+      </section>
+    </div>
+
+    <section class="panel route-guide">
+      <header class="card-head">
+        <div>
+          <h3 class="card-title">Route Guide</h3>
+          <p class="card-sub">Delivery routes from the Old Bowenpally hub — R1 North · R2 East · R3 West · R4 South · R5 outside GHMC</p>
+        </div>
+        <span class="status-badge"><i data-lucide="map"></i> Hub: Old Bowenpally</span>
+      </header>
+      <div class="route-guide-grid">
+
+        <article class="route-guide-card rg-1">
+          <header class="rg-head">
+            <span class="rg-chip">R1</span>
+            <span class="rg-name">North Route</span>
+            <i data-lucide="arrow-up" class="rg-arrow"></i>
+          </header>
+          <p class="rg-hub">Old Bowenpally → North · 8 circles</p>
+          <div class="rg-zone">
+            <p class="rg-zone-name">Secunderabad Zone · Hub Belt</p>
+            <p class="rg-circles">Bowenpally</p>
+          </div>
+          <div class="rg-zone">
+            <p class="rg-zone-name">Kukatpally/Quthbullapur Zone · Northern Wings</p>
+            <p class="rg-circles">Alwal · Jeedimetla · Gajularamaram · Nizampet · Chintal · Kompally · Dundigal</p>
+          </div>
+        </article>
+
+        <article class="route-guide-card rg-2">
+          <header class="rg-head">
+            <span class="rg-chip">R2</span>
+            <span class="rg-name">East Route</span>
+            <i data-lucide="arrow-right" class="rg-arrow"></i>
+          </header>
+          <p class="rg-hub">Old Bowenpally → East · 9 circles</p>
+          <div class="rg-zone">
+            <p class="rg-zone-name">Kapra/Uppal Zone (East)</p>
+            <p class="rg-circles">Kapra · Uppal · Boduppal · Nacharam · Malkajgiri · Moula Ali · Keesara · Tarnaka · Mettuguda</p>
+          </div>
+        </article>
+
+        <article class="route-guide-card rg-3">
+          <header class="rg-head">
+            <span class="rg-chip">R3</span>
+            <span class="rg-name">West Route</span>
+            <i data-lucide="arrow-left" class="rg-arrow"></i>
+          </header>
+          <p class="rg-hub">Old Bowenpally → West · 13 circles</p>
+          <div class="rg-zone">
+            <p class="rg-zone-name">Serilingampally Zone</p>
+            <p class="rg-circles">Serilingampally · Madhapur · Miyapur · Narsingi · Patancheru · Ameenpur</p>
+          </div>
+          <div class="rg-zone">
+            <p class="rg-zone-name">Kukatpally Zone · Southern Wings</p>
+            <p class="rg-circles">Kukatpally · Moosapet · Allwyn Colony</p>
+          </div>
+          <div class="rg-zone">
+            <p class="rg-zone-name">Secunderabad Zone · West Wing</p>
+            <p class="rg-circles">Ameerpet</p>
+          </div>
+          <div class="rg-zone">
+            <p class="rg-zone-name">Khairatabad Zone · West Wing</p>
+            <p class="rg-circles">Jubilee Hills · Yousufguda · Borabanda</p>
+          </div>
+        </article>
+
+        <article class="route-guide-card rg-4">
+          <header class="rg-head">
+            <span class="rg-chip">R4</span>
+            <span class="rg-name">South Route</span>
+            <i data-lucide="arrow-down" class="rg-arrow"></i>
+          </header>
+          <p class="rg-hub">Old Bowenpally → South · 24 circles</p>
+          <div class="rg-zone">
+            <p class="rg-zone-name">Charminar Zone / Old City</p>
+            <p class="rg-circles">Falaknuma · Bahadurpura · Chandrayangutta · Yakutpura · Jangammet · Santoshnagar · Charminar · Malakpet · Moosarambagh</p>
+          </div>
+          <div class="rg-zone">
+            <p class="rg-zone-name">Golconda/Rajendranagar Zone · Central-West Belt</p>
+            <p class="rg-circles">Goshamahal · Karwan · Golconda · Attapur · Rajendranagar</p>
+          </div>
+          <div class="rg-zone">
+            <p class="rg-zone-name">Khairatabad Zone</p>
+            <p class="rg-circles">Khairatabad · Mehdipatnam · Masab Tank</p>
+          </div>
+          <div class="rg-zone">
+            <p class="rg-zone-name">Secunderabad Zone · South Wing</p>
+            <p class="rg-circles">Kavadiguda · Musheerabad · Amberpet</p>
+          </div>
+          <div class="rg-zone">
+            <p class="rg-zone-name">L.B. Nagar Zone (South-East)</p>
+            <p class="rg-circles">Nagole · Saroornagar · L.B. Nagar · Hayathnagar</p>
+          </div>
+        </article>
+
+        <article class="route-guide-card rg-5">
+          <header class="rg-head">
+            <span class="rg-chip">R5</span>
+            <span class="rg-name">Outside GHMC</span>
+            <i data-lucide="globe" class="rg-arrow"></i>
+          </header>
+          <p class="rg-hub">Beyond municipal limits · 8 circles</p>
+          <div class="rg-zone">
+            <p class="rg-zone-name">Non-municipal areas</p>
+            <p class="rg-circles">Sangareddy District · Medchal-Malkajgiri Rural · Shamshabad · Adibatla · Badangpet · Jalpally · Ghatkesar Belt · Yadadri-Bhuvanagiri District</p>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <div id="printArea" class="print-only" hidden></div>
 
     <footer class="footer">
       <span>SkyLimit Outwards Dashboard · processed locally with SheetJS · cached in IndexedDB</span>

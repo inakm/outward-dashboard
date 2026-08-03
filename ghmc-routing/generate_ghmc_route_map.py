@@ -812,6 +812,73 @@ DATA = {
     },
 }
 
+# Circle centroids (lat, lng) for the interactive map. Geocoded from
+# Nominatim (OpenStreetMap) against the circle name + Hyderabad, India.
+CIRCLE_COORDS = {
+    "Bowenpally": [17.475537, 78.479228],
+    "Alwal": [17.502229, 78.508858],
+    "Jeedimetla": [17.519687, 78.446888],
+    "Gajularamaram": [17.527176, 78.420008],
+    "Nizampet": [17.497127, 78.376883],
+    "Chintal": [17.502176, 78.440609],
+    "Kompally": [17.535487, 78.509698],
+    "Dundigal": [17.50621, 78.505108],
+    "Kapra": [17.484636, 78.56101],
+    "Uppal": [17.402509, 78.561256],
+    "Boduppal": [17.398841, 78.536622],
+    "Nacharam": [17.428494, 78.55281],
+    "Malkajgiri": [17.451176, 78.5369],
+    "Moula Ali": [17.46171, 78.55714],
+    "Keesara": [17.481583, 78.592682],
+    "Tarnaka": [17.428548, 78.537943],
+    "Mettuguda": [17.435504, 78.519557],
+    "Serilingampally": [17.466717, 78.340421],
+    "Madhapur": [17.440892, 78.39163],
+    "Miyapur": [17.498161, 78.356763],
+    "Narsingi": [17.387417, 78.356624],
+    "Patancheru": [17.528609, 78.267425],
+    "Ameenpur": [17.523691, 78.33173],
+    "Kukatpally": [17.493084, 78.405441],
+    "Moosapet": [17.468531, 78.42067],
+    "Allwyn Colony": [17.492035, 78.349953],
+    "Ameerpet": [17.437501, 78.448251],
+    "Jubilee Hills": [17.430836, 78.410288],
+    "Yousufguda": [17.43875, 78.427987],
+    "Borabanda": [17.459069, 78.407866],
+    "Falaknuma": [17.33266, 78.475198],
+    "Bahadurpura": [17.357067, 78.454542],
+    "Chandrayangutta": [17.324696, 78.481356],
+    "Yakutpura": [17.358628, 78.485805],
+    "Jangammet": [17.336251, 78.474404],
+    "Santoshnagar": [17.346719, 78.508195],
+    "Charminar": [17.361602, 78.474642],
+    "Malakpet": [17.373671, 78.499648],
+    "Moosarambagh": [17.374353, 78.516084],
+    "Goshamahal": [17.380576, 78.468846],
+    "Karwan": [17.376013, 78.433189],
+    "Golconda": [17.387329, 78.405734],
+    "Attapur": [17.367224, 78.430728],
+    "Rajendranagar": [17.334621, 78.40868],
+    "Khairatabad": [17.412974, 78.461058],
+    "Mehdipatnam": [17.394263, 78.434251],
+    "Masab Tank": [17.402962, 78.450754],
+    "Kavadiguda": [17.422702, 78.49177],
+    "Musheerabad": [17.419142, 78.498573],
+    "Amberpet": [17.386178, 78.511471],
+    "Nagole": [17.377531, 78.560123],
+    "Saroornagar": [17.361166, 78.538744],
+    "L.B. Nagar": [17.349807, 78.547888],
+    "Hayathnagar": [17.328115, 78.60454],
+    "Sangareddy District": [17.528026, 78.267025],
+    "Medchal-Malkajgiri Rural": [17.633993, 78.484315],
+    "Shamshabad (Rangareddy)": [17.257207, 78.345104],
+    "Adibatla (2026-merged)": [17.230899, 78.5559],
+    "Badangpet (2026-merged)": [17.338347, 78.522213],
+    "Jalpally (2026-merged)": [17.306154, 78.473859],
+    "Ghatkesar Belt": [17.451084, 78.684302],
+    "Yadadri-Bhuvanagiri District": [17.517279, 78.886338],
+}
+
 COLUMNS = [
     "Route Code",
     "Route Name",
@@ -819,6 +886,8 @@ COLUMNS = [
     "GHMC Circle Name",
     "GHMC Ward Number & Name",
     "Logistics Sorting Note",
+    "Circle Lat",
+    "Circle Lng",
 ]
 
 # --------------------------------------------------------------------------- #
@@ -1136,6 +1205,7 @@ def build_records() -> list[dict]:
             if key in seen:
                 return
             seen.add(key)
+        lat, lng = CIRCLE_COORDS.get(circle_name, (None, None))
         records.append(
             {
                 "Route Code": route_code,
@@ -1144,6 +1214,8 @@ def build_records() -> list[dict]:
                 "GHMC Circle Name": circle_name,
                 "GHMC Ward Number & Name": ward_col,
                 "Logistics Sorting Note": note,
+                "Circle Lat": lat,
+                "Circle Lng": lng,
             }
         )
 
