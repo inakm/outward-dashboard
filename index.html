@@ -195,6 +195,10 @@
         </div>
       </div>
       <div class="filter-group">
+        <span class="filter-label">Route</span>
+        <div id="routeFilter" class="pill-row"></div>
+      </div>
+      <div class="filter-group">
         <span class="filter-label">Order date</span>
         <input type="date" id="dateFrom" class="date-input" aria-label="From order date">
         <span class="date-sep">→</span>
@@ -306,6 +310,9 @@
               <th data-key="location" class="sortable">
                 <span class="th-label">Location</span><span class="sort-ind"></span>
               </th>
+              <th data-key="route" class="sortable">
+                <span class="th-label">Route</span><span class="sort-ind"></span>
+              </th>
               <th data-key="priority" class="sortable">
                 <span class="th-label">Priority</span><span class="sort-ind"></span>
               </th>
@@ -339,6 +346,32 @@
           </div>
         </div>
         <div class="backlog-list" id="backlogList"></div>
+      </div>
+    </section>
+
+    <section class="panel routes-panel">
+      <header class="table-head">
+        <div>
+          <h3 class="card-title">Routes Overview</h3>
+          <p class="card-sub">Per-route dispatch health in current scope — click a route to filter</p>
+        </div>
+        <span class="status-badge" id="routesMeta">—</span>
+      </header>
+      <div class="table-wrap">
+        <table id="routesTable">
+          <thead>
+            <tr>
+              <th class="th-mono">Route</th>
+              <th>Orders</th>
+              <th>Open P1</th>
+              <th>Done</th>
+              <th>In Transit</th>
+              <th>Pending</th>
+              <th>Fulfillment</th>
+            </tr>
+          </thead>
+          <tbody id="routesBody"></tbody>
+        </table>
       </div>
     </section>
 

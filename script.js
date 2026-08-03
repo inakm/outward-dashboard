@@ -104,7 +104,10 @@
     'acknowledgement': 'Ack',
     'acknowledgment': 'Ack',
     'ack status': 'Ack',
-    'ack': 'Ack'
+    'ack': 'Ack',
+    'route': 'Route',
+    'routes': 'Route',
+    'routing': 'Route'
   };
 
   /* Known data-entry typos → canonical place names (Hyderabad area) */
@@ -184,6 +187,7 @@
     branchesSource: null,
     priority: 'ALL',
     ack: 'ALL',
+    route: 'ALL',
     query: '',
     customerQuery: '',
     sortKey: 'orderDate',
@@ -286,7 +290,8 @@
       location: cleanPlace(raw['Location']),
       priority: normalizePriority(raw['Priority']),
       dispatchDate: parseDate(raw['Dispatch date']),
-      ack: normalizeAck(raw['Ack'])
+      ack: normalizeAck(raw['Ack']),
+      route: cleanCode(raw['Route'])
     };
   }
 
@@ -603,6 +608,29 @@
     return { labels: labels, orders: orders, dispatched: dispatched };
   }
 
+  function buildRouteStats(rows) {
+    var map = {};
+    rows.forEach(function (r) {
+      var key = r.route || '';
+      if (!key) return;
+      if (!map[key]) map[key] = { route: key, total: 0, done: 0, transit: 0, pending: 0, openP1: 0 };
+      var s = map[key];
+      s.total++;
+      if (r.ack === 'Done') s.done++;
+      else if (r.ack === 'In Transit') s.transit++;
+      else s.pending++;
+      if (r.priority === 'P1' && r.ack !== 'Done') s.openP1++;
+    });
+    var list = Object.keys(map).map(function (k) { return map[k]; })
+      .sort(function (a, b) {
+        return b.total - a.total || String(a.route).localeCompare(String(b.route), undefined, { numeric: true });
+      });
+    list.forEach(function (s) {
+      s.fulfillment = s.total ? (s.done / s.total) * 100 : 0;
+    });
+    return list;
+  }
+
   var AGING_BUCKETS = [
     { key: '0-3d', label: '0–3 days', min: 0, max: 3 },
     { key: '4-7d', label: '4–7 days', min: 4, max: 7 },
@@ -674,10 +702,11 @@
     return { orders: orders, open: open };
   }
 
-  function filteredRows() {
+  function filteredRows(ignoreRoute) {
     var rows = state.records;
     if (state.priority !== 'ALL') rows = rows.filter(function (r) { return r.priority === state.priority; });
     if (state.ack !== 'ALL') rows = rows.filter(function (r) { return r.ack === state.ack; });
+    if (!ignoreRoute && state.route !== 'ALL') rows = rows.filter(function (r) { return r.route === state.route; });
     if (state.dateFrom) {
       var from = new Date(state.dateFrom);
       rows = rows.filter(function (r) { return r.orderDate && r.orderDate.getTime() >= from.getTime(); });
@@ -692,7 +721,8 @@
       rows = rows.filter(function (r) {
         return r.customer.toLowerCase().indexOf(q) !== -1 ||
           r.branch.toLowerCase().indexOf(q) !== -1 ||
-          r.location.toLowerCase().indexOf(q) !== -1;
+          r.location.toLowerCase().indexOf(q) !== -1 ||
+          (r.route || '').toLowerCase().indexOf(q) !== -1;
       });
     }
     return rows;
@@ -1308,6 +1338,40 @@
       html;
   }
 
+  function renderRouteOverview(rows) {
+    var tbody = $('routesBody');
+    var meta = $('routesMeta');
+    if (!tbody) return;
+    var stats = buildRouteStats(rows);
+    if (meta) meta.textContent = stats.length ? formatNum(stats.length) + ' routes' : 'No routes';
+    if (!stats.length) {
+      tbody.innerHTML = '<tr class="row-empty"><td colspan="7">No route data in current scope</td></tr>';
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < stats.length; i++) {
+      var s = stats[i];
+      var active = state.route === s.route;
+      var pct = Math.round(s.fulfillment);
+      var pctCls = pct < 60 ? ' is-low' : (pct < 90 ? ' is-mid' : '');
+      html +=
+        '<tr class="route-row' + (active ? ' is-active' : '') + '" data-route="' + escapeHtml(s.route) + '" tabindex="0" aria-label="Filter to route ' + escapeHtml(s.route) + '">' +
+        '<td class="td-strong"><span class="route-chip">' + escapeHtml(s.route) + '</span></td>' +
+        '<td class="td-strong">' + formatNum(s.total) + '</td>' +
+        '<td>' + (s.openP1 ? '<span class="badge badge-p1">' + formatNum(s.openP1) + '</span>' : '—') + '</td>' +
+        '<td>' + formatNum(s.done) + '</td>' +
+        '<td>' + formatNum(s.transit) + '</td>' +
+        '<td>' + formatNum(s.pending) + '</td>' +
+        '<td><span class="fulfillment"><span class="fulfillment-track"><span class="fulfillment-fill' + pctCls + '" style="width:' + Math.min(100, Math.max(0, pct)) + '%"></span></span><span class="fulfillment-num">' + pct + '%</span></span></td>' +
+        '</tr>';
+    }
+    tbody.innerHTML = html;
+  }
+
+  function toggleRoute(r) {
+    setRouteFilter(state.route === r ? 'ALL' : r);
+  }
+
   function renderQuality(rows) {
     var meta = $('qualityMeta');
     var report = $('qualityReport');
@@ -1378,7 +1442,7 @@
       var msg = state.records.length
         ? 'No records match the current filters'
         : 'No data yet — drag & drop a file above, or sync the Google Sheet';
-      tbody.innerHTML = '<tr class="row-empty"><td colspan="7">' + msg + '</td></tr>';
+      tbody.innerHTML = '<tr class="row-empty"><td colspan="8">' + msg + '</td></tr>';
       return;
     }
     var html = '';
@@ -1390,6 +1454,7 @@
         '<td class="td-strong">' + escapeHtml(r.customer || '—') + '</td>' +
         '<td>' + escapeHtml(r.branch || '—') + '</td>' +
         '<td>' + escapeHtml(r.location || '—') + '</td>' +
+        '<td>' + escapeHtml(r.route || '—') + '</td>' +
         '<td>' + priorityBadge(r.priority) + '</td>' +
         '<td class="td-date">' + formatDate(r.dispatchDate) + '</td>' +
         '<td>' + ackBadge(r.ack) + '</td>' +
@@ -1449,6 +1514,7 @@
   function renderAll() {
     var rows = filteredRows();
     renderIngestPanel();
+    renderRouteFilter();
     renderKpis(rows);
     renderCharts(rows);
     renderTable();
@@ -1456,6 +1522,7 @@
     renderCustomers();
     renderDirectoryMeta();
     renderAging(rows);
+    renderRouteOverview(filteredRows(true));
     renderQuality(rows);
     refreshIcons();
   }
@@ -1598,9 +1665,30 @@
     refreshIcons();
   }
 
+  function renderRouteFilter() {
+    var box = $('routeFilter');
+    if (!box) return;
+    var routes = {};
+    state.records.forEach(function (r) { if (r.route) routes[r.route] = true; });
+    var list = Object.keys(routes).sort(function (a, b) {
+      return String(a).localeCompare(String(b), undefined, { numeric: true });
+    });
+    var html = '<button type="button" class="pill' + (state.route === 'ALL' ? ' is-active' : '') + '" data-route="ALL">All</button>';
+    for (var i = 0; i < list.length; i++) {
+      html += '<button type="button" class="pill' + (state.route === list[i] ? ' is-active' : '') + '" data-route="' + escapeHtml(list[i]) + '">' + escapeHtml(list[i]) + '</button>';
+    }
+    box.innerHTML = html;
+  }
+
+  function setRouteFilter(r) {
+    state.route = r;
+    renderAll();
+  }
+
   function resetFilters(silent) {
     state.priority = 'ALL';
     state.ack = 'ALL';
+    state.route = 'ALL';
     state.query = '';
     state.dateFrom = null;
     state.dateTo = null;
@@ -1907,6 +1995,30 @@
         setAckFilter(ev.currentTarget.getAttribute('data-ack'));
       });
     }
+    var routeFilter = $('routeFilter');
+    if (routeFilter) {
+      routeFilter.addEventListener('click', function (ev) {
+        var btn = ev.target.closest && ev.target.closest('.pill');
+        if (btn && btn.getAttribute('data-route')) setRouteFilter(btn.getAttribute('data-route'));
+      });
+    }
+
+    var routesBody = $('routesBody');
+    if (routesBody) {
+      routesBody.addEventListener('click', function (ev) {
+        var row = ev.target.closest && ev.target.closest('tr.route-row');
+        if (row && row.getAttribute('data-route')) toggleRoute(row.getAttribute('data-route'));
+      });
+      routesBody.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          var row = ev.target.closest && ev.target.closest('tr.route-row');
+          if (row && row.getAttribute('data-route')) {
+            ev.preventDefault();
+            toggleRoute(row.getAttribute('data-route'));
+          }
+        }
+      });
+    }
     var resetBtn = $('resetFilters');
     if (resetBtn) resetBtn.addEventListener('click', function () { resetFilters(false); });
 
@@ -2122,6 +2234,7 @@
     buildDoughnutData: buildDoughnutData,
     buildTrendData: buildTrendData,
     buildAgingData: buildAgingData,
+    buildRouteStats: buildRouteStats,
     auditData: auditData,
     customerOrderStats: customerOrderStats,
     sortRows: sortRows,

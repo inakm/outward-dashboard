@@ -1303,6 +1303,79 @@ tr.cust-row.is-clickable:focus-visible {
   font-weight: 500;
 }
 
+/* ---------- Routes overview ---------- */
+.routes-panel {
+  margin-top: var(--s-md);
+  padding: 0;
+  overflow: hidden;
+}
+
+.route-row {
+  cursor: pointer;
+}
+
+.route-row.is-active td {
+  background: rgba(94, 106, 210, 0.06);
+}
+
+.route-row.is-active .route-chip {
+  background: var(--primary);
+  color: var(--on-primary);
+  border-color: transparent;
+}
+
+.route-chip {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--primary);
+  background: rgba(94, 106, 210, 0.08);
+  border: 1px solid rgba(94, 106, 210, 0.25);
+  border-radius: var(--r-pill);
+  padding: 1px 8px;
+}
+
+.fulfillment {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 140px;
+}
+
+.fulfillment-track {
+  flex: 1;
+  height: 6px;
+  border-radius: var(--r-pill);
+  background: var(--surface-3);
+  overflow: hidden;
+}
+
+.fulfillment-fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--r-pill);
+  background: var(--semantic-success);
+  min-width: 2px;
+}
+
+.fulfillment-fill.is-mid {
+  background: var(--p2);
+}
+
+.fulfillment-fill.is-low {
+  background: var(--p1);
+}
+
+.fulfillment-num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-subtle);
+  min-width: 40px;
+  text-align: right;
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 1024px) {
   .kpis {
