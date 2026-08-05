@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Disallow: /Customers/
+Disallow: /ghmc-routing/
+
+Sitemap: https://inakm.github.io/outward-dashboard/sitemap.xml

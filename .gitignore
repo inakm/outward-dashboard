@@ -8,3 +8,6 @@ Thumbs.db
 
 # Excel temp / lock files
 ~$*
+
+# Node
+node_modules/
