@@ -7,6 +7,10 @@ Outputs (into --output-dir):
                             striping, visible gridlines, auto column width,
                             auto-filter, frozen header, print-ready).
   2. ghmc_route_map.json  - machine-readable mirror of the same rows.
+Plus a third file at the repo root:
+  3. ghmc-route-map.js    - the same data bundled as a plain script
+                            (window.GHMC_ROUTE_MAP = ...) so the dashboard's
+                            route map works when opened from the file system.
 
 Routing logic (hub = Old Bowenpally, Secunderabad):
     R1  North            -> Kukatpally/Quthbullapur northern wings (Alwal,
@@ -1324,7 +1328,14 @@ def style_workbook(ws, df) -> None:
 # 4. JSON output                                                              #
 # --------------------------------------------------------------------------- #
 def write_json(records: list[dict], out_path: Path) -> None:
-    payload = {
+    payload = _build_payload(records)
+    out_path.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+
+
+def _build_payload(records: list[dict]) -> dict:
+    return {
         "meta": {
             "title": "SkyLimit Outward Delivery Routes - GHMC Administrative Map",
             "hub": "Bowenpally",
@@ -1338,9 +1349,28 @@ def write_json(records: list[dict], out_path: Path) -> None:
         },
         "records": records,
     }
-    out_path.write_text(
-        json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8"
+
+
+def write_js_bundle(records: list[dict], out_path: Path) -> None:
+    """Emit the same data as a plain script (window.GHMC_ROUTE_MAP = ...).
+
+    The dashboard loads this via a <script> tag so routing + the interactive
+    map work even when the page is opened from the file system, where
+    fetch() to a local .json file is blocked by the browser's CORS policy.
+    """
+    payload = _build_payload(records)
+    js = (
+        "/* Auto-generated from ghmc-routing/output/ghmc_route_map.json by\n"
+        "   generate_ghmc_route_map.py. Bundled as a plain script so the route\n"
+        "   map works even when the app is opened from the file system (where\n"
+        "   fetch() to local JSON is blocked by CORS).\n"
+        "   Regenerate with:  python ghmc-routing/generate_ghmc_route_map.py\n"
+        "*/\n"
+        "window.GHMC_ROUTE_MAP = "
+        + json.dumps(payload, ensure_ascii=False)
+        + ";\n"
     )
+    out_path.write_text(js, encoding="utf-8")
 
 
 # --------------------------------------------------------------------------- #
@@ -1470,8 +1500,15 @@ def main() -> None:
     json_path = out_dir / "ghmc_route_map.json"
     write_json(records, json_path)
 
+    # JS bundle (for the dashboard's offline / file:// mode) ------------------
+    # Lives next to index.html at the repo root, not inside --output-dir.
+    repo_root = Path(__file__).resolve().parent.parent
+    js_path = repo_root / "ghmc-route-map.js"
+    write_js_bundle(records, js_path)
+
     print(f"Wrote {excel_path}  ({df.shape[0]} rows x {df.shape[1]} cols)")
     print(f"Wrote {json_path}")
+    print(f"Wrote {js_path}")
 
 
 if __name__ == "__main__":

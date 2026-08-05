@@ -6,7 +6,7 @@
 
   <!-- Primary SEO -->
   <title>SkyLimit Outwards Dashboard — Dispatch Intelligence</title>
-  <meta name="description" content="SkyLimit Outwards Dashboard — enterprise outward logistics intelligence. Track outward volume, open bottlenecks, dispatch velocity and fulfilment across customers, branches and locations, visualised live from Google Sheets.">
+  <meta name="description" content="SkyLimit outward logistics: volume, open bottlenecks, dispatch velocity and fulfilment across customers, branches and locations, live from Google Sheets.">
   <meta name="keywords" content="SkyLimit, outward logistics, dispatch dashboard, order tracking, fulfilment rate, dispatch velocity, logistics analytics, enterprise dashboard">
   <meta name="author" content="SkyLimit">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
@@ -15,17 +15,17 @@
 
   <!-- Icons -->
   <link rel="icon" type="image/png" href="logo.png">
-  <link rel="apple-touch-icon" href="logo.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="SkyLimit Outwards Dashboard">
   <meta property="og:title" content="SkyLimit Outwards Dashboard — Dispatch Intelligence">
   <meta property="og:description" content="Track outward volume, open bottlenecks, dispatch velocity and fulfilment across every customer, branch and location — in near-real time.">
-  <meta property="og:image" content="https://newskylimit.techril.com/images/logo.png">
-  <meta property="og:image:width" content="1334">
-  <meta property="og:image:height" content="607">
-  <meta property="og:image:alt" content="SkyLimit logo">
+  <meta property="og:image" content="https://inakm.github.io/outward-dashboard/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="SkyLimit Outwards Dashboard overview">
   <meta property="og:url" content="https://inakm.github.io/outward-dashboard/">
   <meta property="og:locale" content="en_IN">
 
@@ -33,8 +33,8 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="SkyLimit Outwards Dashboard — Dispatch Intelligence">
   <meta name="twitter:description" content="Enterprise outward logistics intelligence — volume, bottlenecks, dispatch velocity and fulfilment, visualised live from Google Sheets.">
-  <meta name="twitter:image" content="https://newskylimit.techril.com/images/logo.png">
-  <meta name="twitter:image:alt" content="SkyLimit logo">
+  <meta name="twitter:image" content="https://inakm.github.io/outward-dashboard/og-image.png">
+  <meta name="twitter:image:alt" content="SkyLimit Outwards Dashboard overview">
 
   <!-- Mobile web app -->
   <meta name="mobile-web-app-capable" content="yes">
@@ -49,14 +49,14 @@
     "@type": "WebApplication",
     "name": "SkyLimit Outwards Dashboard",
     "url": "https://inakm.github.io/outward-dashboard/",
-    "image": "https://newskylimit.techril.com/images/logo.png",
+    "image": "https://inakm.github.io/outward-dashboard/og-image.png",
     "description": "Enterprise outward logistics dashboard tracking order volume, open bottlenecks (P1 not yet acknowledged), dispatch velocity and fulfilment rate across customers, branches and locations.",
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "Any (browser based)",
     "browserRequirements": "Requires JavaScript. Client-side only — no server or data storage required.",
     "inLanguage": "en-IN",
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "publisher": { "@type": "Organization", "name": "SkyLimit", "logo": { "@type": "ImageObject", "url": "https://newskylimit.techril.com/images/logo.png" } }
+    "publisher": { "@type": "Organization", "name": "SkyLimit", "logo": { "@type": "ImageObject", "url": "https://inakm.github.io/outward-dashboard/logo.png" } }
   }
   </script>
 
@@ -64,14 +64,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-
   <link rel="stylesheet" href="style.css">
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="https://unpkg.com/lucide@0.294.0/dist/umd/lucide.js"></script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
+  <script src="https://unpkg.com/lucide@0.294.0/dist/umd/lucide.js" defer></script>
+  <script src="ghmc-route-map.js" defer></script>
   <script src="script.js" defer></script>
 </head>
 <body>
@@ -219,7 +217,7 @@
     <section class="panel chart-card trend-card">
       <header class="card-head">
         <div>
-          <h3 class="card-title">Outward Volume Over Time</h3>
+          <h2 class="card-title">Outward Volume Over Time</h2>
           <p class="card-sub">Orders vs dispatched per period in current scope</p>
         </div>
         <div class="table-actions">
@@ -244,7 +242,7 @@
       <article class="panel chart-card">
         <header class="card-head">
           <div>
-            <h3 class="card-title" id="barTitle">Volume by Customer</h3>
+            <h2 class="card-title" id="barTitle">Volume by Customer</h2>
             <p class="card-sub" id="barSub">Order count per customer in current scope</p>
           </div>
           <div class="table-actions">
@@ -267,7 +265,7 @@
       <article class="panel chart-card">
         <header class="card-head">
           <div>
-            <h3 class="card-title">Acknowledgement State</h3>
+            <h2 class="card-title">Acknowledgement State</h2>
             <p class="card-sub">Distribution across Done · In Transit · Pending</p>
           </div>
           <span class="status-badge" id="doughnutMeta">—</span>
@@ -285,7 +283,7 @@
     <section class="panel table-panel">
       <header class="table-head">
         <div>
-          <h3 class="card-title">Customer · Branch · Location Matrix</h3>
+          <h2 class="card-title">Customer · Branch · Location Matrix</h2>
           <p class="card-sub">Sort by clicking a column header, or search across customers, branches and locations</p>
         </div>
         <div class="table-actions">
@@ -338,7 +336,7 @@
     <section class="panel backlog-panel" id="backlogPanel">
       <header class="card-head">
         <div>
-          <h3 class="card-title">Backlog Aging</h3>
+          <h2 class="card-title">Backlog Aging</h2>
           <p class="card-sub">Open P1 bottlenecks aged by days since order date</p>
         </div>
         <span class="status-badge" id="backlogMeta">—</span>
@@ -358,7 +356,7 @@
     <section class="panel routes-panel">
       <header class="table-head">
         <div>
-          <h3 class="card-title">Routes Overview</h3>
+          <h2 class="card-title">Routes Overview</h2>
           <p class="card-sub">Per-route dispatch health in current scope — click a route to filter</p>
         </div>
         <span class="status-badge" id="routesMeta">—</span>
@@ -384,7 +382,7 @@
     <section class="panel quality-panel">
       <header class="card-head">
         <div>
-          <h3 class="card-title">Data Quality Report</h3>
+          <h2 class="card-title">Data Quality Report</h2>
           <p class="card-sub">Rows that may need attention in the source sheet</p>
         </div>
         <div class="table-actions">
@@ -404,7 +402,7 @@
     <section class="panel directory-panel" id="customersView" hidden>
       <header class="table-head">
         <div>
-          <h3 class="card-title">Customer Directory</h3>
+          <h2 class="card-title">Customer Directory</h2>
           <p class="card-sub">Master list with branches and outward activity joined by customer name</p>
         </div>
         <div class="table-actions">
@@ -444,7 +442,7 @@
       <div class="branch-drawer" id="branchDrawer" hidden>
         <header class="drawer-head">
           <div>
-            <h4 class="card-title" id="drawerTitle">Branches</h4>
+            <h3 class="card-title" id="drawerTitle">Branches</h3>
             <p class="card-sub" id="drawerSub"></p>
           </div>
           <button type="button" class="btn btn-tertiary btn-sm" id="drawerClose">
@@ -470,10 +468,20 @@
     </section>
 
     <div id="routeopsView" hidden>
+      <section class="panel route-tabs-panel" id="routeTabsPanel" hidden>
+        <header class="card-head">
+          <div>
+            <h2 class="card-title">Route Focus</h2>
+            <p class="card-sub">Pick a route to isolate its driver path on the map — click again to show all</p>
+          </div>
+        </header>
+        <div id="routeTabs" class="route-tabs"></div>
+      </section>
+
       <section class="panel sla-panel">
         <header class="card-head">
           <div>
-            <h3 class="card-title">Needs Attention</h3>
+            <h2 class="card-title">Needs Attention</h2>
             <p class="card-sub">Open orders scored against SLA thresholds — breached first, then at risk</p>
           </div>
           <div class="table-actions">
@@ -525,20 +533,23 @@
       <section class="panel map-panel">
         <header class="card-head">
           <div>
-            <h3 class="card-title">Route Map</h3>
+            <h2 class="card-title">Route Map</h2>
             <p class="card-sub">Circle-level view of orders in scope, colored by route — click a circle for details</p>
           </div>
           <div class="table-actions">
             <span class="status-badge" id="mapMeta">—</span>
           </div>
         </header>
-        <div id="routeMap" class="route-map"><p class="backlog-empty">Map loading…</p></div>
+        <div class="map-body">
+          <div id="routeMap" class="route-map"></div>
+          <p class="backlog-empty route-map-msg" id="routeMapMsg" hidden>Map loading…</p>
+        </div>
       </section>
 
       <section class="panel loadplan-panel">
         <header class="card-head">
           <div>
-            <h3 class="card-title">Route Load Plans</h3>
+            <h2 class="card-title">Route Load Plans</h2>
             <p class="card-sub">Per-route dispatch batches ordered by the sorting guidance in the GHMC map</p>
           </div>
           <div class="table-actions">
@@ -560,7 +571,7 @@
     <section class="panel route-guide">
       <header class="card-head">
         <div>
-          <h3 class="card-title">Route Guide</h3>
+          <h2 class="card-title">Route Guide</h2>
           <p class="card-sub">Delivery routes from the Old Bowenpally hub — R1 North · R2 East · R3 West · R4 South · R5 outside GHMC</p>
         </div>
         <span class="status-badge"><i data-lucide="map"></i> Hub: Old Bowenpally</span>
