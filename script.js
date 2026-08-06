@@ -208,6 +208,9 @@
     trendGranularity: 'month',
     barDimension: 'customer',
     mapRoute: null,
+    showStopOrder: true,
+    boardScope: 'today',
+    boardDate: null,
     autoRefresh: false,
     lastSyncAt: null
   };
@@ -898,6 +901,188 @@
       return String(a.route).localeCompare(String(b.route), undefined, { numeric: true });
     });
     return routes;
+  }
+
+  /* -------------------------------------------------------------
+     Fleet / dispatch planning
+     - Fleet registry ships as vehicles.json + bundled fleet.js
+       (window.GHMC_FLEET) so planning keeps working on file://.
+     - Capacity is measured in priority-weighted units (P1 weighs
+       more), so "vehicles needed" automatically favours P1 traffic.
+     - Adjacent-Route Overlap Strategy: each vehicle has a primary
+       quadrant plus allowed swing (adjacent) quadrants; overflow
+       guidance only ever pulls vehicles from adjacent quadrants —
+       never the opposite (R1<->R4, R2<->R3) — so the same vehicle
+       can cover 2 routes without wasteful cross-city runs.
+     ------------------------------------------------------------- */
+  var DISPATCH_WINDOWS = {
+    early: { label: 'Early', loadBy: '07:30', dispatchBy: '08:30' },
+    morning: { label: 'Morning', loadBy: '08:30', dispatchBy: '09:30' },
+    truck: { label: 'Truck window', loadBy: '09:00', dispatchBy: '16:00' },
+    offpeak: { label: 'Off-peak', loadBy: '15:00', dispatchBy: '18:00' },
+    any: { label: 'Any time', loadBy: '—', dispatchBy: 'By EOD' }
+  };
+
+  var FLEET_DEFAULTS = [
+    { id: 'T1', primary: 'R1', swing: ['R2'], blocked: ['R4', 'R3'], type: 'Tempo', class: 'Heavy', capacity: 60, driver: '', active: true },
+    { id: 'T2', primary: 'R4', swing: ['R3'], blocked: ['R1', 'R2'], type: 'Tempo', class: 'Heavy', capacity: 60, driver: '', active: true },
+    { id: 'B1', primary: 'R1', swing: ['R2', 'R3'], blocked: ['R4'], type: 'Bike', class: 'Light', capacity: 25, driver: '', active: true },
+    { id: 'B2', primary: 'R2', swing: ['R1', 'R4'], blocked: ['R3'], type: 'Bike', class: 'Light', capacity: 25, driver: '', active: true },
+    { id: 'BM3', primary: 'R3', swing: ['R4', 'R1'], blocked: ['R2'], type: 'Bike', class: 'Light', capacity: 25, driver: '', active: true, note: 'Madhapur-only (will only be used from Madhapur)' }
+  ];
+
+  var FLEET_RULES_DEFAULTS = {
+    efficiency: 0.85,
+    weight: { 'P1': 1.6, 'P2': 1.3, 'P3': 1.1, 'P4': 1.0 },
+    /* Adjacent-Route Overlap Strategy: R1=NE, R2=NW, R3=SE, R4=SW.
+       A vehicle may swing only into adjacent quadrants, never the
+       opposite one (R1<->R4, R2<->R3) — saves fuel. */
+    adjacency: { 'R1': ['R2', 'R3'], 'R2': ['R1', 'R4'], 'R3': ['R1', 'R4'], 'R4': ['R2', 'R3'] },
+    opposite: [['R1', 'R4'], ['R2', 'R3']]
+  };
+
+  var fleetVehicles = null;
+  var fleetRules = null;
+  var fleetHub = null;
+
+  function fleetList() { return fleetVehicles || FLEET_DEFAULTS; }
+  function fleetSettings() { return fleetRules || FLEET_RULES_DEFAULTS; }
+  function fleetEfficiency() { return Number(fleetSettings().efficiency) || 0.85; }
+  function fleetWeight(priority) {
+    var w = fleetSettings().weight;
+    return (w && w[priority]) ? Number(w[priority]) : 1;
+  }
+  function vehicleCapacity(v) { return Number(v && v.capacity) || 50; }
+  function vehiclePrimary(v) { return v.primary || v.route || null; }
+  function vehicleSwing(v) { return v && Array.isArray(v.swing) ? v.swing : []; }
+  function vehicleBlocked(v) { return v && Array.isArray(v.blocked) ? v.blocked : []; }
+  function vehicleCanServe(v, route) {
+    if (!v || v.active === false) return false;
+    if (vehiclePrimary(v) === route) return true;
+    return vehicleSwing(v).indexOf(route) !== -1;
+  }
+  function routeVehicles(route) {
+    return fleetList().filter(function (v) { return v.active !== false && vehiclePrimary(v) === route; });
+  }
+  function swingVehiclesFor(route) {
+    /* Vehicles based on OTHER routes whose swing zones include this route
+       (Adjacent-Route Overlap: only adjacent quadrants, never opposite). */
+    return fleetList().filter(function (v) {
+      return v.active !== false && vehiclePrimary(v) !== route && vehicleSwing(v).indexOf(route) !== -1;
+    });
+  }
+  function windowFor(bucket) { return DISPATCH_WINDOWS[bucket] || DISPATCH_WINDOWS.any; }
+  function earliestBucket(buckets) {
+    var order = BUCKET_ORDER;
+    var best = null;
+    buckets.forEach(function (b) {
+      if (best === null || (order[b] != null && order[b] < order[best])) best = b;
+    });
+    return best === null ? 'any' : best;
+  }
+
+  function computeDispatchPlan(rows, vehicles) {
+    var openRows = (rows || []).filter(function (r) { return r.ack !== 'Done'; });
+    var plan = buildLoadPlan(openRows);
+    var eff = fleetEfficiency();
+    var stats = {};
+    var assignments = {};
+    plan.forEach(function (rp) {
+      var units = 0;
+      rp.circles.forEach(function (c) { c.units = weightedUnitsForCircle(c); units += c.units; });
+      var vehs = routeVehicles(rp.route);
+      var avgCap = vehs.length
+        ? vehs.reduce(function (s, v) { return s + vehicleCapacity(v); }, 0) / vehs.length
+        : 50;
+      var capacity = vehs.reduce(function (s, v) { return s + vehicleCapacity(v); }, 0) * eff;
+      var pressure = capacity ? units / capacity : 0;
+      var needed = units > 0 ? Math.max(1, Math.ceil(units / (avgCap * eff))) : 0;
+      stats[rp.route] = {
+        route: rp.route,
+        name: routeNames[rp.route] || '',
+        total: rp.total,
+        open: rp.open,
+        p1: rp.p1,
+        units: units,
+        capacity: capacity,
+        pressure: pressure,
+        needed: needed,
+        vehicles: vehs.length,
+        avgCap: avgCap,
+        suggestedExtra: Math.max(0, needed - vehs.length),
+        window: earliestBucket(rp.circles.map(function (c) { return c.bucket; }))
+      };
+      assignments[rp.route] = assignRoute(rp, vehs, eff);
+    });
+    var overflow = adjacentOverflow(stats, fleetSettings());
+    return { plan: plan, stats: stats, assignments: assignments, overflow: overflow };
+  }
+
+  function weightedUnitsForCircle(c) {
+    return c.rows.reduce(function (s, r) { return s + fleetWeight(r.priority); }, 0);
+  }
+
+  function orderedCircles(rp) {
+    var list = rp.circles.slice().sort(function (a, b) {
+      return (BUCKET_ORDER[a.bucket] - BUCKET_ORDER[b.bucket]) ||
+        (b.p1 - a.p1) || ((b.units || b.total) - (a.units || a.total));
+    });
+    list.forEach(function (c, i) { c.stop = i + 1; });
+    return list;
+  }
+
+  function assignRoute(rp, vehs, eff) {
+    var stops = orderedCircles(rp);
+    var out = vehs.map(function (v) {
+      return { veh: v, loadUnits: 0, loadPct: 0, stops: [], capacity: vehicleCapacity(v), window: 'any' };
+    });
+    if (!out.length) return { vehicles: out, stops: stops };
+    var vi = 0;
+    stops.forEach(function (c) {
+      if (out[vi].loadUnits > 0 &&
+          out[vi].loadUnits + c.units > out[vi].capacity * eff &&
+          vi < out.length - 1) vi++;
+      out[vi].stops.push(c);
+      out[vi].loadUnits += c.units;
+    });
+    out.forEach(function (o) {
+      o.loadPct = o.capacity ? Math.min(100, 100 * o.loadUnits / (o.capacity * eff)) : 0;
+      o.window = earliestBucket(o.stops.map(function (s) { return s.bucket; }));
+    });
+    return { vehicles: out, stops: stops };
+  }
+
+  function adjacentOverflow(stats, rules) {
+    var adj = rules.adjacency || {};
+    var out = [];
+    Object.keys(stats).forEach(function (route) {
+      var s = stats[route];
+      if (s.suggestedExtra <= 0) return;
+      var best = null;
+      (adj[route] || []).forEach(function (n) {
+        var t = stats[n];
+        if (!t) return;
+        var pullable = swingVehiclesFor(route).filter(function (v) {
+          return vehiclePrimary(v) === n;
+        });
+        if (!pullable.length) return;
+        if (!best || t.pressure < best.pressure) {
+          best = { route: n, pressure: t.pressure, slack: pullable.length };
+        }
+      });
+      if (best) {
+        out.push({
+          route: route,
+          routeName: s.name,
+          needed: s.suggestedExtra,
+          adjacent: best.route,
+          adjacentName: stats[best.route].name,
+          adjacentPressure: best.pressure,
+          slack: best.slack
+        });
+      }
+    });
+    return out;
   }
 
   function auditData(records) {
@@ -1676,7 +1861,7 @@
   /* -------------------------------------------------------------
      Route Ops: interactive route map (Leaflet)
      ------------------------------------------------------------- */
-  var ROUTE_COLOR = { R1: '#5e6ad2', R2: '#27a644', R3: '#b87800', R4: '#e5484d', R5: '#6b7280' };
+  var ROUTE_COLOR = { R1: '#27a644', R2: '#5e6ad2', R3: '#e5484d', R4: '#b87800', R5: '#6b7280' };
   var routeMapObj = null;
   var routeMapLayer = null;
 
@@ -1709,20 +1894,74 @@
     msg.hidden = false;
   }
 
-  function buildRoutePath(scope) {
-    if (!scope) return [];
+  function buildRouteStops(scope) {
     var plan = buildLoadPlan(filteredRows(true));
     var routePlan = null;
     for (var i = 0; i < plan.length; i++) {
       if (plan[i].route === scope) { routePlan = plan[i]; break; }
     }
     if (!routePlan) return [];
+    var circles = routePlan.circles.slice().sort(function (a, b) {
+      return (BUCKET_ORDER[a.bucket] - BUCKET_ORDER[b.bucket]) ||
+        (b.p1 - a.p1) || (b.total - a.total);
+    });
+    var stops = [];
+    circles.forEach(function (c, i) {
+      var coord = coordsIndex[c.circle];
+      if (!coord) return;
+      stops.push({
+        index: i + 1,
+        circle: c.circle,
+        lat: coord.lat,
+        lng: coord.lng,
+        bucket: c.bucket,
+        total: c.total,
+        open: c.open,
+        p1: c.p1
+      });
+    });
+    return stops;
+  }
+
+  function buildRoutePath(scope) {
+    if (!scope) return [];
+    var stops = buildRouteStops(scope);
     var pts = [];
-    for (var j = 0; j < routePlan.circles.length; j++) {
-      var coord = coordsIndex[routePlan.circles[j].circle];
-      if (coord) pts.push([coord.lat, coord.lng]);
-    }
+    stops.forEach(function (s) { pts.push([s.lat, s.lng]); });
     return pts;
+  }
+
+  function routePopupHtml(circle, c) {
+    var html = '<b>' + escapeHtml(circle) + '</b><br>' +
+      'Route ' + escapeHtml(c.route) + ' · Orders: ' + c.total + ' · Open: ' + c.open + ' · P1 open: ' + c.p1;
+    if (c.samples && c.samples.length) {
+      html += '<div class="map-pop-orders">';
+      c.samples.forEach(function (s) {
+        html += '<span class="map-pop-row">' +
+          '<span class="dot ' + (s.priority === 'P1' ? 'dot-p1' : s.priority === 'P2' ? 'dot-p2' : s.priority === 'P3' ? 'dot-p3' : 'dot-p4') + '"></span>' +
+          escapeHtml(s.customer || '—') + ' · ' + escapeHtml(s.location || s.branch || '—') +
+          '<span class="map-pop-ack">' + escapeHtml(s.ack) + '</span></span>';
+      });
+      html += '</div>';
+    }
+    return html;
+  }
+
+  function renderMapLegend(counts) {
+    var box = $('mapLegend');
+    if (!box) return;
+    var routes = Object.keys(counts).map(function (c) { return counts[c].route; });
+    var seen = {};
+    var html = '';
+    ['R1', 'R2', 'R3', 'R4', 'R5'].forEach(function (rc) {
+      if (!seen[rc] && routes.indexOf(rc) !== -1) {
+        seen[rc] = true;
+        var color = ROUTE_COLOR[rc] || '#5e6ad2';
+        var nm = routeNames[rc] ? ' · ' + routeNames[rc] : '';
+        html += '<span class="map-legend-item"><i style="background:' + color + '"></i>' + escapeHtml(rc) + nm + '</span>';
+      }
+    });
+    box.innerHTML = html || '';
   }
 
   function renderRouteMap(rows) {
@@ -1742,13 +1981,17 @@
       if (!info) return;
       if (scope && (r.route || info.route) !== scope) return;
       var circle = info.circle;
-      if (!counts[circle]) counts[circle] = { route: r.route || info.route || '—', total: 0, open: 0, p1: 0 };
+      if (!counts[circle]) counts[circle] = { route: r.route || info.route || '—', total: 0, open: 0, p1: 0, samples: [] };
       counts[circle].total++;
       if (r.ack !== 'Done') counts[circle].open++;
       if (r.priority === 'P1' && r.ack !== 'Done') counts[circle].p1++;
+      if (counts[circle].samples.length < 8) counts[circle].samples.push(r);
     });
     var layer = L.layerGroup();
     var nMarkers = 0;
+    var stops = buildRouteStops(scope);
+    var stopByCircle = {};
+    stops.forEach(function (s) { stopByCircle[s.circle] = s; });
     Object.keys(counts).forEach(function (circle) {
       var c = counts[circle];
       var coord = coordsIndex[circle];
@@ -1763,21 +2006,32 @@
         fillColor: color,
         fillOpacity: 0.6
       }).addTo(layer);
-      marker.bindPopup(
-        '<b>' + escapeHtml(circle) + '</b><br>' +
-        'Route ' + escapeHtml(c.route) + '<br>' +
-        'Orders: ' + c.total + ' · Open: ' + c.open + '<br>' +
-        'P1 open: ' + c.p1
-      );
+      marker.bindPopup(routePopupHtml(circle, c));
+      if (state.showStopOrder && stopByCircle[circle]) {
+        var stop = stopByCircle[circle];
+        L.marker([coord.lat, coord.lng], {
+          icon: L.divIcon({
+            className: 'stop-badge',
+            html: '<span>' + stop.index + '</span>',
+            iconSize: [22, 22],
+            iconAnchor: [11, 11]
+          }),
+          interactive: false,
+          zIndexOffset: 900
+        }).addTo(layer);
+      }
     });
     var path = buildRoutePath(scope);
     if (path.length > 1) {
       var pColor = scope ? (ROUTE_COLOR[scope] || '#5e6ad2') : '#8a94a6';
       L.polyline(path, { color: pColor, weight: 3, opacity: 0.75, dashArray: '6 8' }).addTo(layer);
     }
+    var scopedOrders = 0;
+    for (var sc in counts) scopedOrders += counts[sc].total;
     var label = scope
       ? scope + (routeNames[scope] ? ' · ' + routeNames[scope] : '') + ' · '
       : '';
+    renderMapLegend(counts);
     if (!nMarkers) {
       if (routeMapObj && routeMapLayer) {
         routeMapObj.removeLayer(routeMapLayer);
@@ -1798,7 +2052,7 @@
          zero size and stays broken even after the view becomes visible. */
       var visible = host.offsetParent !== null || host.offsetWidth > 0;
       if (!visible) {
-        if (meta) meta.textContent = label + nMarkers + ' circles · ' + rows.length + ' orders';
+        if (meta) meta.textContent = label + nMarkers + ' circles · ' + scopedOrders + ' orders';
         return;
       }
       host.innerHTML = '';
@@ -1807,6 +2061,16 @@
         maxZoom: 18,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       }).addTo(routeMapObj);
+      if (fleetHub && fleetHub.lat != null && fleetHub.lng != null) {
+        L.circleMarker([fleetHub.lat, fleetHub.lng], {
+          radius: 5,
+          color: '#1a1d21',
+          weight: 2,
+          fillColor: '#1a1d21',
+          fillOpacity: 0.9
+        }).addTo(routeMapObj)
+          .bindPopup('<b>Hub</b> · ' + escapeHtml(fleetHub.name || 'Warehouse'));
+      }
     } else {
       routeMapObj.setView([17.42, 78.42], 11);
     }
@@ -1819,8 +2083,19 @@
     try {
       routeMapObj.fitBounds(layer.getBounds().pad(0.15));
     } catch (e) { /* bounds unavailable */ }
-    if (meta) meta.textContent = label + nMarkers + ' circles · ' + rows.length + ' orders' + (path.length > 1 ? ' · path drawn' : '');
+    if (meta) meta.textContent = label + nMarkers + ' circles · ' + scopedOrders + ' orders' + (path.length > 1 ? ' · path drawn' : '');
   }
+
+  function setShowStopOrder(on) {
+    state.showStopOrder = !!on;
+    var btn = $('stopOrderToggle');
+    if (btn) {
+      btn.classList.toggle('is-active', state.showStopOrder);
+      btn.setAttribute('aria-pressed', String(state.showStopOrder));
+    }
+    renderRouteMap(filteredRows(true));
+  }
+
 
   /* -------------------------------------------------------------
      Route Ops: route focus tabs (isolate one driver path on the map)
@@ -1904,6 +2179,253 @@
       html += '</div>';
     }
     host.innerHTML = html;
+  }
+
+  /* -------------------------------------------------------------
+     Dispatch Command Center (fleet readiness + vehicle assignment)
+     ------------------------------------------------------------- */
+  function renderFleetCenter(rows) {
+    var summary = $('fleetSummary');
+    var overflowBox = $('fleetOverflow');
+    var meta = $('fleetMeta');
+    if (!summary) return;
+    var plan = computeDispatchPlan(rows);
+    var statKeys = Object.keys(plan.stats).sort(function (a, b) {
+      return String(a).localeCompare(String(b), undefined, { numeric: true });
+    });
+    var totalUnits = 0;
+    statKeys.forEach(function (k) { totalUnits += plan.stats[k].units; });
+    if (meta) {
+      meta.textContent = plan.plan.length
+        ? formatNum(statKeys.length) + ' routes · ' + formatNum(fleetList().length) + ' vehicles · ' + formatNum(Math.round(totalUnits)) + ' P1-weighted units open'
+        : 'No open orders';
+    }
+
+    var html = '';
+    statKeys.forEach(function (k) {
+      var s = plan.stats[k];
+      var pct = Math.round(s.pressure * 100);
+      var cls = pct > 100 ? 'is-over' : (pct >= 70 ? 'is-warm' : 'is-ok');
+      var w = windowFor(s.window);
+      html +=
+        '<article class="fleet-card fc-' + String(s.route).toLowerCase() + '">' +
+        '<header class="fc-head">' +
+        '<span class="route-chip">' + escapeHtml(s.route) + '</span>' +
+        '<span class="fc-name">' + escapeHtml(s.name || s.route) + '</span>' +
+        '<span class="fc-window">' + escapeHtml(w.label) +
+        (w.loadBy !== '—' ? ' · load ' + escapeHtml(w.loadBy) + ' · dispatch ' + escapeHtml(w.dispatchBy) : '') + '</span>' +
+        '</header>' +
+        '<div class="fc-stats">' +
+        '<div class="fc-stat"><span class="fc-stat-v">' + formatNum(s.open) + '</span><span class="fc-stat-l">open orders</span></div>' +
+        '<div class="fc-stat"><span class="fc-stat-v fc-stat-danger">' + formatNum(s.p1) + '</span><span class="fc-stat-l">open P1</span></div>' +
+        '<div class="fc-stat"><span class="fc-stat-v">' + formatNum(s.vehicles) + '</span><span class="fc-stat-l">vehicles</span></div>' +
+        '<div class="fc-stat"><span class="fc-stat-v">' + formatNum(s.needed) + (s.suggestedExtra ? ' <span class="fc-need">+' + s.suggestedExtra + '</span>' : '') + '</span><span class="fc-stat-l">needed</span></div>' +
+        '</div>' +
+        '<div class="fc-pressure"><div class="fc-bar"><span class="fc-fill ' + cls + '" style="width:' + Math.min(100, pct) + '%"></span></div>' +
+        '<span class="fc-pct ' + cls + '">' + pct + '%</span></div>' +
+        '</article>';
+    });
+    if (!html) html = '<p class="backlog-empty">No open orders to plan — fleet is idle.</p>';
+    summary.innerHTML = html;
+
+    if (overflowBox) {
+      if (!plan.overflow.length) {
+        overflowBox.innerHTML = '<p class="fleet-ok"><i data-lucide="shield-check"></i> All routes within fleet capacity — no adjacent-route reassignment needed.</p>';
+      } else {
+        var oh = '<div class="fleet-overflow"><p class="fleet-overflow-title"><i data-lucide="git-branch"></i> Adjacent-route overflow guidance <span class="fleet-note">(Adjacent-Route Overlap: R1=NE · R2=NW · R3=SE · R4=SW — opposite quadrants R1↔R4 · R2↔R3 stay blocked)</span></p>';
+        plan.overflow.forEach(function (o) {
+          oh += '<div class="fleet-sugg"><span class="route-chip">' + escapeHtml(o.route) + '</span> needs ' + formatNum(o.needed) +
+            ' more vehicle' + (o.needed === 1 ? '' : 's') + ' — pull from adjacent ' +
+            '<span class="route-chip">' + escapeHtml(o.adjacent) + '</span> (' + escapeHtml(o.adjacentName || o.adjacent) + ', ' + Math.round(o.adjacentPressure * 100) + '% utilised)' +
+            (o.slack > 0 ? ', ' + formatNum(o.slack) + ' spare vehicle' + (o.slack === 1 ? '' : 's') + ' available' : '') + '.</div>';
+        });
+        oh += '</div>';
+        overflowBox.innerHTML = oh;
+      }
+      refreshIcons();
+    }
+
+    var body = $('fleetBody');
+    if (body) {
+      var trs = '';
+      statKeys.forEach(function (k) {
+        var a = plan.assignments[k];
+        var s = plan.stats[k];
+        if (!a || !a.vehicles.length) {
+          trs += '<tr class="row-empty"><td colspan="9">' + escapeHtml(k) + ' has no vehicles in the fleet — add one to vehicles.json.</td></tr>';
+          return;
+        }
+        a.vehicles.forEach(function (o) {
+          var w = windowFor(o.window);
+          var order = o.stops.map(function (st) {
+            return '<span class="fleet-stop">' + st.stop + '.' + escapeHtml(st.circle) + '</span>';
+          }).join(' ');
+          trs += '<tr>' +
+            '<td class="td-mono td-strong">' + escapeHtml(o.veh.id) + '</td>' +
+            '<td><span class="route-chip">' + escapeHtml(s.route) + '</span></td>' +
+            '<td>' + escapeHtml(o.veh.type || '—') +
+            (o.veh.class ? ' <span class="fc-class">' + escapeHtml(o.veh.class) + '</span>' : '') +
+            (vehicleSwing(o.veh).length ? ' <span class="fc-swing">swing ' + escapeHtml(vehicleSwing(o.veh).join(' · ')) + '</span>' : '') +
+            '</td>' +
+            '<td>' + escapeHtml(o.veh.driver || '—') + '</td>' +
+            '<td class="td-mono">' + formatNum(o.capacity) + ' u</td>' +
+            '<td class="td-mono">' + formatNum(o.stops.length) + ' stops · ' + formatNum(Math.round(o.loadUnits)) + ' u</td>' +
+            '<td><span class="fc-bar fc-bar-inline"><span class="fc-fill ' + (o.loadPct > 100 ? 'is-over' : o.loadPct >= 70 ? 'is-warm' : 'is-ok') + '" style="width:' + Math.min(100, o.loadPct) + '%"></span></span><span class="fc-pct fc-pct-inline">' + Math.round(o.loadPct) + '%</span></td>' +
+            '<td class="fleet-order">' + order + '</td>' +
+            '<td>' + escapeHtml(w.label) + '<span class="fc-win-sub">' + (w.loadBy !== '—' ? 'load ' + escapeHtml(w.loadBy) + ' · ' + escapeHtml(w.dispatchBy) : escapeHtml(w.dispatchBy)) + '</span></td>' +
+            '</tr>';
+        });
+      });
+      if (!trs) trs = '<tr class="row-empty"><td colspan="9">No open orders to assign.</td></tr>';
+      body.innerHTML = trs;
+    }
+  }
+
+  function exportFleetPlan() {
+    var rows = filteredRows(true);
+    var plan = computeDispatchPlan(rows);
+    if (typeof XLSX === 'undefined' || !XLSX.writeFile) { toast('SheetJS not available', 'error'); return; }
+    var wb = XLSX.utils.book_new();
+    var aoa = [['Route', 'Route Name', 'Open', 'Open P1', 'Units', 'Capacity', 'Pressure %', 'Vehicles', 'Needed', 'Suggested extra']];
+    Object.keys(plan.stats).sort(function (a, b) {
+      return String(a).localeCompare(String(b), undefined, { numeric: true });
+    }).forEach(function (k) {
+      var s = plan.stats[k];
+      aoa.push([s.route, s.name, s.open, s.p1, Math.round(s.units * 100) / 100, Math.round(s.capacity * 100) / 100, Math.round(s.pressure * 100), s.vehicles, s.needed, s.suggestedExtra]);
+    });
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), 'Fleet Plan');
+    var va = [['Vehicle', 'Route', 'Type', 'Driver', 'Capacity', 'Assigned Units', 'Load %', 'Window', 'Stop Order']];
+    Object.keys(plan.assignments).sort(function (a, b) {
+      return String(a).localeCompare(String(b), undefined, { numeric: true });
+    }).forEach(function (k) {
+      plan.assignments[k].vehicles.forEach(function (o) {
+        var w = windowFor(o.window);
+        va.push([o.veh.id, k, o.veh.type, o.veh.driver, o.capacity, Math.round(o.loadUnits * 100) / 100, Math.round(o.loadPct), w.label, o.stops.map(function (s) { return s.stop + '.' + s.circle; }).join(' → ')]);
+      });
+    });
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(va), 'Vehicles');
+    XLSX.writeFile(wb, 'outward-fleet-plan-' + fmtDateShort(new Date()) + '.xlsx');
+    toast('Exported fleet plan (XLSX)', 'success');
+  }
+
+  /* -------------------------------------------------------------
+     Day-Ahead Dispatch Board
+     ------------------------------------------------------------- */
+  function boardScopeRows(rows) {
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    var horizon = null;
+    if (state.boardScope === 'today') horizon = new Date(today);
+    else if (state.boardScope === 'tomorrow') { horizon = new Date(today); horizon.setDate(horizon.getDate() + 1); }
+    else if (state.boardScope === 'custom') horizon = state.boardDate ? new Date(state.boardDate) : today;
+    var horizonEnd = horizon ? new Date(horizon) : null;
+    if (horizonEnd) horizonEnd.setHours(23, 59, 59, 999);
+    return rows.filter(function (r) {
+      if (r.ack === 'Done') return false;
+      if (state.boardScope === 'overdue') {
+        return r.dispatchDate && r.dispatchDate.getTime() < today.getTime();
+      }
+      if (!horizonEnd) return true;
+      if (r.dispatchDate) return r.dispatchDate.getTime() <= horizonEnd.getTime();
+      return false;
+    });
+  }
+
+  function renderDispatchBoard() {
+    var host = $('dispatchBoard');
+    var meta = $('boardMeta');
+    if (!host) return;
+    var rows = boardScopeRows(filteredRows(true));
+    var plan = buildLoadPlan(rows);
+    if (meta) {
+      var label = state.boardScope === 'overdue' ? 'Overdue open orders' :
+        (state.boardScope === 'tomorrow' ? 'Due by tomorrow' :
+          (state.boardScope === 'custom' ? 'Due by ' + fmtDateShort(horizonEndForBoard()) :
+            'Due today'));
+      meta.textContent = label + ' · ' + formatNum(rows.length) + ' open orders';
+    }
+    if (!plan.length) {
+      host.innerHTML = '<p class="backlog-empty">No open orders due in this window.</p>';
+      return;
+    }
+    var html = '';
+    plan.forEach(function (rp) {
+      var color = ROUTE_COLOR[rp.route] || '#5e6ad2';
+      var ordered = rp.circles.slice().sort(function (a, b) {
+        return (BUCKET_ORDER[a.bucket] - BUCKET_ORDER[b.bucket]) ||
+          (b.p1 - a.p1) || (b.total - a.total);
+      });
+      ordered.forEach(function (c, i) { c.stop = i + 1; });
+      html += '<div class="db-route">' +
+        '<header class="db-head">' +
+        '<span class="route-chip" style="--rt:' + color + '">' + escapeHtml(rp.route) + '</span>' +
+        '<span class="db-name">' + escapeHtml(routeNames[rp.route] || rp.route) + '</span>' +
+        '<span class="db-dim">' + rp.total + ' orders · ' + rp.p1 + ' open P1</span>' +
+        '</header>';
+      var byBucket = {};
+      rp.circles.forEach(function (c) {
+        if (!byBucket[c.bucket]) byBucket[c.bucket] = [];
+        byBucket[c.bucket].push(c);
+      });
+      var bucketKeys = Object.keys(byBucket).sort(function (a, b) {
+        return BUCKET_ORDER[a] - BUCKET_ORDER[b];
+      });
+      bucketKeys.forEach(function (b) {
+        var w = windowFor(b);
+        var list = byBucket[b];
+        var p1 = list.reduce(function (s, c) { return s + c.p1; }, 0);
+        html += '<div class="db-bucket db-bucket-' + b + '">' +
+          '<div class="db-bucket-head">' +
+          '<span class="db-bucket-name">' + escapeHtml(w.label) + '</span>' +
+          '<span class="db-window">' + (w.loadBy !== '—' ? 'load by ' + escapeHtml(w.loadBy) + ' · dispatch by ' + escapeHtml(w.dispatchBy) : escapeHtml(w.dispatchBy)) + '</span>' +
+          '<span class="db-bucket-meta">' + list.length + ' stop' + (list.length === 1 ? '' : 's') + ' · ' + p1 + ' P1</span>' +
+          '</div><div class="db-stops">';
+        list.forEach(function (c) {
+          var slaCounts = c.rows.reduce(function (acc, r) {
+            var lv = slaTier(r).level;
+            if (lv === 'breached') acc.breached++;
+            else if (lv === 'at-risk') acc.atrisk++;
+            return acc;
+          }, { breached: 0, atrisk: 0 });
+          html += '<div class="db-stop">' +
+            '<span class="db-stop-num">' + c.stop + '</span>' +
+            '<span class="db-stop-name">' + escapeHtml(c.circle) + '</span>' +
+            '<span class="db-stop-meta">' + c.total + ' · ' + c.open + ' open · ' + c.p1 + ' P1' + '</span>' +
+            (slaCounts.breached ? '<span class="sla-chip sla-breached">' + slaCounts.breached + ' breached</span>' : '') +
+            (slaCounts.atrisk ? '<span class="sla-chip sla-at-risk">' + slaCounts.atrisk + ' at risk</span>' : '') +
+            '</div>';
+        });
+        html += '</div></div>';
+      });
+      html += '</div>';
+    });
+    host.innerHTML = html;
+  }
+
+  function horizonEndForBoard() {
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (state.boardScope === 'tomorrow') { today.setDate(today.getDate() + 1); return today; }
+    if (state.boardScope === 'custom') return state.boardDate ? new Date(state.boardDate) : today;
+    return today;
+  }
+
+  function setBoardScope(scope) {
+    state.boardScope = scope;
+    var pills = document.querySelectorAll('#boardScope .pill');
+    for (var i = 0; i < pills.length; i++) {
+      pills[i].classList.toggle('is-active', pills[i].getAttribute('data-board') === scope);
+    }
+    var dateInput = $('boardDate');
+    if (dateInput) {
+      if (scope === 'custom') {
+        dateInput.hidden = false;
+        if (!dateInput.value) dateInput.value = fmtDateShort(horizonEndForBoard());
+      } else {
+        dateInput.hidden = true;
+      }
+    }
+    renderDispatchBoard();
   }
 
   function sheetName(v) {
@@ -2222,6 +2744,8 @@
     renderRouteMap(filteredRows(true));
     renderLoadPlan(rows);
     renderRouteOpsTabs();
+    renderFleetCenter(filteredRows(true));
+    renderDispatchBoard();
     refreshIcons();
   }
 
@@ -2860,6 +3384,31 @@
         if (btn) setMapRoute(btn.getAttribute('data-route-tab'));
       });
     }
+
+    var stopOrderToggle = $('stopOrderToggle');
+    if (stopOrderToggle) {
+      stopOrderToggle.addEventListener('click', function () {
+        setShowStopOrder(!state.showStopOrder);
+      });
+    }
+
+    var exportFleetBtn = $('exportFleetBtn');
+    if (exportFleetBtn) exportFleetBtn.addEventListener('click', exportFleetPlan);
+
+    var boardScope = $('boardScope');
+    if (boardScope) {
+      boardScope.addEventListener('click', function (ev) {
+        var pill = ev.target.closest && ev.target.closest('.pill');
+        if (pill && pill.getAttribute('data-board')) setBoardScope(pill.getAttribute('data-board'));
+      });
+    }
+    var boardDate = $('boardDate');
+    if (boardDate) {
+      boardDate.addEventListener('change', function () {
+        state.boardDate = boardDate.value ? new Date(boardDate.value + 'T00:00:00') : null;
+        renderDispatchBoard();
+      });
+    }
     var loadPlanHost = $('loadPlan');
     if (loadPlanHost) {
       loadPlanHost.addEventListener('click', function (ev) {
@@ -2999,6 +3548,7 @@
     setView(state.view);
 
     await loadRouteMap();
+    await loadFleet();
 
     if (state.autoRefresh) {
       setAutoRefresh(true);
@@ -3044,6 +3594,27 @@
     }
   }
 
+  async function loadFleet() {
+    var data = null;
+    if (window.GHMC_FLEET && window.GHMC_FLEET.fleet) {
+      data = window.GHMC_FLEET;
+    } else {
+      try {
+        var res = await fetch('vehicles.json');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        data = await res.json();
+      } catch (e) {
+        console.warn('Fleet config unavailable (vehicles.json):', e);
+      }
+    }
+    if (!data || !Array.isArray(data.fleet)) return;
+    fleetVehicles = data.fleet;
+    fleetRules = data.rules || FLEET_RULES_DEFAULTS;
+    fleetHub = data.hub || null;
+    renderFleetCenter(filteredRows(true));
+    renderDispatchBoard();
+  }
+
   /* Expose pure core for debugging + tests */
   window.DashboardCore = {
     REQUIRED_COLUMNS: REQUIRED_COLUMNS,
@@ -3083,7 +3654,17 @@
     abcClassify: abcClassify,
     buildLoadPlan: buildLoadPlan,
     timeBucketFromNote: timeBucketFromNote,
-    bucketLabel: bucketLabel
+    bucketLabel: bucketLabel,
+    computeDispatchPlan: computeDispatchPlan,
+    assignRoute: assignRoute,
+    orderedCircles: orderedCircles,
+    adjacentOverflow: adjacentOverflow,
+    fleetWeight: fleetWeight,
+    vehicleCapacity: vehicleCapacity,
+    windowFor: windowFor,
+    earliestBucket: earliestBucket,
+    buildRouteStops: buildRouteStops,
+    boardScopeRows: boardScopeRows
   };
 
   init();

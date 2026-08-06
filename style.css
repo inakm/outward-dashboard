@@ -1395,10 +1395,10 @@ tr.cust-row.is-clickable:focus-visible {
   padding: var(--s-md);
 }
 
-.rg-1 { --rg: #5e6ad2; --rg-soft: rgba(94, 106, 210, 0.10); }
-.rg-2 { --rg: #27a644; --rg-soft: rgba(39, 166, 68, 0.10); }
-.rg-3 { --rg: #b87800; --rg-soft: rgba(245, 166, 35, 0.14); }
-.rg-4 { --rg: #e5484d; --rg-soft: rgba(229, 72, 77, 0.10); }
+.rg-1 { --rg: #27a644; --rg-soft: rgba(39, 166, 68, 0.10); }
+.rg-2 { --rg: #5e6ad2; --rg-soft: rgba(94, 106, 210, 0.10); }
+.rg-3 { --rg: #e5484d; --rg-soft: rgba(229, 72, 77, 0.10); }
+.rg-4 { --rg: #b87800; --rg-soft: rgba(245, 166, 35, 0.14); }
 .rg-5 { --rg: #6b7280; --rg-soft: rgba(138, 143, 152, 0.14); }
 
 .rg-head {
@@ -1898,3 +1898,433 @@ tr.row-sla-at-risk { background: rgba(245, 166, 35, 0.04); }
   .pm-prio { width: 34px; }
   .pm-ack { width: 60px; }
 }
+
+/* ---------- Route Ops: Dispatch Command Center ---------- */
+.command-panel,
+.dispatch-board-panel {
+  margin-top: var(--s-md);
+}
+
+.fleet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--s-sm);
+  padding: var(--s-md) var(--s-lg) 0;
+}
+
+.fleet-card {
+  border: 1px solid var(--hairline);
+  border-top: 3px solid var(--fc, var(--primary));
+  border-radius: var(--r-md);
+  background: var(--surface-1);
+  padding: var(--s-sm) var(--s-md);
+}
+
+.fc-r1 { --fc: #5e6ad2; }
+.fc-r2 { --fc: #27a644; }
+.fc-r3 { --fc: #b87800; }
+.fc-r4 { --fc: #e5484d; }
+.fc-r5 { --fc: #6b7280; }
+
+.fc-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-xs);
+  flex-wrap: wrap;
+}
+
+.fc-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.fc-window {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ink-subtle);
+  white-space: nowrap;
+}
+
+.fc-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-xs);
+  margin: var(--s-sm) 0;
+}
+
+.fc-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.fc-stat-v {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.fc-stat-v.fc-stat-danger {
+  color: var(--p1);
+}
+
+.fc-stat-l {
+  font-size: 10.5px;
+  color: var(--ink-subtle);
+}
+
+.fc-need {
+  color: var(--p1);
+  font-size: 12px;
+}
+
+.fc-pressure {
+  display: flex;
+  align-items: center;
+  gap: var(--s-xs);
+}
+
+.fc-bar {
+  flex: 1;
+  height: 8px;
+  border-radius: var(--r-pill);
+  background: var(--surface-3);
+  overflow: hidden;
+}
+
+.fc-bar-inline {
+  width: 64px;
+  height: 6px;
+  flex: none;
+  display: inline-flex;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+.fc-fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--r-pill);
+  background: var(--primary);
+}
+
+.fc-fill.is-ok { background: var(--ack-done); }
+.fc-fill.is-warm { background: var(--p2); }
+.fc-fill.is-over { background: var(--p1); }
+
+.fc-pct {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 44px;
+  text-align: right;
+}
+
+.fc-pct.is-ok { color: var(--ack-done); }
+.fc-pct.is-warm { color: #a86f00; }
+.fc-pct.is-over { color: var(--p1); }
+
+.fc-pct-inline {
+  font-size: 11px;
+  min-width: 0;
+}
+
+.fleet-overflow {
+  margin: var(--s-md) var(--s-lg) 0;
+  border: 1px solid rgba(245, 166, 35, 0.35);
+  background: rgba(245, 166, 35, 0.05);
+  border-radius: var(--r-md);
+  padding: var(--s-sm) var(--s-md);
+}
+
+.fleet-overflow-title {
+  display: flex;
+  align-items: center;
+  gap: var(--s-xs);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: var(--s-xs);
+}
+
+.fleet-overflow-title i {
+  width: 16px;
+  height: 16px;
+}
+
+.fleet-note {
+  font-weight: 400;
+  color: var(--ink-subtle);
+  font-size: 11.5px;
+}
+
+.fleet-sugg {
+  font-size: 12.5px;
+  color: var(--ink-muted);
+  padding: 4px 0;
+}
+
+.fleet-sugg .route-chip {
+  margin: 0 2px;
+}
+
+.fleet-ok {
+  display: flex;
+  align-items: center;
+  gap: var(--s-xs);
+  margin: var(--s-md) var(--s-lg) 0;
+  font-size: 13px;
+  color: var(--ack-done);
+}
+
+.fleet-ok i {
+  width: 16px;
+  height: 16px;
+}
+
+.fleet-order {
+  min-width: 220px;
+  max-width: 360px;
+}
+
+.fleet-stop {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-muted);
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-pill);
+  padding: 1px 8px;
+  margin: 2px;
+  white-space: nowrap;
+}
+
+.fc-win-sub {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ink-subtle);
+}
+
+.fc-class {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-muted);
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-pill);
+  padding: 0 6px;
+  vertical-align: middle;
+}
+
+.fc-swing {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--semantic-success, #2f6f4f);
+  background: rgba(39, 166, 68, 0.08);
+  border: 1px solid rgba(39, 166, 68, 0.25);
+  border-radius: var(--r-pill);
+  padding: 0 6px;
+  vertical-align: middle;
+}
+
+/* ---------- Route Ops: Day-Ahead Dispatch Board ---------- */
+.dispatch-board-panel .table-actions {
+  flex-wrap: wrap;
+}
+
+#dispatchBoard {
+  padding: 0 var(--s-lg) var(--s-md);
+}
+
+.db-route {
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  background: var(--surface-1);
+  margin: var(--s-md) 0 0;
+  overflow: hidden;
+}
+
+.db-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-sm);
+  padding: var(--s-sm) var(--s-md);
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--hairline);
+  flex-wrap: wrap;
+}
+
+.db-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.db-dim {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-subtle);
+}
+
+.db-bucket {
+  border-bottom: 1px solid var(--hairline);
+  padding: var(--s-sm) var(--s-md);
+}
+
+.db-bucket:last-child {
+  border-bottom: none;
+}
+
+.db-bucket-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-sm);
+  flex-wrap: wrap;
+}
+
+.db-bucket-name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.db-window {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-subtle);
+}
+
+.db-bucket-meta {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-subtle);
+}
+
+.db-stops {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--s-xs);
+  margin-top: var(--s-sm);
+}
+
+.db-stop {
+  display: flex;
+  align-items: center;
+  gap: var(--s-xs);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  padding: 6px 10px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+
+.db-stop-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--on-primary);
+  background: var(--primary);
+  border-radius: var(--r-pill);
+}
+
+.db-stop-name {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.db-stop-meta {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-subtle);
+  white-space: nowrap;
+}
+
+.db-stop .sla-chip {
+  font-size: 10.5px;
+  padding: 0 8px;
+}
+
+/* ---------- Route Ops: map extras ---------- */
+.stop-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ink);
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.stop-badge span {
+  line-height: 1;
+}
+
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-sm);
+  padding: var(--s-sm) var(--s-md) 0;
+}
+
+.map-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-muted);
+}
+
+.map-legend-item i {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--r-pill);
+}
+
+.map-pop-orders {
+  margin-top: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.map-pop-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  padding: 2px 0;
+  white-space: nowrap;
+}
+
+.map-pop-ack {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ink-subtle);
+}
+

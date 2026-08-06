@@ -1,0 +1,131 @@
+/* Bundled fleet config for the dispatch planner.
+   Source of truth: vehicles.json (edit that, then regenerate). */
+window.GHMC_FLEET = {
+  "version": 2,
+  "updated": "2026-08-06",
+  "hub": {
+    "name": "Old Bowenpally",
+    "lat": 17.475537,
+    "lng": 78.479228
+  },
+  "rules": {
+    "efficiency": 0.85,
+    "weight": {
+      "P1": 1.6,
+      "P2": 1.3,
+      "P3": 1.1,
+      "P4": 1.0
+    },
+    "adjacency": {
+      "R1": [
+        "R2",
+        "R3"
+      ],
+      "R2": [
+        "R1",
+        "R4"
+      ],
+      "R3": [
+        "R1",
+        "R4"
+      ],
+      "R4": [
+        "R2",
+        "R3"
+      ]
+    },
+    "opposite": [
+      [
+        "R1",
+        "R4"
+      ],
+      [
+        "R2",
+        "R3"
+      ]
+    ]
+  },
+  "fleet": [
+    {
+      "id": "T1",
+      "primary": "R1",
+      "swing": [
+        "R2"
+      ],
+      "blocked": [
+        "R4",
+        "R3"
+      ],
+      "type": "Tempo",
+      "class": "Heavy",
+      "capacity": 60,
+      "driver": "",
+      "active": true
+    },
+    {
+      "id": "T2",
+      "primary": "R4",
+      "swing": [
+        "R3"
+      ],
+      "blocked": [
+        "R1",
+        "R2"
+      ],
+      "type": "Tempo",
+      "class": "Heavy",
+      "capacity": 60,
+      "driver": "",
+      "active": true
+    },
+    {
+      "id": "B1",
+      "primary": "R1",
+      "swing": [
+        "R2",
+        "R3"
+      ],
+      "blocked": [
+        "R4"
+      ],
+      "type": "Bike",
+      "class": "Light",
+      "capacity": 25,
+      "driver": "",
+      "active": true
+    },
+    {
+      "id": "B2",
+      "primary": "R2",
+      "swing": [
+        "R1",
+        "R4"
+      ],
+      "blocked": [
+        "R3"
+      ],
+      "type": "Bike",
+      "class": "Light",
+      "capacity": 25,
+      "driver": "",
+      "active": true
+    },
+    {
+      "id": "BM3",
+      "primary": "R3",
+      "swing": [
+        "R4",
+        "R1"
+      ],
+      "blocked": [
+        "R2"
+      ],
+      "type": "Bike",
+      "class": "Light",
+      "capacity": 25,
+      "driver": "",
+      "active": true,
+      "note": "Madhapur-only (will only be used from Madhapur)"
+    }
+  ]
+};

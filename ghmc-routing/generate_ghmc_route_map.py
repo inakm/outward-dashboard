@@ -12,28 +12,37 @@ Plus a third file at the repo root:
                             (window.GHMC_ROUTE_MAP = ...) so the dashboard's
                             route map works when opened from the file system.
 
-Routing logic (hub = Old Bowenpally, Secunderabad):
-    R1  North            -> Kukatpally/Quthbullapur northern wings (Alwal,
-                            Jeedimetla, Gajularamaram, Nizampet, Chintal,
-                            Kompally, Dundigal) + Bowenpally hub belt
-    R2  East             -> Kapra/Uppal zone (ECIL, Uppal, Boduppal, Nacharam,
-                            Malkajgiri, Moula Ali, Keesara) + Secunderabad
-                            east wing (Tarnaka, Mettuguda)
-    R3  West             -> Serilingampally zone (Gachibowli, Kondapur,
-                            Madhapur, Miyapur, Chandanagar, Hafeezpet) +
-                            Kukatpally southern wings (Moosapet, Kukatpally,
-                            Allwyn) + Ameerpet + west Khairatabad
-                            (Jubilee Hills, Yousufguda, Borabanda)
-    R4  South            -> Charminar / Old City (Falaknuma, Bahadurpura,
-                            Chandrayangutta, Yakutpura, Charminar) +
-                            Khairatabad (Mehdipatnam, Masab Tank) +
-                            Golconda/Rajendranagar + LB Nagar zone (Nagole,
-                            Saroornagar, LB Nagar, Hayathnagar) +
+Routing logic uses the Adjacent-Route Overlap Strategy from the Old Bowenpally
+hub (Secunderabad): four diagonal quadrants split on the hub's lat/lng lines,
+plus a separate outside-GHMC route. Vehicles may swing only into adjacent
+quadrants (never the opposite one) so a single vehicle can cover 1-2 routes
+without wasteful cross-city runs.
+    R1  North-East (NE)  -> Secunderabad hub belt (Bowenpally) + Alwal/Kompally/
+                            Dundigal + Kapra/Keesara north-east flank
+    R2  North-West (NW)  -> Quthbullapur north-west wings (Jeedimetla,
+                            Gajularamaram, Nizampet, Chintal) + Kukatpally
+                            north-west (Kukatpally, Miyapur, Allwyn) +
+                            NW fringe (Patancheru, Ameenpur)
+    R3  South-East (SE)  -> Kapra/Uppal south-east (Uppal, Boduppal, Nacharam,
+                            Malkajgiri, Moula Ali, Tarnaka, Mettuguda) +
                             Secunderabad south wing (Kavadiguda, Musheerabad,
-                            Amberpet)
+                            Amberpet) + Charminar south-east (Chandrayangutta,
+                            Yakutpura, Santoshnagar, Malakpet, Moosarambagh) +
+                            LB Nagar zone (Nagole, Saroornagar, LB Nagar,
+                            Hayathnagar)
+    R4  South-West (SW)  -> Serilingampally south-west (Serilingampally,
+                            Madhapur, Narsingi) + Moosapet + Ameerpet +
+                            west Khairatabad (Jubilee Hills, Yousufguda,
+                            Borabanda) + Old City west (Falaknuma, Bahadurpura,
+                            Jangammet, Charminar) + Golconda/Rajendranagar +
+                            central Khairatabad (Khairatabad, Mehdipatnam,
+                            Masab Tank)
     R5  Outside GHMC     -> outer non-GHMC boundary regions (Sangareddy,
                             Medchal rural, Shamshabad, Ghatkesar,
                             Yadadri Bhuvanagiri)
+
+Adjacency (swing allowed) is diagonal: NE<->NW, NE<->SE, SW<->NW, SW<->SE.
+Opposite (blocked) pairs: NE<->SW and NW<->SE.
 
 GHMC circle/ward references follow the 2026 GHMC re-organisation
 (12 zones / 60 circles / 300 wards, G.O.Ms.No.292 dt. 24-12-2025).
@@ -60,7 +69,7 @@ from openpyxl.utils import get_column_letter
 
 DATA = {
     "R1": {
-        "name": "North Route",
+        "name": "North-East (NE) Route",
         "zones": [
             {
                 "zone": "Secunderabad Zone - Hub Belt",
@@ -79,11 +88,11 @@ DATA = {
                 ],
             },
             {
-                "zone": "Kukatpally/Quthbullapur Zone - Northern Wings",
+                "zone": "Kukatpally/Quthbullapur Zone - North-East Wing",
                 "circles": [
                     (
                         "Alwal",
-                        "North wing on NH44 flank; batch with Quthbullapur & Gajularamaram; morning dispatch.",
+                        "North-east wing on NH44 flank; batch with Quthbullapur belt; morning dispatch.",
                         [
                             (190, "Turkapally"),
                             (191, "Macha Bollaram"),
@@ -93,6 +102,62 @@ DATA = {
                             (195, "Kanajiguda"),
                         ],
                     ),
+                    (
+                        "Kompally",
+                        "Quthbullapur north-east (Kompally, Doolapally); gated layouts; morning dispatch with Quthbullapur belt.",
+                        [
+                            (288, "Kompally"),
+                            (289, "Doolapally"),
+                            (290, "Subhash Nagar"),
+                            (292, "Saibaba Nagar"),
+                        ],
+                    ),
+                    (
+                        "Dundigal",
+                        "Quthbullapur far north-east (Dundigal, Bowrampet); drone/air-force flank; truck or LCV; morning only.",
+                        [
+                            (294, "Bahadurpally"),
+                            (295, "Bowrampet"),
+                            (296, "Dundigal"),
+                        ],
+                    ),
+                ],
+            },
+            {
+                "zone": "Kapra Zone - North-East Belt",
+                "circles": [
+                    (
+                        "Kapra",
+                        "ECIL & A.S. Rao Nagar belt; security gate protocols at ECIL; 10 AM-3 PM window.",
+                        [
+                            (13, "Vampuguda"),
+                            (14, "Kapra"),
+                            (15, "Dr AS Rao Nagar"),
+                            (16, "Kushaiguda"),
+                            (17, "Cherlapally"),
+                        ],
+                    ),
+                    (
+                        "Keesara",
+                        "North-east fringe (Keesara, Dammaiguda, Yapral); one loop via Nagaram road; morning dispatch.",
+                        [
+                            (1, "Keesara"),
+                            (2, "Chandrapuri Colony"),
+                            (3, "Jawahar Nagar"),
+                            (4, "Dammaiguda"),
+                            (189, "Yapral"),
+                        ],
+                    ),
+                ],
+            },
+        ],
+    },
+    "R2": {
+        "name": "North-West (NW) Route",
+        "zones": [
+            {
+                "zone": "Kukatpally/Quthbullapur Zone - North-West Wings",
+                "circles": [
                     (
                         "Jeedimetla",
                         "IDA Jeedimetla industrial belt; truck dock 10 AM-4 PM; gate passes required.",
@@ -115,7 +180,7 @@ DATA = {
                     ),
                     (
                         "Nizampet",
-                        "Residential north wing (Bachupally); off-peak after 10 AM; combine Jeedimetla return.",
+                        "Residential north-west wing (Bachupally); off-peak after 10 AM; combine Jeedimetla return.",
                         [
                             (273, "Nizampet"),
                             (274, "Bachupally"),
@@ -134,46 +199,83 @@ DATA = {
                             (283, "Giri Nagar"),
                         ],
                     ),
+                ],
+            },
+            {
+                "zone": "Kukatpally Zone - North-West Wing",
+                "circles": [
                     (
-                        "Kompally",
-                        "Quthbullapur north (Kompally, Doolapally); gated layouts; morning dispatch with Quthbullapur belt.",
+                        "Kukatpally",
+                        "KPHB high-density residential; small vehicles; 6-10 AM window.",
                         [
-                            (288, "Kompally"),
-                            (289, "Doolapally"),
-                            (290, "Subhash Nagar"),
-                            (292, "Saibaba Nagar"),
+                            (249, "Kukatpally"),
+                            (250, "Balaji Nagar"),
+                            (251, "Vasanth Nagar"),
+                            (252, "KPHB Colony"),
+                            (253, "Kaithalapur"),
+                            (254, "Gayatri Nagar"),
                         ],
                     ),
                     (
-                        "Dundigal",
-                        "Quthbullapur far north (Dundigal, Bowrampet); drone/air-force flank; truck or LCV; morning only.",
+                        "Miyapur",
+                        "Chandanagar/Hafeezpet/Miyapur on NH65 corridor; combine Kukatpally south; mid-day.",
                         [
-                            (294, "Bahadurpally"),
-                            (295, "Bowrampet"),
-                            (296, "Dundigal"),
+                            (236, "Hafeezpet"),
+                            (237, "Madeenaguda"),
+                            (238, "Chanda Nagar"),
+                            (239, "Deepthisri Nagar"),
+                            (240, "Miyapur"),
+                            (241, "Maktha Mahabubpet"),
+                        ],
+                    ),
+                    (
+                        "Allwyn Colony",
+                        "Kukatpally south residential enclave; narrow lanes; 2W last mile; combine Kukatpally.",
+                        [
+                            (243, "Hyder Nagar"),
+                            (244, "Bhagya Nagar Colony"),
+                            (245, "Shamshiguda"),
+                            (246, "Allwyn Colony"),
+                            (247, "Vivekananda Nagar Colony"),
+                            (248, "Venkateshwara Nagar"),
+                        ],
+                    ),
+                ],
+            },
+            {
+                "zone": "Serilingampally Zone - North-West Fringe",
+                "circles": [
+                    (
+                        "Patancheru",
+                        "West fringe on NH65 (Tellapur, Patancheruvu); industrial belt; truck-friendly; plan toll.",
+                        [
+                            (263, "Tellapur"),
+                            (265, "Muthangi"),
+                            (266, "Patancheruvu"),
+                            (267, "JP Colony"),
+                        ],
+                    ),
+                    (
+                        "Ameenpur",
+                        "West fringe (RC Puram, Beeramguda, Ameenpur); NH65 corridor; combine Patancheru; mid-day.",
+                        [
+                            (268, "Ramachandrapuram (RC Puram)"),
+                            (269, "Bharathi Nagar"),
+                            (270, "Beeramguda"),
+                            (271, "Ameenpur"),
+                            (272, "Bollaram"),
                         ],
                     ),
                 ],
             },
         ],
     },
-    "R2": {
-        "name": "East Route",
+    "R3": {
+        "name": "South-East (SE) Route",
         "zones": [
             {
-                "zone": "Kapra/Uppal Zone (East)",
+                "zone": "Kapra/Uppal Zone - South-East Belt",
                 "circles": [
-                    (
-                        "Kapra",
-                        "ECIL & A.S. Rao Nagar belt; security gate protocols at ECIL; 10 AM-3 PM window.",
-                        [
-                            (13, "Vampuguda"),
-                            (14, "Kapra"),
-                            (15, "Dr AS Rao Nagar"),
-                            (16, "Kushaiguda"),
-                            (17, "Cherlapally"),
-                        ],
-                    ),
                     (
                         "Uppal",
                         "IT/industrial mix; IDA Uppal truck gates open till 4 PM; combine Boduppal.",
@@ -229,17 +331,6 @@ DATA = {
                         ],
                     ),
                     (
-                        "Keesara",
-                        "North-east fringe (Keesara, Dammaiguda, Yapral); one loop via Nagaram road; morning dispatch.",
-                        [
-                            (1, "Keesara"),
-                            (2, "Chandrapuri Colony"),
-                            (3, "Jawahar Nagar"),
-                            (4, "Dammaiguda"),
-                            (189, "Yapral"),
-                        ],
-                    ),
-                    (
                         "Tarnaka",
                         "Defence-research corridor (DRDO/ECIL flank); gate-entry paperwork; allow 15-min dwell per stop.",
                         [
@@ -261,13 +352,168 @@ DATA = {
                     ),
                 ],
             },
+            {
+                "zone": "Secunderabad Zone - South-East Wing",
+                "circles": [
+                    (
+                        "Kavadiguda",
+                        "Secunderabad core incl. Cantonment links; avoid Parade Grounds & Clock Tower rush 5-7 PM; LCV/2W only.",
+                        [
+                            (165, "Gandhi Nagar"),
+                            (166, "Kavadiguda"),
+                            (167, "Bakaram"),
+                            (168, "Bholakpur"),
+                            (197, "Padmarao Nagar"),
+                            (198, "Bansilalpet"),
+                            (199, "Ramgopalpet"),
+                        ],
+                    ),
+                    (
+                        "Musheerabad",
+                        "Dense residential + market belt; early 6-10 AM window; pair with Amberpet run.",
+                        [
+                            (163, "Adikmet"),
+                            (164, "Bagh Lingampally"),
+                            (169, "Musheerabad"),
+                            (170, "Ramnagar"),
+                            (171, "Bapuji Nagar"),
+                        ],
+                    ),
+                    (
+                        "Amberpet",
+                        "OU/university belt + market; schedule after 11 AM; combine Kavadiguda/Musheerabad belt.",
+                        [
+                            (155, "Barkatpura"),
+                            (156, "Kachiguda"),
+                            (157, "Golnaka"),
+                            (158, "Patel Nagar"),
+                            (159, "Amberpet"),
+                            (160, "Bagh Amberpet"),
+                            (161, "Tilak Nagar"),
+                            (162, "Nallakunta"),
+                        ],
+                    ),
+                ],
+            },
+            {
+                "zone": "Charminar Zone - South-East Belt",
+                "circles": [
+                    (
+                        "Chandrayangutta",
+                        "Barkas belt; steep lanes; small vehicles; morning window.",
+                        [
+                            (68, "Bandlaguda"),
+                            (69, "Noori Nagar"),
+                            (70, "Barkas"),
+                            (71, "Kanchanbagh"),
+                            (72, "Chandrayangutta"),
+                        ],
+                    ),
+                    (
+                        "Yakutpura",
+                        "Charminar market spill; pedestrian-heavy; early morning drops; hand-cart final mile.",
+                        [
+                            (78, "Gowlipura"),
+                            (79, "Talab Chanchalam"),
+                            (80, "Yakutpura"),
+                            (81, "Dabeerpura"),
+                            (82, "Rein Bazar"),
+                            (83, "Madannapet"),
+                        ],
+                    ),
+                    (
+                        "Santoshnagar",
+                        "Mixed density mid-commercial; schedule 10 AM-1 PM.",
+                        [
+                            (84, "Bhanu Nagar"),
+                            (85, "Santosh Nagar"),
+                            (86, "IS Sadan"),
+                            (87, "Saraswati Nagar"),
+                        ],
+                    ),
+                    (
+                        "Malakpet",
+                        "Commercial mid-belt; combine Moosarambagh; post-11 AM.",
+                        [
+                            (88, "Saidabad"),
+                            (89, "Asmangadh"),
+                            (93, "Akberbagh"),
+                            (94, "Chawani"),
+                        ],
+                    ),
+                    (
+                        "Moosarambagh",
+                        "Ring-road access; quick drops; combine Malakpet.",
+                        [
+                            (90, "Moosarambagh"),
+                            (91, "Old Malakpet"),
+                            (92, "MCH Colony"),
+                            (95, "Kala Dera"),
+                            (96, "Azampura"),
+                        ],
+                    ),
+                ],
+            },
+            {
+                "zone": "L.B. Nagar Zone (South-East)",
+                "circles": [
+                    (
+                        "Nagole",
+                        "South-east gateway; start after 9 AM; combine Saroornagar and LB Nagar.",
+                        [
+                            (29, "Nagole"),
+                            (45, "Mansoorabad"),
+                            (46, "GSI"),
+                            (47, "Lecturers Colony"),
+                            (51, "Kuntloor"),
+                            (52, "Pedda Amberpet"),
+                        ],
+                    ),
+                    (
+                        "Saroornagar",
+                        "High-density residential/market; avoid 9-11 AM; schedule 11 AM onward.",
+                        [
+                            (30, "Kothapet"),
+                            (31, "Chaitanyapuri"),
+                            (32, "Gaddiannaram"),
+                            (33, "Saroornagar"),
+                            (34, "Doctors Colony"),
+                            (35, "RK Puram"),
+                            (36, "NTR Nagar"),
+                        ],
+                    ),
+                    (
+                        "L.B. Nagar",
+                        "Busy commercial hub; split into two trips; afternoon + evening runs.",
+                        [
+                            (37, "Lingojiguda"),
+                            (38, "Champapet"),
+                            (39, "Kharmanghat"),
+                            (40, "Bairamalguda"),
+                            (41, "Hastinapuram"),
+                        ],
+                    ),
+                    (
+                        "Hayathnagar",
+                        "Fringe run up to Vanasthalipuram; one round trip per day; return via LB Nagar ring.",
+                        [
+                            (42, "BN Reddy Nagar"),
+                            (43, "Vanasthalipuram"),
+                            (44, "Chintalkunta"),
+                            (48, "High Court Colony"),
+                            (49, "Sahebnagar"),
+                            (50, "Hayathnagar"),
+                        ],
+                    ),
+                ],
+            },
         ],
     },
-    "R3": {
-        "name": "West Route",
+    "R4": {
+        "name": "South-West (SW) Route",
         "zones": [
             {
-                "zone": "Serilingampally Zone",
+                "zone": "Serilingampally Zone - South-West Belt",
                 "circles": [
                     (
                         "Serilingampally",
@@ -294,18 +540,6 @@ DATA = {
                         ],
                     ),
                     (
-                        "Miyapur",
-                        "Chandanagar/Hafeezpet/Miyapur on NH65 corridor; combine Kukatpally south; mid-day.",
-                        [
-                            (236, "Hafeezpet"),
-                            (237, "Madeenaguda"),
-                            (238, "Chanda Nagar"),
-                            (239, "Deepthisri Nagar"),
-                            (240, "Miyapur"),
-                            (241, "Maktha Mahabubpet"),
-                        ],
-                    ),
-                    (
                         "Narsingi",
                         "ORR new corridor; wide roads; low stop density; morning loop.",
                         [
@@ -316,44 +550,11 @@ DATA = {
                             (128, "Neknampur"),
                         ],
                     ),
-                    (
-                        "Patancheru",
-                        "West fringe on NH65 (Tellapur, Patancheruvu); industrial belt; truck-friendly; plan toll.",
-                        [
-                            (263, "Tellapur"),
-                            (265, "Muthangi"),
-                            (266, "Patancheruvu"),
-                            (267, "JP Colony"),
-                        ],
-                    ),
-                    (
-                        "Ameenpur",
-                        "West fringe (RC Puram, Beeramguda, Ameenpur); NH65 corridor; combine Patancheru; mid-day.",
-                        [
-                            (268, "Ramachandrapuram (RC Puram)"),
-                            (269, "Bharathi Nagar"),
-                            (270, "Beeramguda"),
-                            (271, "Ameenpur"),
-                            (272, "Bollaram"),
-                        ],
-                    ),
                 ],
             },
             {
-                "zone": "Kukatpally Zone - Southern Wings",
+                "zone": "Kukatpally Zone - South-West Wing",
                 "circles": [
-                    (
-                        "Kukatpally",
-                        "KPHB high-density residential; small vehicles; 6-10 AM window.",
-                        [
-                            (249, "Kukatpally"),
-                            (250, "Balaji Nagar"),
-                            (251, "Vasanth Nagar"),
-                            (252, "KPHB Colony"),
-                            (253, "Kaithalapur"),
-                            (254, "Gayatri Nagar"),
-                        ],
-                    ),
                     (
                         "Moosapet",
                         "Balanagar industrial + residential mix; truck-friendly mid-day; combine Kukatpally.",
@@ -363,18 +564,6 @@ DATA = {
                             (257, "Moosapet"),
                             (258, "Prashanth Nagar"),
                             (259, "Balanagar"),
-                        ],
-                    ),
-                    (
-                        "Allwyn Colony",
-                        "Kukatpally south residential enclave; narrow lanes; 2W last mile; combine Kukatpally.",
-                        [
-                            (243, "Hyder Nagar"),
-                            (244, "Bhagya Nagar Colony"),
-                            (245, "Shamshiguda"),
-                            (246, "Allwyn Colony"),
-                            (247, "Vivekananda Nagar Colony"),
-                            (248, "Venkateshwara Nagar"),
                         ],
                     ),
                 ],
@@ -432,13 +621,8 @@ DATA = {
                     ),
                 ],
             },
-        ],
-    },
-    "R4": {
-        "name": "South Route",
-        "zones": [
             {
-                "zone": "Charminar Zone / Old City",
+                "zone": "Charminar Zone - Old City (South-West)",
                 "circles": [
                     (
                         "Falaknuma",
@@ -462,29 +646,6 @@ DATA = {
                         ],
                     ),
                     (
-                        "Chandrayangutta",
-                        "Barkas belt; steep lanes; small vehicles; morning window.",
-                        [
-                            (68, "Bandlaguda"),
-                            (69, "Noori Nagar"),
-                            (70, "Barkas"),
-                            (71, "Kanchanbagh"),
-                            (72, "Chandrayangutta"),
-                        ],
-                    ),
-                    (
-                        "Yakutpura",
-                        "Charminar market spill; pedestrian-heavy; early morning drops; hand-cart final mile.",
-                        [
-                            (78, "Gowlipura"),
-                            (79, "Talab Chanchalam"),
-                            (80, "Yakutpura"),
-                            (81, "Dabeerpura"),
-                            (82, "Rein Bazar"),
-                            (83, "Madannapet"),
-                        ],
-                    ),
-                    (
                         "Jangammet",
                         "Old City fringe; combine Yakutpura; early slots only.",
                         [
@@ -493,16 +654,6 @@ DATA = {
                             (75, "Jangammet"),
                             (76, "Phool Bagh"),
                             (77, "Quadri Chaman"),
-                        ],
-                    ),
-                    (
-                        "Santoshnagar",
-                        "Mixed density mid-commercial; schedule 10 AM-1 PM.",
-                        [
-                            (84, "Bhanu Nagar"),
-                            (85, "Santosh Nagar"),
-                            (86, "IS Sadan"),
-                            (87, "Saraswati Nagar"),
                         ],
                     ),
                     (
@@ -517,31 +668,10 @@ DATA = {
                             (102, "Purana Pul"),
                         ],
                     ),
-                    (
-                        "Malakpet",
-                        "Commercial mid-belt; combine Moosarambagh; post-11 AM.",
-                        [
-                            (88, "Saidabad"),
-                            (89, "Asmangadh"),
-                            (93, "Akberbagh"),
-                            (94, "Chawani"),
-                        ],
-                    ),
-                    (
-                        "Moosarambagh",
-                        "Ring-road access; quick drops; combine Malakpet.",
-                        [
-                            (90, "Moosarambagh"),
-                            (91, "Old Malakpet"),
-                            (92, "MCH Colony"),
-                            (95, "Kala Dera"),
-                            (96, "Azampura"),
-                        ],
-                    ),
                 ],
             },
             {
-                "zone": "Golconda/Rajendranagar Zone - Central-West Belt",
+                "zone": "Golconda/Rajendranagar Zone - South-West Belt",
                 "circles": [
                     (
                         "Goshamahal",
@@ -604,7 +734,7 @@ DATA = {
                 ],
             },
             {
-                "zone": "Khairatabad Zone",
+                "zone": "Khairatabad Zone - Central-South Belt",
                 "circles": [
                     (
                         "Khairatabad",
@@ -636,102 +766,6 @@ DATA = {
                             (144, "Ahmed Nagar"),
                             (145, "Shanti Nagar"),
                             (147, "Mallepally"),
-                        ],
-                    ),
-                ],
-            },
-            {
-                "zone": "Secunderabad Zone - South Wing",
-                "circles": [
-                    (
-                        "Kavadiguda",
-                        "Secunderabad core incl. Cantonment links; avoid Parade Grounds & Clock Tower rush 5-7 PM; LCV/2W only.",
-                        [
-                            (165, "Gandhi Nagar"),
-                            (166, "Kavadiguda"),
-                            (167, "Bakaram"),
-                            (168, "Bholakpur"),
-                            (197, "Padmarao Nagar"),
-                            (198, "Bansilalpet"),
-                            (199, "Ramgopalpet"),
-                        ],
-                    ),
-                    (
-                        "Musheerabad",
-                        "Dense residential + market belt; early 6-10 AM window; pair with Amberpet run.",
-                        [
-                            (163, "Adikmet"),
-                            (164, "Bagh Lingampally"),
-                            (169, "Musheerabad"),
-                            (170, "Ramnagar"),
-                            (171, "Bapuji Nagar"),
-                        ],
-                    ),
-                    (
-                        "Amberpet",
-                        "OU/university belt + market; schedule after 11 AM; combine Kavadiguda/Musheerabad belt.",
-                        [
-                            (155, "Barkatpura"),
-                            (156, "Kachiguda"),
-                            (157, "Golnaka"),
-                            (158, "Patel Nagar"),
-                            (159, "Amberpet"),
-                            (160, "Bagh Amberpet"),
-                            (161, "Tilak Nagar"),
-                            (162, "Nallakunta"),
-                        ],
-                    ),
-                ],
-            },
-            {
-                "zone": "L.B. Nagar Zone (South-East)",
-                "circles": [
-                    (
-                        "Nagole",
-                        "South-east gateway; start after 9 AM; combine Saroornagar and LB Nagar.",
-                        [
-                            (29, "Nagole"),
-                            (45, "Mansoorabad"),
-                            (46, "GSI"),
-                            (47, "Lecturers Colony"),
-                            (51, "Kuntloor"),
-                            (52, "Pedda Amberpet"),
-                        ],
-                    ),
-                    (
-                        "Saroornagar",
-                        "High-density residential/market; avoid 9-11 AM; schedule 11 AM onward.",
-                        [
-                            (30, "Kothapet"),
-                            (31, "Chaitanyapuri"),
-                            (32, "Gaddiannaram"),
-                            (33, "Saroornagar"),
-                            (34, "Doctors Colony"),
-                            (35, "RK Puram"),
-                            (36, "NTR Nagar"),
-                        ],
-                    ),
-                    (
-                        "L.B. Nagar",
-                        "Busy commercial hub; split into two trips; afternoon + evening runs.",
-                        [
-                            (37, "Lingojiguda"),
-                            (38, "Champapet"),
-                            (39, "Kharmanghat"),
-                            (40, "Bairamalguda"),
-                            (41, "Hastinapuram"),
-                        ],
-                    ),
-                    (
-                        "Hayathnagar",
-                        "Fringe run up to Vanasthalipuram; one round trip per day; return via LB Nagar ring.",
-                        [
-                            (42, "BN Reddy Nagar"),
-                            (43, "Vanasthalipuram"),
-                            (44, "Chintalkunta"),
-                            (48, "High Court Colony"),
-                            (49, "Sahebnagar"),
-                            (50, "Hayathnagar"),
                         ],
                     ),
                 ],
@@ -904,161 +938,190 @@ COLUMNS = [
 #                     plus the exact spellings used in the live outward sheet
 #                     (including typos/alt spellings) so raw data joins cleanly.
 LOCALITY_GROUPS = {
-    # ---- R1 North ----------------------------------------------------------
+    # ---- R1 North-East (NE) -------------------------------------------------
     ("R1", "Bowenpally"): (
         "Hub-adjacent (Bowenpally); first sort batch; dispatch before 08:30 AM.",
         ["Old Bowenpally", "Hasmathpet", "Bowenpally Crossroads", "Bolarum"],
     ),
     ("R1", "Alwal"): (
-        "North wing on NH44 flank; batch with Quthbullapur belt; morning dispatch.",
+        "North-east wing on NH44 flank; batch with Quthbullapur belt; morning dispatch.",
         ["Old Alwal", "Rathifile", "Temple Alwal", "Cantonment Alwal"],
     ),
-    ("R1", "Jeedimetla"): (
-        "IDA Jeedimetla industrial belt; truck dock 10 AM-4 PM; gate passes required.",
-        ["IDA Jeedimetla", "Pet Basheerabad", "Suraram Colony"],
-    ),
-    ("R1", "Gajularamaram"): (
-        "Pharma/industrial corridor; gate-based drop-offs; combine Alwal loop.",
-        ["IDA Gajularamaram", "Mahadevpuram", "Shapur Nagar"],
-    ),
-    ("R1", "Nizampet"): (
-        "Residential north wing (Bachupally); off-peak after 10 AM.",
-        ["Bachupally", "Pragathi Nagar", "Kukatpally Housing Board fringe"],
-    ),
     ("R1", "Kompally"): (
-        "Quthbullapur north; gated layouts; morning dispatch.",
+        "Quthbullapur north-east; gated layouts; morning dispatch.",
         ["Kompally (Ecopark)", "Doolapally", "Almasguda", "Bachupally (north)"],
     ),
-    ("R1", "Chintal"): (
-        "Quthbullapur industrial north-west; truck-friendly; combine Jeedimetla.",
-        ["Chintal", "Jagathgiri Gutta", "Giri Nagar"],
+    ("R1", "Dundigal"): (
+        "Quthbullapur far north-east; drone/air-force flank; morning only.",
+        ["Dundigal", "Bowrampet", "Bahadurpally"],
     ),
-    # ---- R2 East -----------------------------------------------------------
-    ("R4", "Saroornagar"): (
-        "High-density residential/market; avoid 9-11 AM; schedule 11 AM onward.",
-        ["Dilsukhnagar", "Kothapet", "Chaitanyapuri", "Gaddiannaram",
-         "P&T Colony", "Saroornagar Lake", "Laxminagar", "Alkapuri Colony"],
-    ),
-    ("R4", "L.B. Nagar"): (
-        "Busy commercial hub; split into two trips; afternoon + evening runs.",
-        ["Lingojiguda", "Champapet", "Kharmanghat", "Bairamalguda",
-         "Hastinapuram", "Buddha Nagar"],
-    ),
-    ("R4", "Nagole"): (
-        "South-east gateway; start after 9 AM; combine Saroornagar/LB Nagar.",
-        ["Mansoorabad", "Kuntloor", "Pedda Amberpet", "GSI Colony"],
-    ),
-    ("R4", "Hayathnagar"): (
-        "Fringe up to Vanasthalipuram; one round trip/day; return via LB Nagar ring.",
-        ["Vanasthalipuram", "Sahebnagar", "BN Reddy Nagar", "Nagarjuna Sagar Road stretch"],
-    ),
-    ("R2", "Kapra"): (
+    ("R1", "Kapra"): (
         "ECIL & A.S. Rao Nagar belt; security gate protocols; 10 AM-3 PM.",
         ["ECIL X Roads", "A.S. Rao Nagar", "Kushaiguda", "Cherlapally",
          "Vampuguda", "Dr. A.S. Rao Nagar"],
     ),
-    ("R2", "Uppal"): (
-        "IT/industrial mix; IDA Uppal truck gates till 4 PM; combine Boduppal.",
-        ["IDA Uppal", "Habsiguda", "Ramanthapur", "Chilkanagar", "Uppal Depot"],
-    ),
-    ("R2", "Boduppal"): (
-        "Fast-growing corridor; wide roads; multiple quick stops.",
-        ["Medipally", "Peerzadiguda", "Chengicherla", "Boduppal X Road"],
-    ),
-    ("R2", "Nacharam"): (
-        "IDA Nacharam industrial; ORR feeder restrictions 6-9 PM; mid-day runs.",
-        ["IDA Nacharam", "Mallapur", "HMT Nagar", "Shakthi Sai Nagar"],
-    ),
-    ("R2", "Malkajgiri"): (
-        "Railway colony + gated societies; combine Kapra/Nacharam loop; early start.",
-        ["Safilguda", "Old Malkajgiri", "Malkajgiri Railway Colony", "Anandbagh"],
-    ),
-    ("R2", "Moula Ali"): (
-        "East-central (Neredmet, Moula Ali); combine Malkajgiri/Sainikpuri loop.",
-        ["Neredmet", "Sainikpuri", "Vinayak Nagar", "Kakatiya Nagar", "Balram Nagar"],
-    ),
-    ("R2", "Keesara"): (
+    ("R1", "Keesara"): (
         "North-east fringe via Nagaram road; one morning loop.",
         ["Dammaiguda", "Yapral", "Nagaram", "Chandrapuri Colony", "Keesara Gutta"],
     ),
-    ("R2", "Tarnaka"): (
-        "Defence-research corridor; gate-entry paperwork; 15-min dwell per stop.",
-        ["Osmania University", "Lalapet", "AOC Camp", "Golconda X Roads (Tarnaka)"],
+    # ---- R2 North-West (NW) -------------------------------------------------
+    ("R2", "Jeedimetla"): (
+        "IDA Jeedimetla industrial belt; truck dock 10 AM-4 PM; gate passes required.",
+        ["IDA Jeedimetla", "Pet Basheerabad", "Suraram Colony"],
     ),
-    ("R2", "Mettuguda"): (
-        "Railway-colony lanes; narrow roads; 2W/LCV only; morning slots.",
-        ["Lalaguda", "Old Tarnaka", "Metro JBS flank"],
+    ("R2", "Gajularamaram"): (
+        "Pharma/industrial corridor; gate-based drop-offs; combine Alwal loop.",
+        ["IDA Gajularamaram", "Mahadevpuram", "Shapur Nagar"],
     ),
-    # ---- R3 West -----------------------------------------------------------
-    ("R3", "Serilingampally"): (
-        "ORR tech belt (Gachibowli-Kondapur); deliver 11 AM-4 PM.",
-        ["Raidurg", "Nanakramguda", "Gopanpally", "Kothaguda", "Nallagandla",
-         "Financial District", "Inorbit Mall", "The HUB", "Masjid Banda"],
+    ("R2", "Nizampet"): (
+        "Residential north-west wing (Bachupally); off-peak after 10 AM.",
+        ["Bachupally", "Pragathi Nagar", "Kukatpally Housing Board fringe"],
     ),
-    ("R3", "Madhapur"): (
-        "HITEC City core; parking premium; last-mile on 2W; after 11 AM.",
-        ["Cyber Towers", "Durgam Cheruvu", "Jubilee Enclave", "Izzath Nagar",
-         "Matrusri Nagar", "Mayuri Nagar", "Mindspace"],
+    ("R2", "Chintal"): (
+        "Quthbullapur industrial north-west; truck-friendly; combine Jeedimetla.",
+        ["Chintal", "Jagathgiri Gutta", "Giri Nagar"],
     ),
-    ("R3", "Miyapur"): (
-        "Chandanagar/Hafeezpet/Miyapur on NH65; combine Kukatpally south; mid-day.",
-        ["Chandanagar", "Madeenaguda", "Deepthisri Nagar", "Old Hafeezpet",
-         "Maktha Mahabubpet"],
-    ),
-    ("R3", "Narsingi"): (
-        "ORR new corridor; wide roads; low stop density; morning loop.",
-        ["Kokapet", "Manikonda", "Gandipet", "Neknampur", "Narsingi (ORR)"],
-    ),
-    ("R3", "Patancheru"): (
-        "West fringe on NH65; industrial belt; truck-friendly; plan toll.",
-        ["ICRISAT", "IDA Patancheru", "Tellapur", "Muthangi", "JP Colony"],
-    ),
-    ("R3", "Ameenpur"): (
-        "West fringe (RC Puram, Beeramguda); NH65 corridor; mid-day.",
-        ["RC Puram", "Beeramguda", "Bharathi Nagar", "Bollaram"],
-    ),
-    ("R3", "Kukatpally"): (
+    ("R2", "Kukatpally"): (
         "KPHB high-density residential; small vehicles; 6-10 AM window.",
         ["Old Kukatpally", "Kukatpally Housing Board", "KPHB Colony",
          "Balaji Nagar", "Vasanth Nagar", "Kaithalapur", "Gayatri Nagar"],
     ),
-    ("R3", "Moosapet"): (
-        "Balanagar industrial + residential; truck-friendly mid-day.",
-        ["IDA Balanagar", "Ferozguda", "Moti Nagar", "Prashanth Nagar", "Allapur"],
+    ("R2", "Miyapur"): (
+        "Chandanagar/Hafeezpet/Miyapur on NH65; combine Kukatpally south; mid-day.",
+        ["Chandanagar", "Madeenaguda", "Deepthisri Nagar", "Old Hafeezpet",
+         "Maktha Mahabubpet"],
     ),
-    ("R3", "Allwyn Colony"): (
+    ("R2", "Allwyn Colony"): (
         "Kukatpally south residential; narrow lanes; 2W last mile.",
         ["Hyder Nagar", "Shamshiguda", "Bhagya Nagar Colony", "Vivekananda Nagar Colony"],
     ),
-    ("R3", "Ameerpet"): (
+    ("R2", "Patancheru"): (
+        "West fringe on NH65; industrial belt; truck-friendly; plan toll.",
+        ["ICRISAT", "IDA Patancheru", "Tellapur", "Muthangi", "JP Colony"],
+    ),
+    ("R2", "Ameenpur"): (
+        "West fringe (RC Puram, Beeramguda); NH65 corridor; mid-day.",
+        ["RC Puram", "Beeramguda", "Bharathi Nagar", "Bollaram"],
+    ),
+    # ---- R3 South-East (SE) -------------------------------------------------
+    ("R3", "Uppal"): (
+        "IT/industrial mix; IDA Uppal truck gates till 4 PM; combine Boduppal.",
+        ["IDA Uppal", "Habsiguda", "Ramanthapur", "Chilkanagar", "Uppal Depot"],
+    ),
+    ("R3", "Boduppal"): (
+        "Fast-growing corridor; wide roads; multiple quick stops.",
+        ["Medipally", "Peerzadiguda", "Chengicherla", "Boduppal X Road"],
+    ),
+    ("R3", "Nacharam"): (
+        "IDA Nacharam industrial; ORR feeder restrictions 6-9 PM; mid-day runs.",
+        ["IDA Nacharam", "Mallapur", "HMT Nagar", "Shakthi Sai Nagar"],
+    ),
+    ("R3", "Malkajgiri"): (
+        "Railway colony + gated societies; combine Kapra/Nacharam loop; early start.",
+        ["Safilguda", "Old Malkajgiri", "Malkajgiri Railway Colony", "Anandbagh"],
+    ),
+    ("R3", "Moula Ali"): (
+        "East-central (Neredmet, Moula Ali); combine Malkajgiri/Sainikpuri loop.",
+        ["Neredmet", "Sainikpuri", "Vinayak Nagar", "Kakatiya Nagar", "Balram Nagar"],
+    ),
+    ("R3", "Tarnaka"): (
+        "Defence-research corridor; gate-entry paperwork; 15-min dwell per stop.",
+        ["Osmania University", "Lalapet", "AOC Camp", "Golconda X Roads (Tarnaka)"],
+    ),
+    ("R3", "Mettuguda"): (
+        "Railway-colony lanes; narrow roads; 2W/LCV only; morning slots.",
+        ["Lalaguda", "Old Tarnaka", "Metro JBS flank"],
+    ),
+    ("R3", "Kavadiguda"): (
+        "Secunderabad core + cantonment belt; avoid 5-7 PM rush; LCV/2W.",
+        [
+            "Trimulgherry", "Marredpally", "Rasoolpura", "Regimental Bazaar",
+            "Parsigutta", "North Secunderabad", "Rani Gunj", "General Bazaar",
+            "Mahatma Gandhi Road", "JBS Paradise", "Patny", "King Koti",
+            "Tadbund", "Sangeet Nagar", "Bhoiguda",
+        ],
+    ),
+    ("R3", "Amberpet"): (
+        "OU/university belt + market; schedule after 11 AM; combine Kavadiguda/Musheerabad belt.",
+        ["Vidyanagar", "OU Campus", "Kachiguda (railway)", "Chikoti Gardens"],
+    ),
+    ("R3", "Chandrayangutta"): (
+        "Barkas belt; steep lanes; small vehicles; morning window.",
+        ["Barkas", "Kanchanbagh", "Bandlaguda", "Noori Nagar"],
+    ),
+    ("R3", "Yakutpura"): (
+        "Charminar market spill; pedestrian-heavy; early morning drops.",
+        ["Dabeerpura", "Rein Bazar", "Madannapet", "Gowlipura", "Talab Chanchalam"],
+    ),
+    ("R3", "Santoshnagar"): (
+        "Mixed density mid-commercial; schedule 10 AM-1 PM.",
+        ["Talab Katta", "Bhanu Nagar", "IS Sadan", "Saraswati Nagar"],
+    ),
+    ("R3", "Malakpet"): (
+        "Commercial mid-belt; combine Moosarambagh; post-11 AM.",
+        ["Malakpet", "Chaderghat", "Saidabad", "Asmangadh", "Akberbagh", "Chawani"],
+    ),
+    ("R3", "Moosarambagh"): (
+        "Ring-road access; quick drops; combine Malakpet.",
+        ["Old Malakpet", "Kala Dera", "Azampura", "MCH Colony"],
+    ),
+    ("R3", "Saroornagar"): (
+        "High-density residential/market; avoid 9-11 AM; schedule 11 AM onward.",
+        ["Dilsukhnagar", "Kothapet", "Chaitanyapuri", "Gaddiannaram",
+         "P&T Colony", "Saroornagar Lake", "Laxminagar", "Alkapuri Colony"],
+    ),
+    ("R3", "L.B. Nagar"): (
+        "Busy commercial hub; split into two trips; afternoon + evening runs.",
+        ["Lingojiguda", "Champapet", "Kharmanghat", "Bairamalguda",
+         "Hastinapuram", "Buddha Nagar"],
+    ),
+    ("R3", "Nagole"): (
+        "South-east gateway; start after 9 AM; combine Saroornagar/LB Nagar.",
+        ["Mansoorabad", "Kuntloor", "Pedda Amberpet", "GSI Colony"],
+    ),
+    ("R3", "Hayathnagar"): (
+        "Fringe up to Vanasthalipuram; one round trip/day; return via LB Nagar ring.",
+        ["Vanasthalipuram", "Sahebnagar", "BN Reddy Nagar", "Nagarjuna Sagar Road stretch"],
+    ),
+    # ---- R4 South-West (SW) -------------------------------------------------
+    ("R4", "Serilingampally"): (
+        "ORR tech belt (Gachibowli-Kondapur); deliver 11 AM-4 PM.",
+        ["Raidurg", "Nanakramguda", "Gopanpally", "Kothaguda", "Nallagandla",
+         "Financial District", "Inorbit Mall", "The HUB", "Masjid Banda"],
+    ),
+    ("R4", "Madhapur"): (
+        "HITEC City core; parking premium; last-mile on 2W; after 11 AM.",
+        ["Cyber Towers", "Durgam Cheruvu", "Jubilee Enclave", "Izzath Nagar",
+         "Matrusri Nagar", "Mayuri Nagar", "Mindspace"],
+    ),
+    ("R4", "Narsingi"): (
+        "ORR new corridor; wide roads; low stop density; morning loop.",
+        ["Kokapet", "Manikonda", "Gandipet", "Neknampur", "Narsingi (ORR)"],
+    ),
+    ("R4", "Moosapet"): (
+        "Balanagar industrial + residential; truck-friendly mid-day.",
+        ["IDA Balanagar", "Ferozguda", "Moti Nagar", "Prashanth Nagar", "Allapur"],
+    ),
+    ("R4", "Ameerpet"): (
         "Ameerpet/Begumpet commercial core; metered curbside drops; avoid 9-11 AM peak.",
         ["Balkampet", "West Marredpally", "Divya Nagar", "Sai Baba Temple Road"],
     ),
-    ("R3", "Jubilee Hills"): (
+    ("R4", "Jubilee Hills"): (
         "High-end gated societies; appointment-based; concierge delivery preferred.",
         ["Banjara Hills", "Film Nagar", "Road No. 12", "Venkateshwara Colony"],
     ),
-    ("R3", "Yousufguda"): (
+    ("R4", "Yousufguda"): (
         "Residential (Srinagar Colony); combine Ameerpet/SR Nagar; mid-morning.",
         ["Srinagar Colony", "Erragadda", "Vengal Rao Nagar", "AG Colony"],
     ),
-    ("R3", "Borabanda"): (
+    ("R4", "Borabanda"): (
         "Residential; narrow roads; 2W last mile; combine Yousufguda.",
         ["Karmika Nagar", "Rajeev Nagar", "Krishna Nagar", "Rahamath Nagar"],
     ),
-    # ---- R4 South / central-west -------------------------------------------
     ("R4", "Charminar"): (
         "Heritage core with vehicle curfews; offload at feeder point; hand-cart final mile.",
         ["Afzalgunj", "Moghalpura", "Aliabad", "Darulshifa", "Hussaini Alam",
          "Purani Haveli", "Pathergatti"],
-    ),
-    ("R4", "Malakpet"): (
-        "Commercial mid-belt; combine Moosarambagh; post-11 AM.",
-        ["Malakpet", "Chaderghat", "Saidabad", "Asmangadh", "Akberbagh", "Chawani"],
-    ),
-    ("R4", "Yakutpura"): (
-        "Charminar market spill; pedestrian-heavy; early morning drops.",
-        ["Dabeerpura", "Rein Bazar", "Madannapet", "Gowlipura", "Talab Chanchalam"],
     ),
     ("R4", "Falaknuma"): (
         "Old City core; narrow lanes; 2W only; 6-11 AM window.",
@@ -1068,18 +1131,6 @@ LOCALITY_GROUPS = {
         "Dense old city; plan around Friday prayer; 6-10 AM deliveries.",
         ["Bahadurpura", "Doodh Bowli", "Kishanbagh", "Teegal Kunta",
          "Chandu Lal Baradari", "Ramnasthpura"],
-    ),
-    ("R4", "Chandrayangutta"): (
-        "Barkas belt; steep lanes; small vehicles; morning window.",
-        ["Barkas", "Kanchanbagh", "Bandlaguda", "Noori Nagar"],
-    ),
-    ("R4", "Santoshnagar"): (
-        "Mixed density mid-commercial; schedule 10 AM-1 PM.",
-        ["Talab Katta", "Bhanu Nagar", "IS Sadan", "Saraswati Nagar"],
-    ),
-    ("R4", "Moosarambagh"): (
-        "Ring-road access; quick drops; combine Malakpet.",
-        ["Old Malakpet", "Kala Dera", "Azampura", "MCH Colony"],
     ),
     ("R4", "Goshamahal"): (
         "Central market belt; dense; early morning or post-8 PM drops.",
@@ -1114,19 +1165,6 @@ LOCALITY_GROUPS = {
         "South fringe; avoid college rush 9-10 AM; combine Attapur.",
         ["Bandlaguda Jagir", "Kismatpur", "Hydershahkote"],
     ),
-    ("R4", "Kavadiguda"): (
-        "Secunderabad core + cantonment belt; avoid 5-7 PM rush; LCV/2W.",
-        [
-            "Trimulgherry", "Marredpally", "Rasoolpura", "Regimental Bazaar",
-            "Parsigutta", "North Secunderabad", "Rani Gunj", "General Bazaar",
-            "Mahatma Gandhi Road", "JBS Paradise", "Patny", "King Koti",
-            "Tadbund", "Sangeet Nagar", "Bhoiguda",
-        ],
-    ),
-    ("R4", "Amberpet"): (
-        "OU/university belt + market; schedule after 11 AM; combine Kavadiguda/Musheerabad belt.",
-        ["Vidyanagar", "OU Campus", "Kachiguda (railway)", "Chikoti Gardens"],
-    ),
     # ---- R5 Outside GHMC ----------------------------------------------------
     ("R5", "Medchal-Malkajgiri Rural"): (
         "NH44 north fringe; Medchal check-post docs; truck only; weekly run.",
@@ -1140,17 +1178,17 @@ LOCALITY_GROUPS = {
 
 LOCALITIES = {
     # custom-note localities (key delivery points) -----------------------------
-    "Secunderabad": ("R4", "Kavadiguda",
+    "Secunderabad": ("R3", "Kavadiguda",
         "Secunderabad city centre (Parade Grounds, Clock Tower); avoid 5-7 PM rush; LCV/2W."),
     "Karkhana": ("R1", "Alwal",
         "Army supply area; gate protocols; combine Alwal loop."),
-    "Dilsukhnagar": ("R4", "Saroornagar",
+    "Dilsukhnagar": ("R3", "Saroornagar",
         "Major commercial hub on LB Nagar ring; metro corridor; two trips; post-10 AM."),
-    "ECIL": ("R2", "Kapra",
+    "ECIL": ("R1", "Kapra",
         "ECIL township; security check at gates; 10 AM-4 PM."),
-    "LB Nagar": ("R4", "L.B. Nagar",
+    "LB Nagar": ("R3", "L.B. Nagar",
         "L.B. Nagar commercial hub; split into two trips; afternoon + evening runs."),
-    "Financial District": ("R3", "Serilingampally",
+    "Financial District": ("R4", "Serilingampally",
         "ORR/Gachibowli offices; 11 AM-4 PM window; corporate receptions."),
     "Gowliguda": ("R4", "Charminar",
         "Old City belt near Koti/Chaderghat; narrow lanes; 2W only; morning window."),
@@ -1162,24 +1200,24 @@ LOCALITIES = {
         "Railway station + hotel belt; early morning + evening peaks."),
     "Punjagutta": ("R4", "Khairatabad",
         "Commercial corridor (Banjara Hills/Greenlands); combine Somajiguda; mid-day."),
-    "Chaderghat": ("R4", "Malakpet",
+    "Chaderghat": ("R3", "Malakpet",
         "Musi-bridge belt between old city & LB Nagar; combine Malakpet."),
-    "Sainikpuri": ("R2", "Moula Ali",
+    "Sainikpuri": ("R3", "Moula Ali",
         "Defence colony; gated; appointments preferred; combine Neredmet."),
     "Kompally": ("R1", "Kompally",
-        "Quthbullapur north; gated layouts; morning dispatch with Quthbullapur belt."),
+        "Quthbullapur north-east; gated layouts; morning dispatch with Quthbullapur belt."),
     # live-sheet spelling variants (typos / alt spellings) --------------------
-    "Gcachibowli": ("R3", "Serilingampally",
+    "Gcachibowli": ("R4", "Serilingampally",
         "Alt. spelling of Gachibowli; ORR tech belt; deliver 11 AM-4 PM."),
-    "Kkatpally": ("R3", "Kukatpally",
+    "Kkatpally": ("R2", "Kukatpally",
         "Alt. spelling of Kukatpally; KPHB high-density; 6-10 AM window."),
-    "Malkpet": ("R4", "Malakpet",
+    "Malkpet": ("R3", "Malakpet",
         "Alt. spelling of Malakpet; commercial mid-belt; post-11 AM."),
     "Mehndipatnam": ("R4", "Mehdipatnam",
         "Alt. spelling of Mehdipatnam; market + residential; after 11 AM."),
-    "Myapur": ("R3", "Miyapur",
+    "Myapur": ("R2", "Miyapur",
         "Alt. spelling of Miyapur; NH65 corridor; mid-day."),
-    "Hitech City": ("R3", "Madhapur",
+    "Hitech City": ("R4", "Madhapur",
         "Alt. spelling of HITEC City (ward 231); same routing as Madhapur."),
     "Himayatnagar": ("R4", "Khairatabad",
         "Alt. spelling of Himayathnagar (ward 220); central corporate; 10 AM-5 PM."),

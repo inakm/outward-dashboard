@@ -1,0 +1,4895 @@
+{
+  "meta": {
+    "title": "SkyLimit Customer Route Coverage — ALL_Customers 31st july.xlsx",
+    "hub": "Old Bowenpally",
+    "generated_at": "2026-08-06T12:26:02.837442+00:00",
+    "source": "Customers/ALL_Customers 31st july.xlsx (Sheet1)",
+    "customer_count": 536
+  },
+  "summary": {
+    "R1": 16,
+    "R2": 38,
+    "R3": 115,
+    "R4": 220,
+    "R5": 22,
+    "R7": 60,
+    "UNMATCHED-HYD": 18,
+    "UNKNOWN": 23,
+    "NO-ADDRESS": 24
+  },
+  "r7": {
+    "count": 60,
+    "cities": [
+      "Anantapur",
+      "Andhra Pradesh",
+      "Bahadurgarh",
+      "Balasore",
+      "Ballari",
+      "Begusarai",
+      "Belagavi",
+      "Bengaluru",
+      "Bhopal",
+      "Bikaner",
+      "Channasandra",
+      "Chennai",
+      "China Amiram",
+      "Coonoor",
+      "Deoghar",
+      "Eluru",
+      "Guntur",
+      "Guwahati",
+      "Indore",
+      "Kochi",
+      "Kolkata",
+      "Lucknow",
+      "Ludhiana",
+      "Madurai",
+      "Mahabubnagar",
+      "Medak",
+      "Meerut",
+      "Mumbai",
+      "Nalgonda",
+      "Nanded",
+      "Nellore",
+      "Nilgiris",
+      "Ongole",
+      "Pant Nagar",
+      "Pune",
+      "Raipur",
+      "Rajamahendravaram",
+      "Rayanapadu",
+      "Siddipet",
+      "Vadodara",
+      "Vijayawada",
+      "Visakhapatnam",
+      "Warangal",
+      "Woxsen"
+    ]
+  },
+  "records": [
+    {
+      "sno": 3,
+      "customer": "AADYA TRAVELS",
+      "address": "Srinivasam, 8-7-133/30/1 ,Ghori nagar, behind limra cafe\nOld Bowenpally",
+      "route": "R1",
+      "area": "Bowenpally",
+      "zone": "Secunderabad Zone - Hub Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 66,
+      "customer": "BHASHYAKARLA ABHISHEK",
+      "address": "H.No. 8-7-170/122,124, SHANKAR ENCLAVE, HAL COLONY, BOWENPALLY, SECUNDERABD, Hyderabad, Telangana, 500011",
+      "route": "R1",
+      "area": "Bowenpally",
+      "zone": "Secunderabad Zone - Hub Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 70,
+      "customer": "Birla Institute of Technology and Science",
+      "address": "1-1-1, BITS Pilani Hyderabad Campus, Jawahar Nagar, Shameerpet Mandal, Rangareddy, Telangana, 500078",
+      "route": "R1",
+      "area": "Keesara",
+      "zone": "Kapra Zone - North-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 72,
+      "customer": "BONDADA ENGINEERING LIMITED",
+      "address": "1/1/27/37, Ashok Manoj Nagar, Kapra, Hyderabad, Rangareddy, Telangana, 500062",
+      "route": "R1",
+      "area": "Kapra",
+      "zone": "Kapra Zone - North-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 126,
+      "customer": "Euro Kids Bowenpally",
+      "address": "Bowenpally, Mallikarjuna Colony, Sec Bad",
+      "route": "R1",
+      "area": "Bowenpally",
+      "zone": "Secunderabad Zone - Hub Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 138,
+      "customer": "Gami Sales Corp",
+      "address": "8-3-167/D/65, NEAR ESI HOSPITAL, KALYAN NAGAR PHASE - 1, HYDERABAD, Hyderabad, Telangana, 500038",
+      "route": "R1",
+      "area": "Alwal",
+      "zone": "Kukatpally/Quthbullapur Zone - North-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 223,
+      "customer": "Lotus Enterprises (19-25)",
+      "address": "Plot No. 20, Maruthi Nagar, Hasmathpet",
+      "route": "R1",
+      "area": "Bowenpally",
+      "zone": "Secunderabad Zone - Hub Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 276,
+      "customer": "Mr. Durga Prasad (HDFC Bank)",
+      "address": "Bowenpally",
+      "route": "R1",
+      "area": "Bowenpally",
+      "zone": "Secunderabad Zone - Hub Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 277,
+      "customer": "Mr. Prakash",
+      "address": "Alwal",
+      "route": "R1",
+      "area": "Alwal",
+      "zone": "Kukatpally/Quthbullapur Zone - North-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 333,
+      "customer": "Pride Office Solution",
+      "address": "H No 8-3-167/D/16 , Kalyan Nagar Near AG Colony",
+      "route": "R1",
+      "area": "Alwal",
+      "zone": "Kukatpally/Quthbullapur Zone - North-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 365,
+      "customer": "RS Brothers Textiles & Garments",
+      "address": "PLOT NO.293, 1-1-265/293, NAGANNA HEIGHTS, OPP. RADHIKA THEATRE, ECIL,, DR A.S.RAO NAGAR, Rangareddy, Telangana, 500062",
+      "route": "R1",
+      "area": "Kapra",
+      "zone": "Kapra Zone - North-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 390,
+      "customer": "Saradha Poly Clinic",
+      "address": "Kompally, Hyderabad",
+      "route": "R1",
+      "area": "Kompally",
+      "zone": "Kukatpally/Quthbullapur Zone - North-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 392,
+      "customer": "SARVA SHAKTHI PLASTICS & STATIONERY",
+      "address": "1-61, OLD BOWENPALLY VILLAGE, BALANAGAR MANDAL, Hyderabad, Telangana, 500011",
+      "route": "R1",
+      "area": "Bowenpally",
+      "zone": "Secunderabad Zone - Hub Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 415,
+      "customer": "Sky Limit Group",
+      "address": "Plot No 20. Maruti Nagar Hasmathpet, Beside lane to spencer's super market, Old Bowenpally , Hyderabad.",
+      "route": "R1",
+      "area": "Bowenpally",
+      "zone": "Secunderabad Zone - Hub Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 448,
+      "customer": "Sumanshi Marketing",
+      "address": "PLOT NO 28, PAVAN VIHAR, BOWENPALLY, HYDERABAD, Medchal Malkajgiri, Telangana, 500011",
+      "route": "R1",
+      "area": "Bowenpally",
+      "zone": "Secunderabad Zone - Hub Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 526,
+      "customer": "WOW ROOM",
+      "address": "ghori nagar",
+      "route": "R1",
+      "area": "Bowenpally",
+      "zone": "Secunderabad Zone - Hub Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 1,
+      "customer": "24 SEVEN INNOVATIVE PRODUCTS AND SERVICES \n",
+      "address": "Plot no: 374, Vr colony Vasanth Nagar,KPHB,Hyderabad",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 22,
+      "customer": "APPLE TREE HOTELS",
+      "address": "PLOT NO 23, SY.NO 166, BESIDE PARADISE RESTAURENT, USHA MALLAPUDI ROAD, A S RAJU COLONY, KUKATPALLY, Hyderabad, Telangana, 500072",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 23,
+      "customer": "Arawada Infrastructure LTD",
+      "address": "3 1 216/1 PLOT NO 17, SOWBHAGYA NAGAR COLONY, L B NAGAR, SAROORNAGAR HYDERABAD, Rangareddy, Telangana, 500035",
+      "route": "R2",
+      "area": "Allwyn Colony",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 38,
+      "customer": "Azad Engineering Pvt Ltd",
+      "address": "PLOT NO 90/C,D, PHASE 1 IDA, JEEDIMETLA, Hyderabad, Medchal Malkajgiri, Telangana, 500055",
+      "route": "R2",
+      "area": "Jeedimetla",
+      "zone": "Kukatpally/Quthbullapur Zone - North-West Wings",
+      "note": "matched"
+    },
+    {
+      "sno": 69,
+      "customer": "BIGFIN CONSULTANCY SERVICES LLP",
+      "address": "1, Honer Homes Office, IDL Access, Road,Kukatpally, Opp Ranganathaswamy Temple, Survey No's 627,1011/1, Hyderabad, Medchal Malkajgiri, Telangana,",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 115,
+      "customer": "Dream Warrior Projects",
+      "address": "432/A, ALLWYN COLONY, Phase 2, Kukatpally, Hyderabad, Telangana, 500072",
+      "route": "R2",
+      "area": "Allwyn Colony",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 122,
+      "customer": "END TO END SCM SOLUTIONS PRIVATE LIMITED",
+      "address": "First Floor, flat no 101 Plot no 190 door no 2-22-1/190/3, Sai Balaji Enclave, Road Number 5, Kukatpally, Hyderabad, Medchal Malkajgiri, Telangana, 500072",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 139,
+      "customer": "Gem Clean Industries",
+      "address": "#17-1-382/K/SB/53/1/3, Sri Balaji Nagar, Saidabad, Hyderabad",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 144,
+      "customer": "Good Will Services",
+      "address": "PLOT NO 210, MIG-II, PHASE-XV, KUKATPALLY, Hyderabad, Telangana, 500072",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 160,
+      "customer": "HONER COMMUNITIES LLP",
+      "address": "Honer Homes Corporate office, IDL Access Road, Kukatpally, Sri Anjaneya Swamy Temple, Sy No.627, 1011/11, Hyderabad, Medchal Malkajgiri, Telangana, 500072",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 161,
+      "customer": "Honer Developers Private Limited",
+      "address": "1, Honer Homes Corporate office, IDL Road, Sri Anjaneya Swamy Temple, Kukatpally, Hyderabad, Medchal Malkajgiri, Telangana, 500072",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 162,
+      "customer": "HONER PRIME HOUSING LLP",
+      "address": "1, Honer Homes Corporate Office, SY No.627, 1011/1, IDL Access Road, Sri Anjaneya Swamy Temple, Kukatpally, Hyderabad, Medchal Malkajgiri, Telangana, 500072",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 182,
+      "customer": "International School Of Hyderabad",
+      "address": "C/O Icrisat , Patancheru",
+      "route": "R2",
+      "area": "Patancheru",
+      "zone": "Serilingampally Zone - North-West Fringe",
+      "note": "matched"
+    },
+    {
+      "sno": 187,
+      "customer": "J & J Enterprises",
+      "address": "H NO 4 32 188/A, SECOND SHUTTER, SHAPUR NAGAR, Shapur Main Market, IDA JEEDIMETLA QUTHBULLAPUR, Hyderabad, Medchal Malkajgiri, Telangana, 500055",
+      "route": "R2",
+      "area": "Jeedimetla",
+      "zone": "Kukatpally/Quthbullapur Zone - North-West Wings",
+      "note": "matched"
+    },
+    {
+      "sno": 189,
+      "customer": "Jabra Connect India Private Limited",
+      "address": "4th Floor, 412, Vijaya Sai Towers, Plot No.2,6/11/412, Kukatpally, Hyderabad, Telangana, 500072",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 206,
+      "customer": "Kidz Mania",
+      "address": "4, PLOT NO.198,199, SOUTH INDIA SHOPPING MALL, MYTHRI NAGAR, MADINAGUDA, Hyderabad, Telangana, 500050",
+      "route": "R2",
+      "area": "Miyapur",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 207,
+      "customer": "KLRB Impex Pvt. Ltd",
+      "address": "6B,TYPE- II, TSIIC, Prasanthi Nagar, Kukatpally",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 211,
+      "customer": "Korsch Technologies",
+      "address": "GAJULARAMARAM, PLOT NO 351/1, HAL COLONY, JEEDIMETLA, JEEDIMETLA, Rangareddy, Telangana, 500055",
+      "route": "R2",
+      "area": "Gajularamaram",
+      "zone": "Kukatpally/Quthbullapur Zone - North-West Wings",
+      "note": "matched"
+    },
+    {
+      "sno": 225,
+      "customer": "Lucky Jeans Corner",
+      "address": "G5 G6, PLOT NO 1/B, SAPTAPADI TOWERS, GANGARAM X ROADS, CHANDANAGAR, Hyderabad, Telangana, 500050",
+      "route": "R2",
+      "area": "Miyapur",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 226,
+      "customer": "Lulu International Shopping Malls Pvt. Ltd",
+      "address": "Door No. 15-31-S2/MM, Sy. No. 1050, Lulu International Shopping Malls Pvt Ltd, KPHB Colony, Kukatpally, Hyderabad, Medchal Malkajgiri, Telangana, 500072",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 231,
+      "customer": "M/S DIVINE HOMES",
+      "address": "Door No.16-3-V/839, Vasanth Nagar, Kukatpally, Hyderabad, Medchal Malkajgiri, Telangana, 500072",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 243,
+      "customer": "M/S. Tricky Hygiene Products",
+      "address": "#16-3-476, Plot No. 476, Vasanth Nagar",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 305,
+      "customer": "Nrupen Creation",
+      "address": "MIG-206, ROAD NO.1,KPHB COLONY, HYDERABAD, Rangareddy, Telangana, 500072",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 350,
+      "customer": "RAMESH WATCH CO PVT LTD K-INORBIT",
+      "address": "4th Floor, M No.15-24-330, Plot no 330, KPHB Colony, Kukatpally, Hyderabad, Telangana, 500072",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 363,
+      "customer": "RK Collections",
+      "address": "Lig-122,KPHB colony , Kukatpally , Hyderabad-500072",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 371,
+      "customer": "S C M International Impex Pvt Ltd",
+      "address": "11-6-72/B Y Junction Kukatpally",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 380,
+      "customer": "Sai Madhura Event Management",
+      "address": "Villa No 1, Plot No 79, La Bouquet Villa Edifice, Madinaguda Silpa Homes,\nKondapur",
+      "route": "R2",
+      "area": "Miyapur",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 382,
+      "customer": "Saichand Suchitra",
+      "address": "Suchitra",
+      "route": "R2",
+      "area": "Jeedimetla",
+      "zone": "Kukatpally/Quthbullapur Zone - North-West Wings",
+      "note": "alias match"
+    },
+    {
+      "sno": 430,
+      "customer": "Sri Sai Balaji Enterprises",
+      "address": "469/A, Gokul Plots, Vasanth Nagar Extn. K.P.H.B.,",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 433,
+      "customer": "Sri Veda Sushruta  Ayurveda Hospital",
+      "address": "MIG-190, Flat No. G1&G2, Kphb Colony Road 1,, Kukatpally,Hyderabad,Medchal Malkajgiri - 500072",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 441,
+      "customer": "Stellar Facility Management Services",
+      "address": "1-2-31/1/304, LAHARI ENCLAVE, NIZAMPET ROAD, KUKATPALLY, Medchal Malkajgiri, Telangana, 500072",
+      "route": "R2",
+      "area": "Kukatpally",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 461,
+      "customer": "SWAGATH GRAND HOTEL",
+      "address": "MADINAGUDA, Hyderabad",
+      "route": "R2",
+      "area": "Miyapur",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 466,
+      "customer": "T N R ESTATES PRIVATE LIMITED",
+      "address": "SY NO 85/P, 89/P, SUCHITRA CIRCLE,, Hyderabad, Medchal Malkajgiri, Telangana,, 500055 - 500055",
+      "route": "R2",
+      "area": "Jeedimetla",
+      "zone": "Kukatpally/Quthbullapur Zone - North-West Wings",
+      "note": "alias match"
+    },
+    {
+      "sno": 471,
+      "customer": "TEAM4 LIFE SPACES LLP",
+      "address": "Opposite to Honda Service Center, SY no 199/AA,200/AA,201/AA,205/2/AA, Near Aurigen pharmaceutical compamy, Miyapur Bachupally Cross road, Hyderabad, Hyderabad, Telangana, 500049",
+      "route": "R2",
+      "area": "Nizampet",
+      "zone": "Kukatpally/Quthbullapur Zone - North-West Wings",
+      "note": "matched"
+    },
+    {
+      "sno": 479,
+      "customer": "TITAN COMPANY LIMITED",
+      "address": "GROUND FLOOR, Sy No 16 / 17 / 18,, Gundlapochampally, Gundlapochampally Village, Rangareddy, Telangana, 500014",
+      "route": "R2",
+      "area": "Nizampet",
+      "zone": "Kukatpally/Quthbullapur Zone - North-West Wings",
+      "note": "alias match"
+    },
+    {
+      "sno": 488,
+      "customer": "Ultimate Facility Management Services Pvt. Ltd.",
+      "address": "Falt No. 202, H.No. 1-55-78/202, Ram Reddy Residency, Madhinaguda, Hyderabad, Rangareddy",
+      "route": "R2",
+      "area": "Miyapur",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 503,
+      "customer": "VARNAM",
+      "address": "1-57/3/A,, Geetha Parishama Sangam, Sai Nagar, Hafeezpet,, Near Petrol Pump, Hyderabad, Rangareddy, Telangana, 500049",
+      "route": "R2",
+      "area": "Miyapur",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 524,
+      "customer": "WHITEMEN CONSTRUCTIONS PRIVATE LIMITED",
+      "address": "FLAT NO 104, MANISH RESIDENCY,MADINAGUDA,",
+      "route": "R2",
+      "area": "Miyapur",
+      "zone": "Kukatpally Zone - North-West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 8,
+      "customer": "ACE AJANTA APARTMENT",
+      "address": "H.No. 12-1-468/ACE, Ace Ajanta Apartments, Fathullaguda, Bandlaguda, Nagole, Uppal Mandal, Medchal - Malkajgiri - 500068",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 9,
+      "customer": "AD WORLD SIGNAGES PVT LTD",
+      "address": "IDA, PLOT NO 11/5/2, SURVEY NO 50, ROAD NO 8, NACHARAM, Rangareddy, Telangana, 500076",
+      "route": "R3",
+      "area": "Nacharam",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 10,
+      "customer": "ADVANCED TECHNOLOGY GROUP",
+      "address": "Building No./Flat No.: PLOT NO 27 AND 29, FLAT NO 102, Name Of Premises/Building: TULIP PEARL APTS, ALKAPURI, Road/Street: Road Number 1, MAIN ROAD, Nearby Landmark: Saroornagar Sub Post Office, Locality/Sub Locality: Saroor Nagar East, City/Town/Village:",
+      "route": "R3",
+      "area": "Saroornagar",
+      "zone": "L.B. Nagar Zone (South-East)",
+      "note": "matched"
+    },
+    {
+      "sno": 11,
+      "customer": "Advanta Enterprises Limited",
+      "address": "Survey No. 824/825 & 829, Nutankal Mandal, Nuthankal, Hyderabad, Medchal Malkajgiri, Telangana, 501401",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 19,
+      "customer": "AMR Enterprises",
+      "address": "Ground Floor, Plot No. 94, Sy No.8,, Thukaramgate, Thukaramgate, Secunderabad, Hyderabad, Telangana, 500017",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 20,
+      "customer": "ANAGHA ENTERPRISES",
+      "address": "2nd Floor, 8-3-230/B/30, Plot No-79, Road No-11, Sravanthi Nagar, Jubleehills, HYDERABAD, Secunderabad, Hyderabad, Telangana, 500003",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 26,
+      "customer": "Arshith Enterprises",
+      "address": "1st Floor, 11-81,, Ramanthapur colony,, Ramanthapur, Hyderabad, Telangana, 500013",
+      "route": "R3",
+      "area": "Uppal",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 32,
+      "customer": "Asian Multiplexes Pvt. Ltd",
+      "address": "1st floor, 396-397, Jain Estate, Parklane, Secunderabad, Hyderabad, Telangana, 500003",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 33,
+      "customer": "ASPIRE HOMES PVT LTD",
+      "address": "APPA JUNCTION HYDERABAD",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 39,
+      "customer": "B Narasimha Reddy Sir",
+      "address": "Nacharam hyderabad",
+      "route": "R3",
+      "area": "Nacharam",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 40,
+      "customer": "B SUNDAR RAO HOTELS PVT LTD",
+      "address": "4-1-999, abids king koti road, abids, hyderabad, Hyderabad, Telangana, 500001",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 41,
+      "customer": "BALAJI ENTERPRISES",
+      "address": "5-2-430, Risala Abdulla Lane, Osmangunj, Hyderabad, Hyderabad, Telangana, 500012",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 42,
+      "customer": "BALAJI RAIL ROAD SYSTEMS PRIVATE LIMITED",
+      "address": "PLOT NO.3, BARSYL TOWERS, STAFF ROAD, SITARAM NAGAR, SIKH VILLAGE, Rangareddy, Telangana, 500009",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 71,
+      "customer": "BONDADA ECOBUILD PRIVATE LIMITED",
+      "address": "Sy No.147, Ankireddypally Village, Keesara,\nHyderabad, Medchal Malkajgiri\nHyderabad Telangana 501301",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 73,
+      "customer": "BONDADA MANAGED SERVICES PRIVATE LIMITED",
+      "address": "37 Kapra, Ashok Manoj Nagar Hyderabad, Medchal \nMalkajgiri Telangana code : 36, Hyderabad, Telangana, \n500062",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 74,
+      "customer": "BOTANIC HEALTHCARE PRIVATE LIMITED",
+      "address": "16/1/12and13, Botanic Healthcare Private Limited, Street No.7, Uppal Mandal Medchal Ida nacharam, Medchal Malkajgiri, Telangana, 500076",
+      "route": "R3",
+      "area": "Nacharam",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 77,
+      "customer": "Capital Pest Solutions & Services",
+      "address": "4-94 MARUTHI NAGAR, Malkajgiri, OPP SHAHS ELECTRONICS, Hyderabad, Medchal Malkajgiri, Telangana, 500047",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 78,
+      "customer": "Caps Gold Pvt Ltd",
+      "address": "3-2-354, DOOR NO 220, S V STREET RP ROAD, SECUNDERABAD, Hyderabad, Telangana, 500003",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 89,
+      "customer": "Citron Scientific",
+      "address": "BLOCK-B, SURVEY NO.156 157 AND 174, DHULAPALLY ROAD, KOMPALLY, SECUNDERABAD, Medchal Malkajgiri, Telangana, 500014",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 91,
+      "customer": "Clean Hizen Housekeeping Services",
+      "address": "Flat No - 204, SSM Residency, Satyanagar, New Maruti Nagar,\nKothapet, Hyderabad - 500060",
+      "route": "R3",
+      "area": "Saroornagar",
+      "zone": "L.B. Nagar Zone (South-East)",
+      "note": "matched"
+    },
+    {
+      "sno": 94,
+      "customer": "COMFO MODULAR",
+      "address": "6-9-30/B-918, Industrial Development Area Road, Bala Nagar, Hyderabad, Medchal Malkajgiri, Telangana, 500037",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 104,
+      "customer": "D.G.R & Co (S)",
+      "address": "1-4-137 AND 138, KALASIGUDA, SECUNDERABAD, Hyderabad, Telangana, 500003",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 106,
+      "customer": "Datta Guru Industries",
+      "address": "1 ST FLOOR, PLOT 80/A, 7-8-189/1, GOUTHAMNAGAR, BALANAGAR, Hyderabad, Telangana, 500042",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 107,
+      "customer": "DE BLUEOAK AND P MANGATRAM PROPERTIES LLP",
+      "address": "Plot No.58,59, HOUSE NO.8-5-255, Diamond Colony,\nKharmanghat, L B Nagar, HYDERABAD, Hyderabad, Telangana,\n500074",
+      "route": "R3",
+      "area": "L.B. Nagar",
+      "zone": "L.B. Nagar Zone (South-East)",
+      "note": "matched"
+    },
+    {
+      "sno": 121,
+      "customer": "Emerald Enterprises",
+      "address": "1st floor, 4-3-203,214,215, 216, SHAKUNTALA COMPLEX, HILLSTREET, secunderabad, Hyderabad, Telangana, 500003",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 124,
+      "customer": "Ethics Events",
+      "address": "Flat No. 403, B-Block, Ace Ajanta, bandlaguda, Nagole, Hyderabad, Rangareddy, Telangana, 500068",
+      "route": "R3",
+      "area": "Chandrayangutta",
+      "zone": "Charminar Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 128,
+      "customer": "Evya Hospitals",
+      "address": "#5-5-1211, Opp. Panama Acrh, Panama Godowns, Ganesh Nagar-I & II, Vanasthalipuram, Hyderabad, Telangana, 500068",
+      "route": "R3",
+      "area": "Hayathnagar",
+      "zone": "L.B. Nagar Zone (South-East)",
+      "note": "matched"
+    },
+    {
+      "sno": 136,
+      "customer": "G V Reserch Centers Pvt Ltd",
+      "address": "Soham mansion, 5-4-187/3, MG Road, MG Road, Secunderabad, Hyderabad, Telangana, 500003",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 140,
+      "customer": "GEMCARE HOSPITALS PRIVATE LIMITED",
+      "address": "4th floor, H. No 4-1-1226, 1226/1, 1226/2, Kamineni Building, King Koti Road, King Koti, Hyderabad, Hyderabad, Telangana, 500001",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 153,
+      "customer": "Hanuman Enterprises",
+      "address": "second floor, plot no.48, K.Suresh Reddy house, Suryanagar, chintal, Medchal Malkajgiri, Telangana, 500037",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 164,
+      "customer": "Hotel Kamal Pvt Ltd",
+      "address": "9-1-167/168, BASERA, S D ROAD, SECUNDERABAD, Hyderabad, Telangana, 500003",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 165,
+      "customer": "HYGIENIFY SOLUTIONS",
+      "address": "parvathapur, medchal malkajgiri  sri jagathswapna infra projects Spanzilla Villas Hyderabad Medchal Malkajgiri  Telangana 500039",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 169,
+      "customer": "ICHOR BIOLOGICS PRIVATE LIMITED",
+      "address": "Sy. No. 222P, Thurkapally Village, Shamirpet Mandal, Hyderabad, Medchal Malkajgiri, Telangana, 500078",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 173,
+      "customer": "Impel Business Solutions Private Limited",
+      "address": "3rd, 1-155, Impel ventures limited, Medchal highway, opposite ARKE hospital, kompally, Secunderabad, Medchal Malkajgiri, Telangana, 500100",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 174,
+      "customer": "Impressive9 Llp",
+      "address": "1-9-1113/30/1/C, Dayanad Nagar, Vidya Nagar, Hyd - 500044",
+      "route": "R3",
+      "area": "Amberpet",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 178,
+      "customer": "INDUSIND BANK LIMITED",
+      "address": "IndusInd Bank Limited, MSME Office, 1st Floor, 1-8-435/436, Durga Tower, Rasoolpura, Begumpet, Hyderabad- 500 016",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 181,
+      "customer": "Interactive Data Systems Limited",
+      "address": "PLOT NO 39, TSIIC Hardware Park PH II, Srisailam Road, Mamidipally Village, Balapur Mandal, Chandrayangutta, Hyderabad, Hyderabad, Telangana, 500005",
+      "route": "R3",
+      "area": "Chandrayangutta",
+      "zone": "Charminar Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 183,
+      "customer": "ISHAYU EXPORTS LIMITED",
+      "address": "6TH FLOOR, 6D, SURYA TOWERS, Sardar Patel Road, Paradise Metro Station, Sardar Patel Road, Secunderabad, Hyderabad, Telangana, 500003",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 184,
+      "customer": "Ishayu Garments",
+      "address": "105 SP Road Surya Towers 6th Floor",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 186,
+      "customer": "ITP Externals India Private Ltd.",
+      "address": "60/A, IDA, GANDHI NAGAR, Rangareddy, Telangana, 500037",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 191,
+      "customer": "Jain Traders",
+      "address": "503/505, SADAR BAZAR BOLARAM, SECUNDERABAD, Hyderabad, Telangana, 500010",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 197,
+      "customer": "JUBILEE HOSPITALITY PRIVATE LIMITED",
+      "address": "SY 105, 2-3-229/1, UPPAL ROAD, NAGOLE VILLAGE, Medchal Malkajgiri, Telangana, 500068",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 199,
+      "customer": "Jyothi Traders",
+      "address": "E 106, INDU ARANYA PALLAVI APTS, NAGOLE, TATTI ANNARAM, Rangareddy, Telangana, 500068",
+      "route": "R3",
+      "area": "Nagole",
+      "zone": "L.B. Nagar Zone (South-East)",
+      "note": "matched"
+    },
+    {
+      "sno": 200,
+      "customer": "Kala Jyothi Process Pvt. Ltd.",
+      "address": "1-1-60/5, RTC Cross Road, Hyderabad, Hyderabad, Telangana, 500020",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 204,
+      "customer": "KARTHIK ENTERPRISES",
+      "address": "15-2-311/2, GROUND FLOOR KISHAN GUNJ, Hyderabad, Hyderabad, Telangana, 500012",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 205,
+      "customer": "Kaushik sir VBN",
+      "address": "Dilsukhnagar",
+      "route": "R3",
+      "area": "Saroornagar",
+      "zone": "L.B. Nagar Zone (South-East)",
+      "note": "alias match"
+    },
+    {
+      "sno": 212,
+      "customer": "Krishna Balaji Retail Solutions",
+      "address": "13-9-31/NR, LALITHA NAGAR, SHANTHI NAGAR, DILSHUK NAGAR, Hyderabad, Telangana, 500028",
+      "route": "R3",
+      "area": "Saroornagar",
+      "zone": "L.B. Nagar Zone (South-East)",
+      "note": "alias match"
+    },
+    {
+      "sno": 214,
+      "customer": "KUNAL PHARMA DISTRIBUTORS PVT LTD",
+      "address": "GF/F/S FLOOR,, 1-8-303/19, PLOT NO. 18, SINDHI COLONY, P G ROAD, SECUNDERABAD, Hyderabad, Telangana, 500003",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 229,
+      "customer": "M.B. Sales Corporation",
+      "address": "4-4-10/11/12/A1, Sikhwal Chamber, G Floor,",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 232,
+      "customer": "M/S E CAPS COMPUTERS INDIA PRIVATE LIMITED",
+      "address": "Ground Floor, Survey No 5,6,7, 8 & 9, Hasmathpet Road, Back side of Spencers, Maruthi Nagar, Secunderabad, Hyderabad, Telangana, 500011",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 236,
+      "customer": "M/S SRI VENGAMAMBA HOTELS AND RESORTS-NAGOL",
+      "address": "Metro Station, beside Nagole, Surya Nagar,, Saraswathi Colony, Nagole, Hyderabad, Telangana 500039",
+      "route": "R3",
+      "area": "Nagole",
+      "zone": "L.B. Nagar Zone (South-East)",
+      "note": "matched"
+    },
+    {
+      "sno": 237,
+      "customer": "M/s The Surya Towers Flat Owners Welfare Society",
+      "address": "S P ROAD, 105, SURYA TOWERS, S P ROAD, SECUNDERABAD, Hyderabad, Telangana, 500003",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 239,
+      "customer": "M/s Veduka Group of Hotels",
+      "address": "Medipally, Plot No 9-84/4 52 54 55 56 VSR CENTER  SYNO 36 AND 38 PART 29 Hyderabad Medchal Malajgiri, Telangana",
+      "route": "R3",
+      "area": "Boduppal",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 240,
+      "customer": "M/S. Afita Constructions Pvt Ltd",
+      "address": "GR, PLOTNO 85A, PRAJAY WATER FRONT CITY, MURAHARAPALLY VILLAGE,MEDCHAL MANDAL, MEDCHAL -MALKAJGIRI, Medchal Malkajgiri, Telangana, 500078",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 252,
+      "customer": "Manepally Jewellers Private Limited",
+      "address": "3-3-600/603, GENERAL BAZAR, SECUNDERABAD, Hyderabad, Telangana, 500003",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 253,
+      "customer": "Manikanta Express Solution",
+      "address": "12-1/19, Sy No-271, RAMPALLY, KEESARA, Hyderabad, Medchal Malkajgiri, Telangana, 501301",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 263,
+      "customer": "Max",
+      "address": "Trimulgherry",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 268,
+      "customer": "MERCURY ASSOCIATES",
+      "address": "First Floor, H. No. 3-47-68, Plot No. 39, Vasavi Nagar, Karkhana, Karkhana, Secunderabad, Hyderabad, Telangana, 500015",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 270,
+      "customer": "Metro Needs",
+      "address": "H No 1-1-80/3/G1, RTC Cross Road, Musheerabad, Hyderabad, Hyderabad, Telangana, 500020",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 282,
+      "customer": "Mukunda Jewellers",
+      "address": "4-1-102/16/2, BHAVANI NAGAR, BEHIND MAHANKALI TEMPLE, Nacharam, Hyderabad, Medchal Malkajgiri, Telangana, 500076",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 286,
+      "customer": "N. Priya Stationers",
+      "address": "5-2-471, Risala Abdulla, Osmangunj, Hyderabad",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 287,
+      "customer": "NACL Industries Ltd",
+      "address": "Plot no.3B and 11 Block no.36, Sy.no.96/1/A, Auto Nagar,, Bagh Hayatnagar Village, Hayatnagar Mandal, Rangareddy, Telangana, 500070",
+      "route": "R3",
+      "area": "Hayathnagar",
+      "zone": "L.B. Nagar Zone (South-East)",
+      "note": "alias match"
+    },
+    {
+      "sno": 289,
+      "customer": "NAMITHA BUILDERS",
+      "address": "H NO 12-5-3/10/3, Ist FLOOR, NEAR, St ANNS SCHOOL OPP, WHITE HOUSE, BUS STOP, VIJAYAPURI COLONY, TARNAKA,, Hyderabad, Telangana, 500017 - 500017",
+      "route": "R3",
+      "area": "Tarnaka",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 292,
+      "customer": "Narne Constructions Private Limited",
+      "address": "1 Gunrock Enclave, Secunderabad, Telanaga",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 293,
+      "customer": "NARNE ESTATES PRIVATE LTD",
+      "address": "1, GUN ROCK ENCLAVE, GUN ROCK ENCLAVE COLONY, SECUNDRABAD, Hyderabad, Telangana, 500009",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 294,
+      "customer": "Necklace Pride Apartment Flat Owners MACMS Ltd.",
+      "address": "6-6-8 TO 32 & 395, Kavadiguda, Secunderabad -500080 - 500080",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 297,
+      "customer": "Nehita Hygiene Care Products",
+      "address": "Ground floor, 2-2-1107/66, TILLAK NAGAR, BAYAMMA GALLI, Hyderabad, Telangana, 500044",
+      "route": "R3",
+      "area": "Amberpet",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 302,
+      "customer": "NIRMAL MARKETING AGENCIES",
+      "address": "VASANTH VIHAR COLONY, 1-4-54/4/4A, STREET NO 8, HABSHIGUDA, Medchal Malkajgiri, Telangana, 500007",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 304,
+      "customer": "Northeast Chit Fund Services Private Limited",
+      "address": "First Floor, 1-7-301/FF/24 to 27, Hardy Complex, MG Road, Secunderabad, Hyderabad, Telangana, 500003",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 307,
+      "customer": "Ocimum International School",
+      "address": "Hasmatpet Rd, Krishi Nagar, Bowenpally, Secunderabad, Telangana 500009",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 310,
+      "customer": "Om Sri Sai Communications",
+      "address": "2-3-34/8/A/1, vijayapuri colony, Uppal, Hyderabad, Rangareddy, Telangana, 500039",
+      "route": "R3",
+      "area": "Uppal",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 312,
+      "customer": "Orissa Dhaba",
+      "address": "H NO: 17, Orissa Dhaba - Champapet, 1-382/K/1/4, Nagarjuna Sagar Ring Rd, opp. PRESS COLONY, beside Reliance Trends, Saroornagar, BN Reddy Nagar, Saroor Nagar East, Champapet, Hyderabad, Telangana",
+      "route": "R3",
+      "area": "Hayathnagar",
+      "zone": "L.B. Nagar Zone (South-East)",
+      "note": "matched"
+    },
+    {
+      "sno": 314,
+      "customer": "Padmavathi Traders",
+      "address": "3-5-1089/11, Y.M.C.A,NARAYANAGUDA, HYDERABAD,\nHyderabad, Telangana, 500029",
+      "route": "R3",
+      "area": "Amberpet",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 315,
+      "customer": "PANASONIC LIFE SOLUTIONS INDIA PRIVATE LIMITED",
+      "address": "1-8-384 AND 386, Gowra Grand Ground Floor, S P ROAD, BEGUMPET, Hyderabad, Telangana, 500003",
+      "route": "R3",
+      "area": "Amberpet",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 319,
+      "customer": "PATNE ENTERPRISES",
+      "address": "7-1-226/1, Maruthi Veedi, Monda Market, Secunderabad, Telangana - 500003",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 323,
+      "customer": "PKART INSHOP SOLUTION TECHNOLOGY PRIVATE LIMITED",
+      "address": "SEETHA RAMA COLONY, 225, UPPAL, UPPAL,",
+      "route": "R3",
+      "area": "Uppal",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 324,
+      "customer": "PLRA INDUSTRIES PRIVATE LIMITED",
+      "address": "GROUND FLOOR, House No.4-24/1/30, Plt .83, S No.1089, Metro Landmark, Nisha Park, Medchal, Hyderabad, Medchal Malkajgiri, Telangana, 50140",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 327,
+      "customer": "Poonam Enterprises",
+      "address": "#1-4-268 Parklane, Kalasiguda, Secunderabad",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 334,
+      "customer": "Priyanka Enterprises",
+      "address": "SIKH ROAD, SHOP No.4, S M R SARPAZ PLAZA",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 336,
+      "customer": "QAFFEINE PRIVATE LIMITED",
+      "address": "9-1-167/168, S D ROAD, SECUNDERABAD, Hyderabad, Telangana, 500003",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 344,
+      "customer": "Raja Lakshmi Enterprises",
+      "address": "#7-3-214/159, Rajalakshmi Nivas, Ghasmandi, Sec-Bad",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 349,
+      "customer": "Ramaiah Caterers",
+      "address": "1-9-634/C, ADIKMET, NALLA KUNTA, HYDERABAD, Hyderabad, Telangana, 500044",
+      "route": "R3",
+      "area": "Amberpet",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 353,
+      "customer": "RATAN SIR",
+      "address": "SY 105, 2-3-229/1, UPPAL ROAD, NAGOLE VILLAGE, Medchal Malkajgiri, Telangana, 500068",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 354,
+      "customer": "Ratnadeep Retail Pvt  Ltd.",
+      "address": "d-18, VIKRAM PURI, SECUNDERABAD, Medchal Malkajgiri, Telangana, 500009",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 355,
+      "customer": "RBL Finserve Ltd",
+      "address": "Unit No. 503,5th Floor,1-8-384&385,Gowra Grand,",
+      "route": "R3",
+      "area": "Amberpet",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 359,
+      "customer": "RICH & KEY ENTERPRISES LLP",
+      "address": "PLOT NO. 61, ISHAQ COLONY, Wellington, PLOT NO. 61, ISHAQ COLONY, Wellington, Hyderabad, Telangana, 500015",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 381,
+      "customer": "Sai Marketing",
+      "address": "B7, SAI MARKETING, IDA UPPAL, UPPAL, Medchal Malkajgiri, Telangana, 500039",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 399,
+      "customer": "Scribe EMR Systems Pvt. Ltd",
+      "address": "5th Floor, 1-8-368, Gowra Trinity, Chiran Fort Club Road, Abhisheks Institute of Imageology, Patigadda, Secunderabad, Hyderabad, Telangana, 500003",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 402,
+      "customer": "Sheshadri Industries Limited",
+      "address": "105 6th Floor Surya Towers",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 405,
+      "customer": "SHREE KRISHNA HARDWARE AND STEEL CENTRE",
+      "address": "5-5-183, LALA TEMPLE, RANIGUNJ, SECUNDERABAD, Hyderabad, Telangana, 500003",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 409,
+      "customer": "Siddhi Vinayaka Fashions LLP",
+      "address": "RS Brothers 16/1/604, Near Gandhi Bomma center",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 416,
+      "customer": "SKY SUPERIORS PRIVATE LIMITED",
+      "address": "4Th Foor, D.No 49-404/2/C/401, HMT Township, Padama NAgar-2, Tirumalagiri, Hyderabad, Medchal Malkajgiri, Telangana, 500054",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 422,
+      "customer": "SRI ADITYA UTSAV",
+      "address": "H No 2-91, Doolapally, Kompally Muncipality, Sri Venkateshwara Xerox, Doolapally, Secunderabad, Medchal Malkajgiri, Telangana, 500014",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 424,
+      "customer": "Sri Devi Associates",
+      "address": "Above SBI Bank , Opp Ashok Nagar Park,, Ashok Nagar RTC Cross Roads, Hyderabad - 500020",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 425,
+      "customer": "Sri Krishna Silks",
+      "address": "Head Office : General Bazar, Secunderabad - 500003",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 426,
+      "customer": "Sri Lakshmi Enterprises",
+      "address": "Uppal",
+      "route": "R3",
+      "area": "Uppal",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 432,
+      "customer": "Sri Vasavi Kanyaka Parameshwari Charitable Trust",
+      "address": "Streetno :2,New South, Venkateshwara Temple Road,, Kkr Gardens,Swaroop Colony,  Uppal Hyd:500039",
+      "route": "R3",
+      "area": "Uppal",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 437,
+      "customer": "Srika Shopping Mall",
+      "address": "# 12-2-727/3, Rethibowli, P&T Colony, Piller No.45,",
+      "route": "R3",
+      "area": "Saroornagar",
+      "zone": "L.B. Nagar Zone (South-East)",
+      "note": "matched"
+    },
+    {
+      "sno": 438,
+      "customer": "SRIVANI HOTELS AND RESORTS",
+      "address": "GROUND FLOOR, H.No.4-3-302 to 308, King Koti Road, Hyderabad, Hyderabad, Telangana, 500001",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 449,
+      "customer": "SUNDAR TAJ MAHAL HOTELS PVT LTD",
+      "address": "1-1-40, 1-1-40, sevenhills, s.d.road, secunderabad, Hyderabad, Telangana, 500003",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 452,
+      "customer": "Suparnudu Sir",
+      "address": "Ace Ajanta, Bandlaguda Rd, Geological Survey of India Colony, Nagole, Hyderabad, Telangana 500068",
+      "route": "R3",
+      "area": "Chandrayangutta",
+      "zone": "Charminar Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 453,
+      "customer": "Supreme Enterprises",
+      "address": "1-4-91, Sri Nilayam, Kalasiguda, Secunderabad, Hyderabad, Telangana, 500003",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 454,
+      "customer": "SURAAG HOTELS AND RESORTS",
+      "address": "3-35, HANUMAN SAI NAGAR, BESIDE SRI, KRISHNA THEATER, MAIN ROAD, UPPAL,, Hyderabad, Medchal Malkajgiri, Telangana,, 500039 - 500039",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 455,
+      "customer": "SURAKSHA INTERIORS AND EXTERIORS",
+      "address": "H NO 16-2-751/93/F/6/A/A1 TO A3/106, ASMANGAD, ABR RESIDENCY, SAI RAM NAGAR COLONY,, OPP SHIVA GANGA THEATER, DILSUKH NAGAR, SAIDABAD, HYDERABAD, Rangareddy, Telangana, 500059",
+      "route": "R3",
+      "area": "Saroornagar",
+      "zone": "L.B. Nagar Zone (South-East)",
+      "note": "alias match"
+    },
+    {
+      "sno": 459,
+      "customer": "Suryavanshi Spinning Mills Limited",
+      "address": "105 6th Floor Surya Towers",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 462,
+      "customer": "SWAPRIYARAJ HOLDINGS LLP",
+      "address": "#1-1-151 & 1-1-151/1 Ground  Floor Sai Ram Towers, Alexander Road Sec Bad,",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 468,
+      "customer": "TCS TEXTILE AND APPAREL INDIA Pvt Ltd",
+      "address": "Aries Plaza, MN 12-2-823/A/9, Santosh Nagar Colony,",
+      "route": "R3",
+      "area": "Santoshnagar",
+      "zone": "Charminar Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 470,
+      "customer": "TEAM4 LIFE SPACES (PRIME) LLP",
+      "address": "Sy No.199/AA, 200/AA, 201/AA, 205/2/AA, Opp Honda Service Centre, Miyapur, Hyderabad, Medchal Malkajgiri,\nTelangana, 500049",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 507,
+      "customer": "VEDA CERAMICS",
+      "address": "HNO 15-70 PLOT NO9, MARUTHI NAGAR MEDIPALLY, HYDERABAD, Medchal - Malkajgiri, Telangana, 500098",
+      "route": "R3",
+      "area": "Malkajgiri",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 508,
+      "customer": "Venkat Satya Traders",
+      "address": "16-11-370/A, Musarambagh, Malakpet, Hyderabad, Telangana, 500036",
+      "route": "R3",
+      "area": "Malakpet",
+      "zone": "Charminar Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 512,
+      "customer": "Vidisha Educational Society",
+      "address": "ATC Building, Trimulgherry, Hyderabad",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 517,
+      "customer": "Virata Retail Pvt. Ltd.",
+      "address": "Uppal Depot, H. No 6-51/1, Street Number 8, Opposite to Pillar No.92, Budha Nagar, Beside VIJAY SALES, Uppal, Peerzadiguda, Hyderabad, Telangana 500092",
+      "route": "R3",
+      "area": "Boduppal",
+      "zone": "Kapra/Uppal Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 520,
+      "customer": "VSS INDUSTRIAL NEEDS,",
+      "address": "7-2-606/7 OS4 , RETREAT BUILDING ,RP ROAD",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 527,
+      "customer": "Wynn Hospitality Services LLP",
+      "address": "C 14, V T Plaza, KPHB colony, Opposite to SBI KPHB branch, Kukatpally, Secunderabad, Hyderabad, Telangana, 500072",
+      "route": "R3",
+      "area": "Kavadiguda",
+      "zone": "Secunderabad Zone - South-East Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 532,
+      "customer": "YASHODA HEALTH CARE SERVICES PVT LTD",
+      "address": "16-10-29, YASHODA HOSPITAL, NALGONDA X ROADS, MALAKPET, Hyderabad, Telangana, 500036",
+      "route": "R3",
+      "area": "Malakpet",
+      "zone": "Charminar Zone - South-East Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 2,
+      "customer": "AADYA TRAVELS",
+      "address": "UNIT #303, SRI VASISTA APURVA,8-2-350/3/2, ROAD NO.3, BANJARA HILLS,HYDERABAD, +91 40 23337007 - 500034",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 5,
+      "customer": "AASEYA IT SERVICES PRIVATE LIMITED",
+      "address": "4th Floor, Building HO6, Unit in Avance Atlas, Infratech Private Limited IT/ITES SEZ, Hitech City, 2 Gachibowli Village, Serilingampally Mandal,, Rangareddy District, Hyderabad - 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 6,
+      "customer": "AASEYA IT Services Pvt Ltd",
+      "address": "Sri Sai Towers Plot No 9a & 9b Ground Floor",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 7,
+      "customer": "Abharanam Private Limited",
+      "address": "6-3-713, Emerald Apartments, Amrutha Estate, Punjagutta/ Somajiguda, Hyderabad, Hyderabad, Telangana, 500082",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 12,
+      "customer": "AISIN PROPERTIES LLP",
+      "address": "2nd Floor, Sy No 66, 67, Plot No 5,, VVC Konark, Hitech City Road,, Jubilee Enclave, Madhapur,, Hyderabad, Rangareddy,, Telangana, 500081 - 500081",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 13,
+      "customer": "ALLU CINEPLEX LLP",
+      "address": "PLOT NO: 1067, 8/2/293/82/A,\nROAD NO: 45, JUBILEE HILLS,\nHYDERABAD, TELANGANA 500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 15,
+      "customer": "AMALTAS EDUCATION SERVICES PRIVATE LIMITED",
+      "address": "4th Floor, Hyndava Techno Park HUDA Techno Enclave, Sector 3  Hi Tech City, Madhapur Hyderabad Rangareddy Telangana 500081",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 16,
+      "customer": "Amazon Development Centre India Pvt. Ltd",
+      "address": "Sez Unit IN TSIIC LTD, IT/ITES SEZ,, Plot No.12/P&15P, SY No. 115Part, Nankramguda, Village, Serilingampally Mandal, RR District, Hyderabad. 500032",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 18,
+      "customer": "AMB Cinemas LLP-2024-25",
+      "address": "Plot 502B, Amara Jyothi Building, Road Number 31, Jubilee Hills, Hyderabad, Hyderabad, Telangana, 500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 25,
+      "customer": "Arrowsight Private Limited",
+      "address": "1st Floor, Plot No.1/2 Sector 1, Huda Techno Enclave, Serilingampally Circle, Madhapur of Survey No.64, GHMC Serilingampally Circle, Madhapur, Hyderabad, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 27,
+      "customer": "Ashva Ventures Pvt Ltd",
+      "address": "2nd Floor, H.No.1-65/2/164, Guttala Begumpet, Madhapur, Hyderabad, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 29,
+      "customer": "ASIAN ALLU ARJUN CINEMAS LLP",
+      "address": "PLOT NO 502 B, AMAR JYOTHI BUILDING, ROAD NUMBER 31, Jubilee Hills, Hyderabad, Hyderabad, Telangana, 500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 31,
+      "customer": "ASIAN MUKTA A2 CINEMAS LLP",
+      "address": "Ground Floor, 502/B, Amara Jyoti, Road Number 31, Hyderabad, Hyderabad, Telangana, 500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 34,
+      "customer": "ATHOME HOSPITALITY SERVICES PRIVATE LIMITED",
+      "address": "survey no 82 to 84, Deccan Serai, Madhapur, serilingampally, Rangareddy, Telangana, 500084",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 35,
+      "customer": "ATLURI FOODS PVT LTD",
+      "address": "GROUND, 8-2-248/A/G1, SHILPA ARCADE, 3, BANJARA HILLS, Hyderabad, Telangana, 500034",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 36,
+      "customer": "Atum ITS",
+      "address": "PLOT 63, H-NO-4-50/P-1/63, JAYABHERI ENCLAVE, GACHIBOWLI, HYDERABAD, Hyderabad, Telangana, 500032",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 37,
+      "customer": "AVD CINEMAS LLP",
+      "address": "GROUND FLOOR, PLOT NO 502/B, ROAD NO 31, JUBILEE HILLS, HYDERABAD, Hyderabad, Telangana, 500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 51,
+      "customer": "Bharat Financial Inclusion Limited",
+      "address": "10 and 11 FLOOR, 16/A/1 & 2, Qualcomm Commerzone, Kandukuri Road, Qualcomm, Raidurgam, Hyderabad, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 65,
+      "customer": "BHARATVOIP COMMUNICATIONS PRIVATE LIMITED",
+      "address": "4th Floor, HNo 3-240, Plot No. 240, Flat No: 401, B-Block,, Jyothi Flora, D Mart Road, D Mart Road, Kavuri Hills, Madhapur, Hyderabad, Hyderabad, Telangana, 500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 67,
+      "customer": "Bhumi Axis Infrastructures Pvt Ltd",
+      "address": "Orwell-I,GroundFloor,KnowledgeCity,Floor. Sy.No.83/1,PltNo2 Serilingampallymandal,Raidurg,Hyderabad",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 68,
+      "customer": "BIGC MOBILES PRIVATE LIMITED",
+      "address": "1-99/2/B,PLOT NO.2, BIGC TOWER, IMAGE HOSPITAL LANE, MADAPUR, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 75,
+      "customer": "Bright Ventures",
+      "address": "13 1 2/2, AVANTINAGAR, MOTINAGAR, Hyderabad, Telangana, 500018",
+      "route": "R4",
+      "area": "Moosapet",
+      "zone": "Kukatpally Zone - South-West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 80,
+      "customer": "Cartik Reddy Sir",
+      "address": "Plot No. 175, Road No, 13, Jubilee Hills, Hyderabad, Telangana -500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 83,
+      "customer": "CBRE South Asia Pvt. Ltd.",
+      "address": "1ST FLOOR, UNIT NO. 1, SALARPURIA SATTVA KNOWLEDGE CITY, PLOT NO 2, PHASE - I, VILLAGE RAIDURG, SERILINGAMPALLY MANDAL, RANGA REDDY DISTRICT, Hyderabad, Telangana, 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 84,
+      "customer": "Century Multispeciality Hospital",
+      "address": "Road No 12, Banjara Hills",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 87,
+      "customer": "CHANNEL MASTER PRIVATE LIMITED",
+      "address": "GROUND FLOOR, SHOP NO 10 6-2-27 27 A 28 GF -10, DOWN TOWN MALL, LAKIDIKAPUL, HYDERABAD, Hyderabad, Telangana, 500004",
+      "route": "R4",
+      "area": "Masab Tank",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 88,
+      "customer": "Cherry Hill Interiors Pvt. Ltd.",
+      "address": "3rd Floor, Sy.No.136, Sreshta Marvel, Kondapur Main Road, Gachibowli, Hyderabad, Rangareddy, Telangana, 500032",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 90,
+      "customer": "Clean Harbors India LLP",
+      "address": "10th floor North wing part and South Wing,, Unit Nos 1002 - 1004, Divija Commercial properties Pvt .Ltd, Sky view 20, Sy.no 83/1,Plot no. 22,23,24 and 31,32 and 33, Raidurga Panmaqtha Village,Serilingampally Mandal,Hyderabad, Rangareddy, Telangana, 500019",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 92,
+      "customer": "Clove Technologies Private Limited",
+      "address": "H No.1-63/50, PLOT No.50, V V G PARK VIEW, KAVURI HILLS, GUTTALA BEGUMPET, MADHAPUR,HYDERABAD, Hyderabad, Telangana, 500081",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 93,
+      "customer": "Colruyt IT Consultancy India Private. Ltd",
+      "address": "1st and 2nd Floor, Building No. 21, Mindspace Raheja IT Park, Survey No. 64 part, Madhapur, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 95,
+      "customer": "COMPASS GROUP (INDIA) PRIVATE LIMITED",
+      "address": "3rd floor, Q CITY, B Block, Nanakramguda, Opposite US Consulate, Gachibowli, Serilingampally (M), Hyderabad, Rangareddy, Telangana, 500032",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 96,
+      "customer": "CONCORD BUZZ SERVICES PRIVATE LIMITED",
+      "address": "FLAT NO.C1, BHAGYALAXMI NAGAR, SERILINGAMPALLY, HYDERABAD, Rangareddy, Telangana, 500080",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 97,
+      "customer": "Cosmic Office Solutions",
+      "address": "1-39, 1-39/A, BEHIND MADHAPUR PS, GUTTALA BEGUMPET,, MADHAPUR, Hyderabad, Telangana, 500081",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 98,
+      "customer": "COTELLIGENT INDIA PRIVATE LIMITED",
+      "address": "Upper Ground Floor,Unit No. UG 04, MahangaCommercial Properties Pvt Ltd, Sky view, Raidurga Village, Serlingampally, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 100,
+      "customer": "Crafts Council Of Telangana",
+      "address": "1st Floor, 8-2-686/28/1/3/1, Crafts Council Of Telangana, Sharon Full Gospel Church Road, Sharon Full Gospel Church, Banjara Hills, Hyderabad, Hyderabad, Telangana, 500034",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 101,
+      "customer": "Creative Corporation",
+      "address": "3RD FLOOR, SURVEY NO 50P PLOT NO 187 188 188/A 199 199/A 200, SILPA SUMMIT, ABOVE INDUSIND BANK, GACHIBOWLI VILLGE, GACHIBOWLI, Hyderabad, Telangana, 500032",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 102,
+      "customer": "CS LUXURIO",
+      "address": "PLOT NO.6, GACHIBOWLI, SERI LINGAMPALLY, Hyderabad, Telangana, 500032",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 103,
+      "customer": "D. E. SHAW INDIA PRIVATE LIMITED",
+      "address": "PLOT NO. 573, B and C, ROAD NO 1, JUBILEE HILLS, Hyderabad, Telangana, 500096",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 105,
+      "customer": "DataDeli Technologies and Services Pvt. Ltd.",
+      "address": "Level 3, Reliance Humsafar Building\nRoad No 11, Banjara Hills, Hyderabad – 500034",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 108,
+      "customer": "DELIGHT STORE (OPC) PRIVATE LIMITED",
+      "address": "14-10-1122, Opp. Mahankali Temple, Lower Dhoolpet, Puranapul, Hyderabad, Hyderabad, Telangana, 500006",
+      "route": "R4",
+      "area": "Charminar",
+      "zone": "Charminar Zone - Old City (South-West)",
+      "note": "alias match"
+    },
+    {
+      "sno": 109,
+      "customer": "Devbhumi Realtors Pvt. Ltd",
+      "address": "Ground Floor, Plot No.2, SY No.83/1, Knowledge City, Orwell 1, Serilingampally Mandal, Raidurg Panmaktha Village, Hyderabad, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 111,
+      "customer": "DIGITAL MINDS SOFTWARE SOLUTIONS PRIVATE LIMITED",
+      "address": "SOFTSOL BUILDING, A-WING 2ND FLOOR, PLOT NO 4 INFO CITY, BESIDE MIND SPACE, MADHAPUR, Hyderabad, Telangana, 500081",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 112,
+      "customer": "Digitral Private Limited",
+      "address": "2nd, The Skyview 10, Hitech City Main Road, Hyderabad, Hyderabad, Telangana, 500082",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 113,
+      "customer": "DIVIJA COMMERCIAL PROPERTIES PRIVATE LIMITED,",
+      "address": "8TH FLOOR, 1-123 BLOCK III, MY HOME HUB, MADHAPUR, HYDERABAD, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 120,
+      "customer": "Elite Techno Projects",
+      "address": "1-11-153/1/A/2/F.201, SHAMLAR BULIDINGS, HAVEN RESIDENCY,BEGUMPET, Hyderabad, Telangana, 500016",
+      "route": "R4",
+      "area": "Ameerpet",
+      "zone": "Secunderabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 123,
+      "customer": "Energetic People Private Limited",
+      "address": "1ST, PLOT NO 59 SY NO 41, AARADHYA GRANDEUR, kavuri hills, NAVABHARAT BUILDING, Serilingampalli, Hyderabad, Rangareddy, Telangana, 500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 129,
+      "customer": "F5 Networks Innovation Private Limited",
+      "address": "Unit No.801 to 804, Skyview-20, Divija Commercial Properties Private Limited, Raidurga Village, Serilingampally Mandal, Hyderabad, Telangana, 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 130,
+      "customer": "Facebook India Online Services Pvt Ltd",
+      "address": "14th,15th,16th and 17th, Skyview 10, The Skyview, Survey No. 83/1 of Raidurg Panmaqtha Village, Serilingampally Mandal,, Hyderabad, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 131,
+      "customer": "FACTSET Systems India Pvt Ltd",
+      "address": "7TH FLOOR, 8TH FLOOR, 9TH FLOOR and 11TH FLOOR, 7TH FLOOR BLOCK 4, NSL DIVYASREE ORION, SURVEY NO.66/1, RAIDURG VILLAGE, Rangareddy, Telangana, 500032",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 132,
+      "customer": "FERNANDEZ FOUNDATION",
+      "address": "4-1-1229/1, Dr.L.J.F. BLOCK, BOGULKUNTA, HYDERABAD, Hyderabad, Telangana, 500001",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 134,
+      "customer": "FOX MANDAL & ASSOCIATES LLP",
+      "address": "3RD FLOOR, PLOT NO.1264, SAI SHIKHA, ROAD NO.36,JUBILEE HILLS, HYDERABAD, Hyderabad, Telangana, 500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 137,
+      "customer": "GA Dental Hospital",
+      "address": "Banjara Hills, Hyderabad",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 141,
+      "customer": "GENESYS BIOLOGICS PRIVATE LIMITED",
+      "address": "4TH FLOOR, 6-3-248/1/1/A, BHASKAR PLAZA, road no 1, banjara hills, Hyderabad, Telangana, 500034",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 142,
+      "customer": "Gerab India Engineering Products Private Limited",
+      "address": "6TH FLOOR, NO.6-3-1085/D/601, DEGA TOWERS, RAJ BHAVAN ROAD, SOMAJIGUDA, Hyderabad, Telangana, 500082",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 145,
+      "customer": "Greater Horizon Consultants LLP",
+      "address": "8-2-293/82A/853-D, Road Number 44, Siri Media Pvt Ltd, Jubilee Hills, Hyderabad, Hyderabad, Telangana, 500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 147,
+      "customer": "GRID DYNAMICS PRIVATE LIMITED",
+      "address": "5th Floor, Plot No.16 Survey No.83/1, Tower 1 KnowledgePark, Raidurg, Serilingampally Mandal, Panmaktha, Hyderabad, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 148,
+      "customer": "GRIPTONITE  GAMES  INDIA  PRIVATE  LIMITED",
+      "address": "Survey Number 13, 3rd Floor, Western Pearl, Kondapur, Hyderabad, Hyderabad, Telangana, 500084",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 150,
+      "customer": "Guru Vinayaka Soloutions",
+      "address": "B-24 Ground Floor, Madhura Nagar, Hyderabad, Telangana - 500016",
+      "route": "R4",
+      "area": "Moosapet",
+      "zone": "Kukatpally Zone - South-West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 151,
+      "customer": "H&A GLOBAL SERVICES",
+      "address": "SIXTH FLOOR, H.NO. 4-768/A, NEW HAFEEZPET, SERILINGAMPALLY, Marthanda Nagar, Hyderabad, Medchal Malkajgiri, Telangana, 500049",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 154,
+      "customer": "HARSHA CONSTRUCTIONS PRIVATE LIMITED",
+      "address": "2nd floor, SY No 36/A/9, League Sujana Building, Gopana Palli Road, Gopanpalle, Hyderabad, Rangareddy, Telangana, 500046",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 155,
+      "customer": "HEALTHEDGE SOFTWARE PRIVATE LIMITED",
+      "address": "Floor No 13, Tower-I  M/S  Laxmi Infobahn, Pvt Ltd-Tower-1(Sez), Developer Sy.No/P, Kokapet, Village  Rajendra Nagar  Mandal",
+      "route": "R4",
+      "area": "Rajendranagar",
+      "zone": "Golconda/Rajendranagar Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 156,
+      "customer": "HELLO MOBILES PRIVATE LIMITED",
+      "address": "Building No./Flat No.: H No - 2 - 56 / 2 - 33\nName Of Premises/Building: Ayyappa Society\nRoad/Street: Plot No - 1303, Khanamet\nCity/Town/Village: Madhapur District: Hyderabad State: Telangana PIN Code: 500081",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 158,
+      "customer": "HITACHI DIGITAL SERVICES INDIA PRIVATE LIMITED",
+      "address": "Limited, Co- Developer in  M/S  TSIIC limited, nanakaramguda village serillingampally Mandal, Rangareddy District, Telangana, 5000032",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 163,
+      "customer": "Honer Property Management Llp",
+      "address": "PLOT NO 1 2 3 4 4A, KRB TOWERS, JUBILEE ENCLAVE, HYDERABAD, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 166,
+      "customer": "Hyundai Mobis",
+      "address": "Floor 7 & 8, Building No. 12B, Raheja Mindspace,, Hi-Tech City, Madhapur, Rangareddy Telangana",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 167,
+      "customer": "HYUNDAI MOTOR INDIA ENGINEERING PVT LTD",
+      "address": "SURVEY NO.5/2 AND 5/3, OPP HITEC CITY RAILWAY STATION, IZZATNGAR, LINGAMPALLY MANDAL, Rangareddy, Telangana, 500084",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 168,
+      "customer": "I Design Data Solutions Pvt Ltd",
+      "address": "1st Floor, Plot No 5, Prashasan Nagar, Road No 72, Jubilee Hills Hyderabad, Hyderabad, Telangana, 500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 171,
+      "customer": "Image Healthcare Limited",
+      "address": "Ameerpet, Hyderabad",
+      "route": "R4",
+      "area": "Ameerpet",
+      "zone": "Secunderabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 172,
+      "customer": "IMIMOBILE CLOUD COMMUNICATIONS (INDIA) PRIVATE LIMITED",
+      "address": "PLOT NO. 770, ROAD NO 44,",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 175,
+      "customer": "IN - VIPL Co-Developer",
+      "address": "Virtusa Consulting Services Pvt. Ltd Co-Developer,",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 177,
+      "customer": "Indira Television Limited",
+      "address": "6-3-248/3, Sakshi Towers, Road No.1, Banjara Hills,",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 188,
+      "customer": "J.C. Brothers Jewellers",
+      "address": "# 6-3-1186/10, Rajbhavan Road, Begumpet, Hyderabad",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 190,
+      "customer": "Jagati Publications Limited",
+      "address": "6-3-249/1, Sakshi Towers, Road no-1, Banjara Hills, Hyderabad, Hyderabad, Telangana, 500034",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 192,
+      "customer": "JALAVIHAR ENTERTAINMENT PRIVATE LIMITED",
+      "address": "PLOT NO.229, JALAVIHAR, NECKLACE RAOD, NECKLACE RAOD, Hyderabad, Telangana, 500004",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 193,
+      "customer": "JAYABHERI AUTOMOTIVES PVT LTD",
+      "address": "JAYABHERI ENCLAVE, PLOT NO 1 2 AND 3, 105 106, GACHIBOWLI, HYDERABAD, Hyderabad, Telangana, 500032",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 194,
+      "customer": "JB Hospitality Service",
+      "address": "JANARDHAN REDDY NAGAR, PLOT NO 85, NEAR HP GAS GODOWN, BESIDE SVR MENS HOSTEL, GACHIBOWLI, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 195,
+      "customer": "JOIN US ENTERPRISES",
+      "address": "6-3-883/A/1/1, OPP MOR JEWELLERS, PANJAGUTTA, HYDERABAD, Hyderabad, Telangana, 500082",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 196,
+      "customer": "Jubilee Enterprises (Krishnapatnam, J. Hills)",
+      "address": "8-2-293/82/A/1217, M/S SRESHTA PROPERTIES, ROAD NO-36, JUBILEE HILLS, Hyderabad, Telangana, 500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 198,
+      "customer": "JUBLEE HILL RESORTS PRIVATE LIMITED",
+      "address": "TS NO.1, BLOCK.C, WARD NO.9GO, ROAD NO.37, JUBILEE HILLS, HYDERABAD, Hyderabad, Telangana, 500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 201,
+      "customer": "KALASHA FINE JEWELS PRIVATE LIMITED",
+      "address": "Building No./Flat No.: 8-2-623/5/1/1\nName Of Premises/Building: AVENUE IV GRC HIGH VALUES\nRoad/Street: RAOAD NO 10\nLocality/Sub Locality: BANJARA HILLS\nCity/Town/Village: Secunderabad\nDistrict: Hyderabad\nState: Telangana\nPIN Code: 500034",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 202,
+      "customer": "KALYANA VINDHU RESTAURENT LLP",
+      "address": "FIRST, PLOT NO 36 AND 43-C, KONDAPUR,",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 203,
+      "customer": "KAPIL BUSINESS CENTER PRIVATE LIMITED",
+      "address": "Kapil Business center, Growork 4th Floor,\nKapil Towers, ISB Rd, Financial District,\nNanakramguda, Hyderabad, Telangana 500032",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 208,
+      "customer": "Knight Frank (India) Pvt. Ltd.",
+      "address": "SURVEY NO. 83/1, OFFICE 3, 5TH FLOOR, WESTERN DALLAS CENTRE, HYDERABAD KNOWLEDGE CITY, RAIDURG,SERILINGAMPALLY MANDAL, Rangareddy, Telangana, 500032",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 209,
+      "customer": "Knowledge City-Phase II",
+      "address": "GROUND FLOOR, SALARPURIA SATTVA GROUP ORWELL I, KNOWLEDGE CITY, SY NO 83/1 PLOT NO. 2, RAIDURG, SERILINGAMPALLY MANDAL, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 210,
+      "customer": "KONY INDIA PRIVATE LIMITED",
+      "address": "SEZ I, 7TH FLOOR, BUILDING NO H06B,",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 213,
+      "customer": "KSP HOTEL PRIVATE LIMITED",
+      "address": "6-1-1603/C, Opp RR Dist Collectorate, Lakdikapul, Hyderabad, Telangana, 500004",
+      "route": "R4",
+      "area": "Masab Tank",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 216,
+      "customer": "LAKAMSANI GROUP",
+      "address": "Ground Floor, 8-2-293-82/NL/288, P No.288, LAKAMSANI HOUSE, Road Number 10C, Hyderabad, Hyderabad, Telangana, 500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 217,
+      "customer": "LANSUM ETANIA DEVELOPERS LLP",
+      "address": "PLOT NO 283, LANSUM HOUSE, ROAD NO 78, JUBILEE HILLS, Hyderabad, Telangana, 500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 218,
+      "customer": "LANSUM Properties LLP",
+      "address": "Plot No-283, Joy Of Housing Lansum House, Road No-78, Jubilee Hills, Hyderabad, Hyderabad, Telangana, 500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 219,
+      "customer": "Laurel Services",
+      "address": "PLOT NO 168,MIG HUDA LAYOUT,NALLAGANDLA SERILINGAMPALLY,HYDE, SERILINGAMPALLY, SERILINGAMPALLY, Rangareddy, Telangana, 500019",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 220,
+      "customer": "Lee Services",
+      "address": "First Floor, Industrial Estate, C-2, Opp Little Scholar School, Sanath Nagar, Hyderabad, Hyderabad, Telangana, 500018",
+      "route": "R4",
+      "area": "Ameerpet",
+      "zone": "Secunderabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 222,
+      "customer": "LOHIYA INDUSTRIES",
+      "address": "PLOT NO 6-66, SURVEY NO 165, GAGAN PAHAD, RAJENDRA NAGAR, Rangareddy, Telangana, 501323",
+      "route": "R4",
+      "area": "Rajendranagar",
+      "zone": "Golconda/Rajendranagar Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 224,
+      "customer": "Lucky Enterprises",
+      "address": "GROUND FLOOR, 6-3-662/b, JAFAR-ALI-BAGH, SOMAJIGUDA, PANJAGUTTA, Hyderabad, Telangana, 500082",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 227,
+      "customer": "M G Trends",
+      "address": "3RD FLOOR, PLOT NO 187 SY NO 50P, SILPA SUMMIT, GACHIBOWLI, GACHIBOWLI, HYDERABAD, Rangareddy, Telangana, 500032",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 230,
+      "customer": "M/S Centro Brands Private Limited",
+      "address": "Survey No. 50P, Plot No. 187 to 200, Silpa Summit, Gachibowli, hyderabad, Rangareddy, Telangana, 500032",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 233,
+      "customer": "M/s Samriddhi Petro Products Pvt Ltd",
+      "address": "PLOT NO 359-III ROAD NO 80, H.NO 8-2-293/82/JIII/359, JUBILEE HILLS, JUBILEE HILLS, Hyderabad, Hyderabad, Telangana, 500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 235,
+      "customer": "M/S SRI VENGAMAMBA HOTELS AND RESORTS-KOTI",
+      "address": "H N0.4-3-302 TO 308, BANK STREET, KOTI, Hyderabad, Telangana, 500001",
+      "route": "R4",
+      "area": "Goshamahal",
+      "zone": "Golconda/Rajendranagar Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 238,
+      "customer": "M/S UDAY JEWELLERY INDUSTRIES LIMITED",
+      "address": "2nd Floor, 3-6-307/1, 3-6-307/2, 3-6-308/1, Sanghi House Basheer Bagh, Hyderguda Main Road, Opp Bikanervala, Basheer Bagh, Hyderabad, Hyderabad, Telangana, 500004",
+      "route": "R4",
+      "area": "Attapur",
+      "zone": "Golconda/Rajendranagar Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 241,
+      "customer": "M/S. MYK LATICRETE India Pvt. LTD",
+      "address": "17 TH, Plot No 30/C forming part of Sy No 83/1, Orbit Building Tower 1, Hyderabad Knowledge CITY TSIIC RAIDURGAM, T HUB & DALLAS CENTER, Raidurgam, Hyderabad, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 242,
+      "customer": "M/S. Sumadhura Infracon P. LTD",
+      "address": "2nd FLOOR, 8-2-2293/82/A/1, Plot No 1131, PANZER 36, ROAD NO 36 JUBILEE HILLS, HYDERABAD, Hyderabad, Telangana, 500034",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 246,
+      "customer": "Mahanga Commercial Properties Pvt Ltd",
+      "address": "8 TH FLOOR 3RD BLOCK, H NO 1-123, MY HOME HUB, HI TECH CITY, Madhapur, Hyderabad, Hyderabad, Telangana, 500081",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 247,
+      "customer": "Maheshwari Times",
+      "address": "1ST FLOOR, 5-9-250, 40, UNITY HOUSE, ABIDS, HYDERABAD, Hyderabad, Telangana, 500001",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 249,
+      "customer": "MALABAR GOLD AND DIAMONDS LIMITED",
+      "address": "2nd Floor, 6-3-1112/A AND B , 201 ,, PLOT NO 6, BOLESAHEB MAKTHA ROAD, BEGUMPET, Hyderabad, Telangana, 500082",
+      "route": "R4",
+      "area": "Ameerpet",
+      "zone": "Secunderabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 250,
+      "customer": "MALABAR GOLD LIMITED- Manufacturing Unit",
+      "address": "3rd Floor, 6-3-1112/A AND B , 201 ,, PLOT NO 6, BOLESAHEB MAKTHA ROAD, BEGUMPET, Hyderabad, Telangana, 500082",
+      "route": "R4",
+      "area": "Ameerpet",
+      "zone": "Secunderabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 251,
+      "customer": "Mallemaala Entertainments Pvt. Ltd",
+      "address": "Plot No 5, Sabdalaya, Road No 2, Banjarahills, Hyderabad, Hyderabad, Telangana, 500034",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 254,
+      "customer": "MARRI RETAIL LIMITED",
+      "address": "9th Floor, Sy.No 17, Units Numbers: 901,902,903 & 904, Vasavi Shalom Sky City, Gachibowli Circle, Shilpa Layout Service Road, Gachibowli X Road Bus Stop, Gachibowli, Hyderabad, Rangareddy, Telangana, 500032",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 256,
+      "customer": "Marri Retail Limited Jewellery Division",
+      "address": "9th Floor, Sy.No 17, Units Numbers: 901,902,903 & 904, Vasavi Shalom Sky City, Gachibowli Circle, Shilpa Layout Service Road, Gachibowli X Road Bus Stop, Gachibowli, Hyderabad, Rangareddy, Telangana, 500032",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 259,
+      "customer": "MARRI RETAIL PRIVATE LIMITED(Jewellery Division)",
+      "address": "# 12-7-20/65, Railwaygoods Shed Road,, Opp: Eenadu Printing Press, Moosapet,, Hyderabad - 500018",
+      "route": "R4",
+      "area": "Moosapet",
+      "zone": "Kukatpally Zone - South-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 260,
+      "customer": "Maruti Suzuki India Limited",
+      "address": "Unit No.903, Gowra Palladium, Survey No.83/1, Hyderabad Knowledge City, Raidurg Panmaktha Village, Serilingampally Mandal, Hyderabad, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 264,
+      "customer": "Max to Max",
+      "address": "AYYAPPASARANAM, HNO 8-4/376/7, New Shastri Nagar, Moti nagar, Erragadda, Hyderabad, Hyderabad, Telangana, 500018",
+      "route": "R4",
+      "area": "Moosapet",
+      "zone": "Kukatpally Zone - South-West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 265,
+      "customer": "MCS Solutions Private Limited",
+      "address": "4TH Floor, B Wing, C/o IKON Spaces, PURVA SUMMIT, White Field Road, Hitec City, Hyderabad, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 266,
+      "customer": "Megha Engineering & Infrastructures Ltd",
+      "address": "S-2,T.I.E, BALANAGAR, HYDERABAD, Rangareddy, Telangana, 500037",
+      "route": "R4",
+      "area": "Moosapet",
+      "zone": "Kukatpally Zone - South-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 269,
+      "customer": "METRO CARE HOSPITAL",
+      "address": "PLOT NO : 408, NORTH GATE - 1, MATHRU SREE NAGAR,",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 273,
+      "customer": "Moonlike Construction Pvt Ltd",
+      "address": "SY. NO. 67/P,, CYBER PARK,, Adj. to Shilparamam,, Hitech City, Madhapur,, Hyderabad, Telangana, 500081",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 274,
+      "customer": "More Retail Limited",
+      "address": "6-3-562, Road No 1 Banjara Hills",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 281,
+      "customer": "MTX IT Consulting Services Pvt. Ltd.",
+      "address": "My Home Twitza, Level 15, Survey No. 83/1, TSIIC, Hitech City Main RoadHyderabad, Telangana – 500081",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 283,
+      "customer": "MYK LATICRETE INDIA PRIVATE LIMITED",
+      "address": "17 TH, Plot No 30/C Forming Part of \nSy N 83/1, Orbit Building Tower 1, Hyderabad\nKnowledge CITY TSIIC RAIDURGAM, T HUB",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 284,
+      "customer": "Mylan Laboratories Limited",
+      "address": "Plot No.564/A/22, Mylan Laboratories Limited, Road No.92, Jubilee Hills, Hyderabad, Telangana, 500096",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 285,
+      "customer": "N Prasad Gaaru",
+      "address": "Plot No.242/B, Road No.76, Jubilee Hills, Hyderabad",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 288,
+      "customer": "NAKSHATRA ART JEWELLERY",
+      "address": "7-2-B-35 and 36, Sanath Nagar Industrial, Estate, Sanath Nagar, Hyderabad,, Telangana, 500018 - 500018",
+      "route": "R4",
+      "area": "Ameerpet",
+      "zone": "Secunderabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 290,
+      "customer": "NARBADA GEMS & JEWELLERY LIMITED",
+      "address": "1st Floor, 3-6-307/1, 3-6-307/2, 3-6-308/1, Sanghi House Basheer Bagh, Hyderguda Main Road, Opp Bikanervala, Basheer Bagh, Hyderabad, Hyderabad, Telangana, 500004",
+      "route": "R4",
+      "area": "Attapur",
+      "zone": "Golconda/Rajendranagar Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 295,
+      "customer": "Neelanchal Griha Nirman Pvt. Ltd",
+      "address": "GROUND FLOOR, SALARPURIA SATTVA GROUP ORWELL BLOCK 1, KNOWLEDGE CITY, SY NO. 83/1 PLOT NO.2, SERILINGAMPALLY MANDAL, RAIDURG, HYDERABAD, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 296,
+      "customer": "Neelanchal Projects LLP",
+      "address": "Ground floor, Orwell 1, Salarpuria sattva knowledge city, SY NO 83/1 plot no 2 serlingampally mandal raidurg, Hyderabad, Hyderabad, Telangana, 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 298,
+      "customer": "NEOVATIC TECHNOLOGIES PRIVATE LIMITED",
+      "address": "PLOT NO 78, KAVURI HILLS, PHASE-1, MADHAPUR, Hyderabad,, Telangana, 500081 - 500081",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 300,
+      "customer": "NETWORK18 MEDIA & INVESTMENTS LIMITED",
+      "address": "1st Floor, Door No. 6-3-902/A/F2, Central Plaza, Somajiguda, Hyderabad, Hyderabad, Telangana, 500082",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 301,
+      "customer": "NEWTECH BUILDHOME PRIVATE LIMITED",
+      "address": "134P,132P,110P, GACHIBOWLI, SERILINGAMPALLY, Rangareddy, Telangana, 500032",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 303,
+      "customer": "North Star Enterprises",
+      "address": "7-1-208/2, SY No 157, Chinmayi Residency, BT Road, Jhbio Innovation Pvt, Ameerpet, Hyderabad, Hyderabad, Telangana, 500082",
+      "route": "R4",
+      "area": "Ameerpet",
+      "zone": "Secunderabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 306,
+      "customer": "NTT DATA Business Solutions Private Limited",
+      "address": "3rd Floor B wing, Plot no 4, Softsol Tower 2, Info City , Software units Layout, Madhapur, Hyderabad, Telangana, 500081",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 308,
+      "customer": "Olectra Greentech Limited",
+      "address": "3rd Floor, S-22, Balanagar, Technocrat Industrial Estate, hyderabad, Hyderabad, Telangana, 500037",
+      "route": "R4",
+      "area": "Moosapet",
+      "zone": "Kukatpally Zone - South-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 309,
+      "customer": "Olive Dental World",
+      "address": "Fortune Ikon, Rd No.7,Kaktiya Hills, Guttala -Begumpet, Kavuri Hills, Madhapur, Hyderabad",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 311,
+      "customer": "One Convergence Devises Pvt. Ltd.",
+      "address": "2nd Floor , East Wing, Plot No,S -1,2,3,4 & 4/A, KRB Towers, Madhapur, Hyderabad Telangana, 500081",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 318,
+      "customer": "PARENUS",
+      "address": "FLAT GC.6-3-713, Sapphire Complex, AMRUTHA HILLS, Punjagutta Officers Colony Road, Punjagutta, Hyderabad, Hyderabad, Telangana, 500082",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 322,
+      "customer": "PHONIEX SHOES PRIVATE LIMITED",
+      "address": "4-12/b,4-12/c, serilingampally, Hyderabad, Rangareddy, Telangana, 500019",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 325,
+      "customer": "PMR HOUSING PRIVATE LIMITED",
+      "address": "FLAT NO 205 H NO 6 3 862 1, LAXMI NIVAS APARTMENTS, AMEERPET, HYDERABAD, Hyderabad, Telangana, 500016",
+      "route": "R4",
+      "area": "Ameerpet",
+      "zone": "Secunderabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 326,
+      "customer": "Police Officers Mess",
+      "address": "10-5-15, OFFICERS MESS, MASAB TANK, Hyderabad, Telangana, 500028",
+      "route": "R4",
+      "area": "Masab Tank",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 328,
+      "customer": "Poorna Build Tech Pvt. Ltd",
+      "address": "Ground Floor, Orwell 1, Sattva Knowledge City, Sy. No. 83/1,Plot No.2, Serilingam Pally Mandal, Raidurg, Hyderabad, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 329,
+      "customer": "Practive Health India Private Limited",
+      "address": "3rd Floor, Building No 21,  Raheja Mindspace, Survey No.64, Madhapur Village  Serilingampall, Hyderabad",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 337,
+      "customer": "QUALITEST TECHNOLOGIES PRIVATE LIMITED",
+      "address": "3rd Floor, Plot No. 1202&1215A, Regus, SL Jubilee, Road No. 36, Jubilee Hills, Hyderabad, Hyderabad, Telangana, 500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 338,
+      "customer": "QUALITY ASSAY & HALLMARKING CENTRE PRIVATE LIMITED",
+      "address": "4th FLOOR, 6-3-1112/A , B, ROOM NO 401 Plot No 6, Bolesaheb Maktha Road, Begumpet, Hyderabad, Telangana, 500082",
+      "route": "R4",
+      "area": "Ameerpet",
+      "zone": "Secunderabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 339,
+      "customer": "QUEST DIAGNOSTICS HTAS INDIA PRIVATE LIMITED",
+      "address": "Level 2, Building No. H06A, Avance Business Hub, Survey No.30P,34P,35Pand38P,Behind Dell Campus, Gachibowli, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 343,
+      "customer": "RAIN CEMENTS LIMITED",
+      "address": "Regd/Corp. Office : 34, \"Rain Center\",",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 345,
+      "customer": "Rajlaxmi Griha Nirman Pvt Ltd",
+      "address": "Necklace Pride_Commercial",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 347,
+      "customer": "Rama Krishna Sir",
+      "address": "Plot No. 270/G/1, Road No. 10, Jubilee Hills,",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 351,
+      "customer": "Ramky Atalian Pvt. Ltd.",
+      "address": "9t Floor, Ramky Gandiose, Ramky Towers Complex,",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 356,
+      "customer": "RELIABLE CORPORATE SERVICES",
+      "address": "8-1-402/23, ground floor, OPP INTELLI KIDS",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "house-number prefix 8-1-"
+    },
+    {
+      "sno": 357,
+      "customer": "Reliance Retail Limited",
+      "address": "4, 6- 3- 1090 / B, LAKE SHORE TOWERS, RAJBHAVAN ROAD, SOMAJIGUDA, Hyderabad, Telangana, 500082",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 358,
+      "customer": "RENEWSYS INDIA PVT LTD",
+      "address": "SEZ UNIT, FABCITY PLOT NO.06,SURVEY#114/P,",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 360,
+      "customer": "Rishi Trading Company",
+      "address": "Plot No. F5 &F6, Shutter No. 4&5, APIE, Balanagar, Fathenagar, Hyderabad",
+      "route": "R4",
+      "area": "Moosapet",
+      "zone": "Kukatpally Zone - South-West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 362,
+      "customer": "RK Cine Plex",
+      "address": "8-2-120/1/9 F-2 F-3, ROAD NO 2, BANJARA HILLS HYDERABAD, Hyderabad, Telangana, 500034",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 364,
+      "customer": "RS Brothers Jewellers Pvt Ltd",
+      "address": "OPP FIRE STATION, 7-2-1740,, WARE HOUSE NO. 14, 15, MAIN ROAD, SANATHNAGAR, HYDERABAD, Hyderabad, Telangana, 500018",
+      "route": "R4",
+      "area": "Ameerpet",
+      "zone": "Secunderabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 367,
+      "customer": "RSB RETAIL INDIA LIMITED - TG",
+      "address": "7-2-1740 WAREHOUSE NO 14,15, KSSP WARE HOUSE COMPLEX, OPP FIRE STATTION, SANATHNAGAR, Hyderabad, Telangana, 500018",
+      "route": "R4",
+      "area": "Ameerpet",
+      "zone": "Secunderabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 372,
+      "customer": "S V Enterprises",
+      "address": "1, 8-2-603/B/34/78/5, Zehra Nagar, Road No.10,",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 373,
+      "customer": "S-Square Data Systems Pvt. Ltd",
+      "address": "Unit No. 13A, B. No. 9, Survey No.64, 5th Raheja -",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 375,
+      "customer": "Saboo Automotive PVT LTD",
+      "address": "House no : 8-2-293/82/F/A/22 & 8-2-293/82/F/A/22/1, Plot no: 22 (Type A) in Site-I of Film Nagar Co-operative Housing, Society Limited Film Nagar, Beside Auto Pride, Hyderabad.",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 377,
+      "customer": "Sagar Stationers",
+      "address": "6/2/935/2/2, RAJ BHAVAN ROAD,",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 378,
+      "customer": "SAI KRIDHAY ENTERPRISE PRIVATE LIMITED",
+      "address": "4, 314, Fortune icon, Road No.7, sri chaitanya school, kakatiya hills, Hyderabad, Hyderabad, Telangana, 500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 379,
+      "customer": "SAI KRISHMAAN OWNERS ASSOCIATION",
+      "address": "Plot no 97, block b, sy no 43/p,44/p,45,46,48  Kavuri Hills Guttala Begumpet Hyderabad Telangana 500081",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 386,
+      "customer": "SANGEETA SANGHI",
+      "address": "FLAT No 102, 3-6-62/17, VICTORY RESIDENCY",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "house-number prefix 3-6-"
+    },
+    {
+      "sno": 387,
+      "customer": "Sanghi Enterprises",
+      "address": "Upper Ground Floor, Shop No.6, 21-2-444, Gs Trade Center, Mitti Ka Sher, Charkaman, Near AGRA MITHAI GHAR AND RESTAURANT, Hyderabad, Hyderabad, Telangana, 500002",
+      "route": "R4",
+      "area": "Charminar",
+      "zone": "Charminar Zone - Old City (South-West)",
+      "note": "alias match"
+    },
+    {
+      "sno": 388,
+      "customer": "Sanghi Jewellers Pvt Ltd",
+      "address": "3rd Floor, 3-6-307/1, 3-6-307/2, 3-6-308/1, Sanghi House Basheer Bagh, Hyderguda Main Road, Opp Bikanerwala, Basheer Bagh, Hyderabad, Hyderabad, Telangana, 500004",
+      "route": "R4",
+      "area": "Attapur",
+      "zone": "Golconda/Rajendranagar Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 391,
+      "customer": "SARADHI PROJECTS PRIVATE LIMITED",
+      "address": "D.NO.10-105, OPP. IDPL COLONY,",
+      "route": "R4",
+      "area": "Moosapet",
+      "zone": "Kukatpally Zone - South-West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 393,
+      "customer": "Sathya Sankalp Enterprises",
+      "address": "SRT NO 738, Near Round Table School, Nehru Park Line Road, Sanathnagar, Hyderabad, Telangana, 500018",
+      "route": "R4",
+      "area": "Ameerpet",
+      "zone": "Secunderabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 394,
+      "customer": "Sattva Developers Pvt Ltd",
+      "address": "Ground Floor, SALARPURIA SATTVA ORWELL 1, Knowledge City, 83/1 plot no 2 serilingampally raidurg, Hyderabad, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 395,
+      "customer": "Sattva Infra Management Private Limited",
+      "address": "GROUND FLOOR, SALARPURIA SATTVA GROUP ORWELL I, KNOWLEDGE CITY, SY NO 83/1 PLOT NO. 2, RAIDURG, SERILINGAMPALLY MANDAL, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 396,
+      "customer": "Sattva Reality Pvt. Ltd",
+      "address": "GROUND FLOOR, ORWELL 1, SALARPURIA SATTVA KNOWLEDGE CITY, SY NO 83/1 PLOT NO 2 SERLINGAMPALLY MANDAL RAIDURG, Hyderabad, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 397,
+      "customer": "Sattva-4",
+      "address": "Necklace Pride",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 398,
+      "customer": "Sattva-5",
+      "address": "Knowledge Capital Block III",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 403,
+      "customer": "Shirasa Dwellings Private Limited",
+      "address": "Plot No. 2, Raidurg, Serilingampally, Hyderabad",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 406,
+      "customer": "SHREE VENKATESHWARA LODGE",
+      "address": "6-1-74, SHREE VENKATESHWARA",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "house-number prefix 6-1-"
+    },
+    {
+      "sno": 408,
+      "customer": "SHRI SHAKTI SCHOOLS PVT. LTD.",
+      "address": "1-55 / 12, CHIEC AVENUE, KONDAPUR, KOTHAGUDA POST, Hyderabad, Telangana, 500084",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 412,
+      "customer": "Sirigiri Plast Pvt Ltd",
+      "address": "Part of Plot No. 159, SY No. 48/11, SEIE, Kattedan,, Rajendra Nagar, Hyderabad - 500077",
+      "route": "R4",
+      "area": "Rajendranagar",
+      "zone": "Golconda/Rajendranagar Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 414,
+      "customer": "SKOOTR GLOBAL PRIVATE LIMITED",
+      "address": "14 & 15, RMZ Futura, Deloitte Drive, Block C, Madhapur, Hyderabad, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 418,
+      "customer": "Smart Scape Developers LLP",
+      "address": "Plot No. 18, Opp: Vijaya Co-Operative Housing, Society, Road No, 10C, Jubilee Hills, Hydrabad",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 420,
+      "customer": "SPECTRAMEDIX INDIA PRIVATE LIMITED",
+      "address": "First Floor, Municipal No. 1-11-250/2/2/A, Begumpet,\nBegumpet, Hyderabad, Hyderabad, Telangana, 500016",
+      "route": "R4",
+      "area": "Ameerpet",
+      "zone": "Secunderabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 421,
+      "customer": "Sri Aditya Homes Pvt Ltd",
+      "address": "8/2/332/8/A, ADITYA HOUSE, ROAD NO 3, BANJARA HILLS, Hyderabad, Telangana, 500034",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 423,
+      "customer": "Sri Agencies",
+      "address": "6-3-667/1, Panjagutta, Hyderabad",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 427,
+      "customer": "SRI RAMA PAINTS & PIPE FITTING STORES",
+      "address": "7-1-624, MARKET STREET,KHAIRATABAD,, Hyderabad, Telangana, 500004 - 500004",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 428,
+      "customer": "Sri Ratna Traders",
+      "address": "Anand Nagar Colony, H.No 1-111/1/17/3P, Sri Nilayam, Road Number 3, JC Real Estate, Kondapur, Hyderabad, Rangareddy, Telangana, 500084",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 431,
+      "customer": "Sri Sai Enterprises",
+      "address": "PLOT NO.70, SRI RAM NAGAR COLONY, B.K.GUDA, S.R.NAGAR, Hyderabad, Telangana, 500038",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 435,
+      "customer": "SRIFIN CREDIT PRIVATE LIMITED",
+      "address": "Patrika Nagar ,5th Floor,Unit No 509,Sy No 83P and 84P, Gowra Fountain Head, Hitech City Madhapur, Road,, Madhapur",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 436,
+      "customer": "SRIHITHA SHOPPING SERVICES PRIVATE LIMITED",
+      "address": "1st Floor, 8-3-191/175 B-72, Vengal Rao Nagar,",
+      "route": "R4",
+      "area": "Yousufguda",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 439,
+      "customer": "SSL SILVER JEWELLERY",
+      "address": "FIRST FLOOR, 10-2-223/1, PLOT #272/1, ASHWINI COLONY, West Marredpally, Secunderabad, Telangana 500026",
+      "route": "R4",
+      "area": "Ameerpet",
+      "zone": "Secunderabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 440,
+      "customer": "Status Textiles & Garments",
+      "address": "Door No. 5-8-651, Nampally Station Road, Abids,",
+      "route": "R4",
+      "area": "Masab Tank",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 444,
+      "customer": "SULTAN HEALTH CARE AND COSMETICS PRIVATE LIMITED",
+      "address": "Address : 2nd Floor, MS Tower, 8-2-626/A, Rd Number 1, above SBI bank, Avenue 4, Banjara Hills, Hyderabad, Telangana 500034",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 445,
+      "customer": "SUMADHURA CONSTRUCTIONS PRIVATE LIMITED",
+      "address": "2nd Floor, Plot No.1131 D No 8-2-293/82/A/1, Panzer 36, Road Number 36, Pillar No.1639, Jubilee Hills, Hyderabad, Hyderabad, Telangana, 500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 446,
+      "customer": "Sumadhura Infracon Private Limited",
+      "address": "2nd Floor,8-2-2293/82/A/1, PLOT NO 1131,, PANZER 36,ROADNO 36 JUBLIEE HILLS, HYDERABAD TELENGANA ,500034 - 500034",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 447,
+      "customer": "SUMADHURA VASAVI INFRASTRUCTURES LLP",
+      "address": "Olympus survey number 91/2, 145(P)",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 451,
+      "customer": "SUNSHINE HYGIENE TECH",
+      "address": "SRT 965, SANATH NAGAR, HYDERABAD500018",
+      "route": "R4",
+      "area": "Ameerpet",
+      "zone": "Secunderabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 456,
+      "customer": "SUREKHA INDUSTRIAL MARKETING ASSOCIATES",
+      "address": "D.No:81-18-2/11,Flat No:403,Putta Homes,2nd Street,Walker's Road,",
+      "route": "R4",
+      "area": "Masab Tank",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 457,
+      "customer": "SURENDER REDDY KANDAKATLA",
+      "address": "11, E-1107, RAJA PUSHPA THE RETREAT,, GANDIPET MAIN ROAD, KOKAPET,, Hyderabad, Rangareddy, Telangana, 500075 - 500075",
+      "route": "R4",
+      "area": "Narsingi",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 463,
+      "customer": "Swarnalok Educational Trust",
+      "address": "beside Srija Hospital, Padmasree Gardens, Gowlidoddy, Hyderabad, Telangana 500032",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 464,
+      "customer": "Swift Enterprise",
+      "address": "7-1-29/A/1/2, LEELA NAGAR, AMEERPET OPP SAI SIRI SAMPADA APPTS, Hyderabad, Telangana, 500016",
+      "route": "R4",
+      "area": "Ameerpet",
+      "zone": "Secunderabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 465,
+      "customer": "Symmetrics Development Services Pvt Ltd",
+      "address": "1st Floor, No. 88 Krishe Sapphire",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 469,
+      "customer": "TEAM4 LIFE SPACES (ELITE) LLP",
+      "address": "SY.NO 187,188,189,190(P) & 194(P), Beside TG Transco substation, Manikonda Jagir(Village) Gandipet Mandal, near by Lanco Circle, Manikonda, Hyderabad, Rangareddy, Telangana, 500089",
+      "route": "R4",
+      "area": "Narsingi",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 475,
+      "customer": "The Aga Khan Academy",
+      "address": "Survey # 1/1 Hardware Park, Hyderabad",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 476,
+      "customer": "The Shri Ram Academy",
+      "address": "Sy. No. 219, Gowlidoddi, Gachibowli, Telangana - 500032",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 478,
+      "customer": "Tide Platform Technology & Servicing Pvt. Ltd.",
+      "address": "Level AB, Sonali Spazio, Plot No. 19,",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 483,
+      "customer": "TRENT LIMITED",
+      "address": "Municipal No. 5-9-62, Khan Lateef Khan, Estate, Fateh Maidan Road, Hyderabad,, Hyderabad, Telangana, 500001 - 500001",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 484,
+      "customer": "TRU Designs",
+      "address": "# 8-2-502/1/A, 2nd Floor, Jivi Towers, Road No.7,",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "house-number prefix 8-2-"
+    },
+    {
+      "sno": 486,
+      "customer": "Udai-Omni Hospital Pvt. Ltd",
+      "address": "5-9-94, UDAI OMNI HOSPITALS PRIVATE LTD, CAHAPEL ROAD, NAMPALLY, Hyderabad, Telangana, 500001",
+      "route": "R4",
+      "area": "Masab Tank",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 489,
+      "customer": "UNISTYLE  CORPORATION",
+      "address": "Level III & IV B,# 1-2-412/1/3 ABC Jet Bhavan, Jeeyar Education Trust, Lane 4, Domalguda, Hyderabad",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 495,
+      "customer": "V - RETAIL LIMITED",
+      "address": "GROUND FLOOR, SURVEY NO.50P, PLOT NOS. 187,188,188/A,199,199A AND 200, SILPA SUMMIT, BEHIND INDUSIND BANK, GACHIBOWLI, SERILINGAMPALLY, Hyderabad, Telangana, 500032",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 496,
+      "customer": "V Centric Technologies Pvt. Ltd.",
+      "address": "43/A, Road No.12, MLA Colony,",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 499,
+      "customer": "V S Corp",
+      "address": "First floor, H No. 8-2-293/82/A/6, Plot No. 645, Unit A1, Spaces & More, Road Number 36, Jubilee Hills, Hyderabad, Rangareddy, Telangana, 500033",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 501,
+      "customer": "Value Gold Private Limited",
+      "address": "Terrace Above 2nd Floor, 8-2-623/5/1/1, Sai Teja, Avenue 4, Road Number 10, Banjara Hills, Hyderabad, Hyderabad, Telangana, 500034",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 502,
+      "customer": "VARMA STEELS PRIVATE LIMITED",
+      "address": "5TH FLOOR, 1-89/3/19, V TOWERS, Durgam Cheruvu Road, NCC Bluewater Products Ltd Registered Office, OPP DURGAM CHERUVU, Hyderabad, Hyderabad, Telangana, 500082",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 505,
+      "customer": "Vasavi Brundavanam Residents Welfare Association",
+      "address": "Vasavai Brundavanam, Moti Nagar, Hyderabad-18 - 500018",
+      "route": "R4",
+      "area": "Moosapet",
+      "zone": "Kukatpally Zone - South-West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 506,
+      "customer": "VASSAR LABS IT SOLUTIONS PRIVATE LIMITED",
+      "address": "5th FLOOR, Building no 9, HSBC BUILDING, MINDSPACE, IT PARK, MADHAPUR, Hyderabad, Telangana, 500081",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 513,
+      "customer": "Vidya Lok Educational Trust",
+      "address": "The Shriram Universal School, 2-59/1/JM/104 ,FINANCIAL DISTRICT NANKRAMGUDA, GACHIBOWLI SERLINGAMPALLY - 500032",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 514,
+      "customer": "Vigilant Technologies",
+      "address": "11th Floor, Western Aqua, White Fields, Madhapur",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 515,
+      "customer": "VIJAYANAGAR SUGAR PRIVATE LIMITED",
+      "address": "Film Nagar, Hyderabad - 582118",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "matched"
+    },
+    {
+      "sno": 521,
+      "customer": "VYB ACTIVE PRIVATE LIMITED",
+      "address": "3rd Floor, 8-2-684/J/15 Plot No 15, Road No. 12, Above, TisvaShowroom, Banjara Hills, Hyderabad, Hyderabad,, Telangana 500034 - 500034",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 523,
+      "customer": "White Thoughts and Branding Private Limited",
+      "address": "First Floor, 8-2-277/B/1, Mega City No. 131,, Road No. 2, Banjara Hills, Hyderabad, Telagana - 500034",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 525,
+      "customer": "Worldwide Realcon Pvt. Ltd",
+      "address": "Ground Floor, Orwell 1, Sattva Knowledge City, Sy. No. 83/1,Plot No.2, Serilingam Pally Mandal, Raidurg, Hyderabad, Rangareddy, Telangana, 500081",
+      "route": "R4",
+      "area": "Serilingampally",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 530,
+      "customer": "Yash Technologies  Pvt Ltd(SEZ)",
+      "address": "C/o Sundew Properties Ltd (SEZ Developer)",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 531,
+      "customer": "Yash Technologies Pvt Ltd",
+      "address": "C/o Sundew Properties Ltd ( SEZ Developer), 1234 Offices 6th Floor Building # 20 Raheja Mind, SpaceCyberabad Madhapur HYD - 500081",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 533,
+      "customer": "Yashoda Super Speciality Hospital",
+      "address": "6-3-906/B and B1, Raj Bhavan Road, Somajiguda, Hyderabad Telangana - 500082",
+      "route": "R4",
+      "area": "Khairatabad",
+      "zone": "Khairatabad Zone - Central-South Belt",
+      "note": "alias match"
+    },
+    {
+      "sno": 534,
+      "customer": "Your Office Needs",
+      "address": "13-1-155/1, Snehapuri Colony, Moti Nagar,",
+      "route": "R4",
+      "area": "Moosapet",
+      "zone": "Kukatpally Zone - South-West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 535,
+      "customer": "YSK Retail Spaces Pvt. Ltd.",
+      "address": "3rd Floor, 8-2-293, Flat 303,, Anushka Trendz building., Road no. 14, Banjara Hills, HYDERABAD, Hyderabad, Telangana, 500034",
+      "route": "R4",
+      "area": "Jubilee Hills",
+      "zone": "Khairatabad Zone - West Wing",
+      "note": "alias match"
+    },
+    {
+      "sno": 536,
+      "customer": "Zen Quality Assurance Private Limited",
+      "address": "1st, 2nd, 3rd Floor, Atria Building, Plot No 17, Survey No 64/2, Software Units Layout, Madhapur, Hyderabad, Hyderabad, Telangana, 500081",
+      "route": "R4",
+      "area": "Madhapur",
+      "zone": "Serilingampally Zone - South-West Belt",
+      "note": "matched"
+    },
+    {
+      "sno": 21,
+      "customer": "ANTHEA PHARMA PVT LTD",
+      "address": "Plot Number: 290,Phase-3,Unit-1,, Pashamylaram,Industrial Area,, DA,Isnapuar,Sangareddy-502307 - 502307",
+      "route": "R5",
+      "area": "Sangareddy District",
+      "zone": "Outside GHMC (non-municipal)",
+      "note": "alias match"
+    },
+    {
+      "sno": 114,
+      "customer": "DOLPHIN HOTELS PRIVATE LIMITED",
+      "address": "ANAJPUR VILLAGE, REGISTER OFFICE , HOTEL SITARA, RAMOJI FILM CITY, ABDULLAPURMET MANDAL, HYDERABAD, Rangareddy, Telangana, 501512",
+      "route": "R5",
+      "area": "Hayathnagar Fringe (Abdullapurmet)",
+      "zone": "Outside GHMC - Hayathnagar Fringe",
+      "note": "alias match"
+    },
+    {
+      "sno": 119,
+      "customer": "Eenadu Television Pvt. Ltd.",
+      "address": "3RD FLOOR, SP-3 BUILDING, RAMOJI FILM CITY, HAYATHNAGAR MANDAL, Rangareddy, Telangana, 501512",
+      "route": "R5",
+      "area": "Hayathnagar Fringe (Abdullapurmet)",
+      "zone": "Outside GHMC - Hayathnagar Fringe",
+      "note": "alias match"
+    },
+    {
+      "sno": 125,
+      "customer": "ETV Bharat",
+      "address": "SP 1, EENADU BUILDING, RAMOJI FILM CITY, HAYATHA NAGAR, ANAJPUR, Rangareddy, Telangana, 501512",
+      "route": "R5",
+      "area": "Hayathnagar Fringe (Abdullapurmet)",
+      "zone": "Outside GHMC - Hayathnagar Fringe",
+      "note": "alias match"
+    },
+    {
+      "sno": 143,
+      "customer": "GITAM DEEMED TO BE UNIVERSITY",
+      "address": "RUDRARAM VILLAGE, GITAM DEEMED TO BE UNIVERSITY, PATANCHERU MANDAL, SANGAREDDY DISTRICT, Sangareddy, Telangana, 502329",
+      "route": "R5",
+      "area": "Sangareddy District",
+      "zone": "Outside GHMC (non-municipal)",
+      "note": "matched"
+    },
+    {
+      "sno": 221,
+      "customer": "LOHIYA EDIBLE OILS PRIVATE LIMITES",
+      "address": "Plot No 4, Phase II, I D A, Mankhal Maheshwaram, Rangareddy, Telangana, 501359",
+      "route": "R5",
+      "area": "Adibatla (2026-merged)",
+      "zone": "Outside GHMC (non-municipal)",
+      "note": "alias match"
+    },
+    {
+      "sno": 248,
+      "customer": "MALABAR GEMS AND JEWELLERY MANUFACTURING PRIVATE LIMITED",
+      "address": "-, IP GENERAL PARK MAHESHWARAM, MAHESHWARAM ROAD, Nagaram, Rangareddy, Telangana, 501359",
+      "route": "R5",
+      "area": "Adibatla (2026-merged)",
+      "zone": "Outside GHMC (non-municipal)",
+      "note": "alias match"
+    },
+    {
+      "sno": 348,
+      "customer": "Ramadevi Public School",
+      "address": "Ramoji Film City, Hyderabad",
+      "route": "R5",
+      "area": "Hayathnagar Fringe (Abdullapurmet)",
+      "zone": "Outside GHMC - Hayathnagar Fringe",
+      "note": "alias match"
+    },
+    {
+      "sno": 374,
+      "customer": "Saanvi Traders",
+      "address": "7-32/4/15, Jyothi Nagar Colony, Indira Nagar,Ghatkesar Mandal, Boduppal, Rangareddy, Telangana, 500092",
+      "route": "R5",
+      "area": "Ghatkesar Belt",
+      "zone": "Outside GHMC (non-municipal)",
+      "note": "matched"
+    },
+    {
+      "sno": 410,
+      "customer": "Siri Nature Valley",
+      "address": "KAGAZGHAT VILLAGE,AGAPALLYXROADS, Sagar Road, Ibrahimpatnam, Hyderabad",
+      "route": "R5",
+      "area": "Ghatkesar Belt",
+      "zone": "Outside GHMC (non-municipal)",
+      "note": "matched"
+    },
+    {
+      "sno": 411,
+      "customer": "SIRI NATURE'S VALLEY RESORTS",
+      "address": "KAGAZGHAT VILLAGE,AGAPALLYXROADS",
+      "route": "R5",
+      "area": "Ghatkesar Belt",
+      "zone": "Outside GHMC (non-municipal)",
+      "note": "alias match"
+    },
+    {
+      "sno": 413,
+      "customer": "SITARA - A DIVISION OF DOLPHIN HOTELS PRIVATE LIMITED",
+      "address": "SITARA HOTEL, SITARA BUILDING, RAMOJI FILM CITY, Ramoji Film City, SITARA HOTEL, Hyderabad, Rangareddy, Telangana, 501512",
+      "route": "R5",
+      "area": "Hayathnagar Fringe (Abdullapurmet)",
+      "zone": "Outside GHMC - Hayathnagar Fringe",
+      "note": "alias match"
+    },
+    {
+      "sno": 417,
+      "customer": "Sloka International School",
+      "address": "Tukkuguda, Hyderabad, Telangana 501359",
+      "route": "R5",
+      "area": "Shamshabad (Rangareddy)",
+      "zone": "Outside GHMC (non-municipal)",
+      "note": "alias match"
+    },
+    {
+      "sno": 419,
+      "customer": "SNR GARDENS",
+      "address": "Sy No 85/C, SNR GARDENS, KOMPELLY, MEDCHAL, Rangareddy, Telangana, 500009",
+      "route": "R5",
+      "area": "Medchal-Malkajgiri Rural",
+      "zone": "Outside GHMC (non-municipal)",
+      "note": "matched"
+    },
+    {
+      "sno": 460,
+      "customer": "SVR Engineerings",
+      "address": "Plot No. 15/A, Shiva Ganga Hills Colony, Karmanghat, Meerpet Post, Hyderabad - 500097",
+      "route": "R5",
+      "area": "Badangpet (2026-merged)",
+      "zone": "Outside GHMC (non-municipal)",
+      "note": "matched"
+    },
+    {
+      "sno": 477,
+      "customer": "THE TRANQUIL RETREAT",
+      "address": "SYNO 143, MANGALPALLY VILLAGE, IBRAHIMPATNAM MANDAL, Hyderabad, Rangareddy, Telangana, 501510",
+      "route": "R5",
+      "area": "Ghatkesar Belt",
+      "zone": "Outside GHMC (non-municipal)",
+      "note": "matched"
+    },
+    {
+      "sno": 485,
+      "customer": "TV18 Broadcast Limited",
+      "address": "Corp: Office: Ramoji Film City,",
+      "route": "R5",
+      "area": "Hayathnagar Fringe (Abdullapurmet)",
+      "zone": "Outside GHMC - Hayathnagar Fringe",
+      "note": "alias match"
+    },
+    {
+      "sno": 491,
+      "customer": "Ushakiron Movies Pvt Ltd",
+      "address": "SP II, RAMOJI FILM CITY, ANAJPUR, Rangareddy, Telangana, 501512",
+      "route": "R5",
+      "area": "Hayathnagar Fringe (Abdullapurmet)",
+      "zone": "Outside GHMC - Hayathnagar Fringe",
+      "note": "alias match"
+    },
+    {
+      "sno": 492,
+      "customer": "Ushakiron Properties",
+      "address": "RAMOJI FILM CITY, CORP. BLDG, ANAJPUR, Rangareddy, Telangana, 501512",
+      "route": "R5",
+      "area": "Hayathnagar Fringe (Abdullapurmet)",
+      "zone": "Outside GHMC - Hayathnagar Fringe",
+      "note": "alias match"
+    },
+    {
+      "sno": 493,
+      "customer": "Ushodaya Enterprises Pvt. Ltd",
+      "address": "Eenadu Corporate Office, Ramoji Film City,, Anajpur Village, RR Dist. - 501512",
+      "route": "R5",
+      "area": "Hayathnagar Fringe (Abdullapurmet)",
+      "zone": "Outside GHMC - Hayathnagar Fringe",
+      "note": "alias match"
+    },
+    {
+      "sno": 511,
+      "customer": "Venkateshwara Textiles",
+      "address": "2186, MAIN ROAD, ZAHEERABAD, Sangareddy, Telangana, 502220",
+      "route": "R5",
+      "area": "Sangareddy District",
+      "zone": "Outside GHMC (non-municipal)",
+      "note": "alias match"
+    },
+    {
+      "sno": 519,
+      "customer": "VSR Nature",
+      "address": "Shamirpet, Hyderabad",
+      "route": "R5",
+      "area": "Medchal-Malkajgiri Rural",
+      "zone": "Outside GHMC (non-municipal)",
+      "note": "matched"
+    },
+    {
+      "sno": 17,
+      "customer": "AMB CINEMAS LLP",
+      "address": "255, Nataka Rathnagubbi Veeranna Road Kapli Complex, Gandhi Nagar, Bengaluru, Karnataka. 560009",
+      "route": "R7",
+      "area": "Bengaluru",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Bengaluru)"
+    },
+    {
+      "sno": 24,
+      "customer": "Arkay  Energy(Rameshwarm)  Private  Limited",
+      "address": "1 st Floor, NEW NO 20, Old No 129, CHAMIERS ROAD, NANDANAM, Chennai, Tamil Nadu, 600035",
+      "route": "R7",
+      "area": "Chennai",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Chennai)"
+    },
+    {
+      "sno": 30,
+      "customer": "ASIAN ALLU ARJUN CINEMAS LLP -AP",
+      "address": "Survey Nos 220/1/P, 221/1/P, 222/1A/P, 224/P,  salagrampuram, Dondaparthi Village, Visakhapatnam, Visakhapatnam, Andhra Pradesh, 530024",
+      "route": "R7",
+      "area": "Visakhapatnam",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Visakhapatnam)"
+    },
+    {
+      "sno": 43,
+      "customer": "Balaji Textiles & Readymades",
+      "address": "23A-10-6, R R Pet, NEAR VENKATESWARASWAMY TEMPLE, ELURU, West Godavari, Andhra Pradesh, 534002",
+      "route": "R7",
+      "area": "Eluru",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Eluru)"
+    },
+    {
+      "sno": 46,
+      "customer": "BHAGYALAKSHMI HEALTHCARE SERVICES PRIVATE LIMITED",
+      "address": "H NO - 3-16-334, MULUGU ROAD CHOWRASTA, 2 CELLARS, GORUND, FIRST SECOND AND THIRD FLOOR, Warangal, Warangal, Telangana, 506002",
+      "route": "R7",
+      "area": "Warangal",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Warangal)"
+    },
+    {
+      "sno": 48,
+      "customer": "Bharat Financial Inclusion Limited",
+      "address": "Plot No- 293/948, Ishan Nagar, Near ITI Squire, Village/Town - Karanjia, District - Balasore, State - Odisha, Pincode - 756001",
+      "route": "R7",
+      "area": "Balasore",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Balasore)"
+    },
+    {
+      "sno": 49,
+      "customer": "Bharat Financial Inclusion Limited",
+      "address": "Chitoor Towers, Opp: Padamugal UP School - Indira Junction - Padamugal, Town & District- Ernakulam, Kochi, State- Kerala, Pin- 682030",
+      "route": "R7",
+      "area": "Kochi",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Kochi)"
+    },
+    {
+      "sno": 50,
+      "customer": "Bharat Financial Inclusion Limited",
+      "address": "SCO Number - 95, Urban State, Phase - 1, Dugri Road, In Front of MGM School, Above Easy Day, Ludhiana, District - Ludhiana, Punjab - 141001",
+      "route": "R7",
+      "area": "Ludhiana",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Ludhiana)"
+    },
+    {
+      "sno": 52,
+      "customer": "Bharat Financial Inclusion Limited",
+      "address": "1st FLOOR, CP-15 & 16, SS TOWER, VIRAJ KHAND, GOMTI NAGAR, Lucknow, Lucknow, Uttar Pradesh, 226010",
+      "route": "R7",
+      "area": "Lucknow",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Lucknow)"
+    },
+    {
+      "sno": 53,
+      "customer": "Bharat Financial Inclusion Limited",
+      "address": "NH-31 , Near Kapasiya Chowk, Nagdah, Town & Dist- Begusarai, State- Bihar, Pin- 851101",
+      "route": "R7",
+      "area": "Begusarai",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Begusarai)"
+    },
+    {
+      "sno": 54,
+      "customer": "Bharat Financial Inclusion Limited",
+      "address": "1ST FLOOR, 38, BEHIND OLD PNB, NEAR SHIB MANDIR, LAKHINAGAR, R.G BARUA ROAD, GUWAHATI, Kamrup, Assam, 781005",
+      "route": "R7",
+      "area": "Guwahati",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Guwahati)"
+    },
+    {
+      "sno": 55,
+      "customer": "Bharat Financial Inclusion Limited",
+      "address": "6TH FLOOR, UNIT NO.2, BLOCK-4A, ECO SPACE BUSINESS PARK, KOLKATA, New Town, North Twenty Four Parganas, West Bengal, 700156",
+      "route": "R7",
+      "area": "Kolkata",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Kolkata)"
+    },
+    {
+      "sno": 56,
+      "customer": "Bharat Financial Inclusion Limited",
+      "address": "Near Subhash Chowk, Opposite of St. Francis School, Castair Town & Dist- Deoghar, State- Jharkhand, Pin- 814112",
+      "route": "R7",
+      "area": "Deoghar",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Deoghar)"
+    },
+    {
+      "sno": 57,
+      "customer": "Bharat Financial Inclusion Limited",
+      "address": "H No- 144, Ward No- 13, Arya Nagar, Main Najafgarh Road, Town- Bahadurgarh, Dist- Jhajjar, State- Haryana, Pin- 124507",
+      "route": "R7",
+      "area": "Bahadurgarh",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Bahadurgarh)"
+    },
+    {
+      "sno": 58,
+      "customer": "Bharat Financial Inclusion Limited",
+      "address": "Plot No- 59, 2nd Floor, Kulkarni layout Kanbargi Road,Near Surabhi Hotel Ramateeth Nagar Belagavi, Vill/Town- Belagavi, Dist- Belagavi, State- Karnataka, Pin- 590016",
+      "route": "R7",
+      "area": "Belagavi",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Belagavi)"
+    },
+    {
+      "sno": 59,
+      "customer": "Bharat Financial Inclusion Limited",
+      "address": "Forum Building, Above Ranka Jewellers, Pune-Satara Road, 3rd Floor, S. No 63/2B/Plot No- 9, CTS No- 3378, Padamavati, Pune, Tal- Pune, Dist- Pune, State- Maharashtra, Pincode- 411009",
+      "route": "R7",
+      "area": "Pune",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Pune)"
+    },
+    {
+      "sno": 60,
+      "customer": "Bharat Financial Inclusion Limited",
+      "address": "Q. No- A 1/5, Ahead of Labour Office, Avanti Vihar, Sec â€“ 1, Town & Dist- Raipur, State- Chhattisgarh, Pin- 492007",
+      "route": "R7",
+      "area": "Raipur",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Raipur)"
+    },
+    {
+      "sno": 61,
+      "customer": "Bharat Financial Inclusion Limited",
+      "address": "# 201- Kunj Plaza, 2nd Floor, Near Fortune Gateway Chhani Jakat Naka Circle, Chhani Road, TP-13, Vadodara, Gujarat- 390002",
+      "route": "R7",
+      "area": "Vadodara",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Vadodara)"
+    },
+    {
+      "sno": 62,
+      "customer": "Bharat Financial Inclusion Limited",
+      "address": "H. No- 1-B-10, Pawanpuri Bikaner, Vill/Town- Bikaner, Dist- Bikaner, State- Rajasthan, Pin Code- 334003",
+      "route": "R7",
+      "area": "Bikaner",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Bikaner)"
+    },
+    {
+      "sno": 63,
+      "customer": "Bharat Financial Inclusion Limited",
+      "address": "Plot No-2&3, 2nd & 3rd Floor, Bajaj Tower, Lala Lajpat Rai Colony, Above HDFC bank, Raisen Road Ashoka Garden, Ward No. 69, Bhopal, Madhya Pradesh Pin-462023",
+      "route": "R7",
+      "area": "Bhopal",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Bhopal)"
+    },
+    {
+      "sno": 64,
+      "customer": "Bharat Financial Inclusion Limited",
+      "address": "R.S Complex, No.9. Sathya Sai Nagar Main Road,1st Floor, Opp. Anantha Nilayam, Town & Dist- Madurai, State- Tamil Nadu, Pin- 625003",
+      "route": "R7",
+      "area": "Madurai",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Madurai)"
+    },
+    {
+      "sno": 76,
+      "customer": "Buroneeds Supplies (OPC)Pvt Ltd",
+      "address": "21/2, SHED NO 4B, 14TH KM OLD MADRAS ROAD, BHATTARAHALLI, Bengaluru, Bengaluru Urban, Karnataka, 560049",
+      "route": "R7",
+      "area": "Bengaluru",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Bengaluru)"
+    },
+    {
+      "sno": 86,
+      "customer": "Chalukyas Restaurant",
+      "address": "GM37+MP7, Guru Nanak Colony Road, opp. sbi bank, Kanaka, Durga Gazetted Officers Colony, Guru Nanak Colony, Vijayawada,, Andhra Pradesh 520008",
+      "route": "R7",
+      "area": "Vijayawada",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Vijayawada)"
+    },
+    {
+      "sno": 110,
+      "customer": "Devyani International Limited",
+      "address": "K125 KFC.Shop No.2, Ground Floor Survey Nos.119 1A, 119 1A, 119 1D, 126 2C, Premises No. 55-1-10,Ward No.49, Guntur Road, Ongole, Prakasam, Ongole, Prakasam, Andhra Pradesh, 523001",
+      "route": "R7",
+      "area": "Guntur",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Guntur)"
+    },
+    {
+      "sno": 118,
+      "customer": "Eco Task Chemicals",
+      "address": "26/2/198, GROUND FLOOR, 3RD STREET THYAGARAJA NAGAR, VEDAYAPALEM, Sri Potti Sriramulu Nellore, Andhra Pradesh, 524004",
+      "route": "R7",
+      "area": "Nellore",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Nellore)"
+    },
+    {
+      "sno": 127,
+      "customer": "EVERGREEN CLEANTECH FACILITIES MANAGEMENT\n(INDIA) LIMITED\n",
+      "address": "3RD FLOOR, 3/2, 75C,, PARK STREET, KOLKATA, Kolkata,\nWest Bengal, 700016",
+      "route": "R7",
+      "area": "Kolkata",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Kolkata)"
+    },
+    {
+      "sno": 133,
+      "customer": "FLEMING LABORATORIES LIMITED",
+      "address": "SURVEY NO 270, WORKS 1,SURVEY NO.270, NAWABPET VILLAGE,, FLEMING LABORATORIES LIMITED, NAWABPET VILLAGE,, NAWABPET VILLAGE, SHIVAMPET MANDAL, Medak, Telangana, 502313",
+      "route": "R7",
+      "area": "Medak",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Medak)"
+    },
+    {
+      "sno": 149,
+      "customer": "GTS Facility Management Services Pvt Ltd",
+      "address": "PLOT NO.5, BRINDAVAN NAGAR, VALASARAVAKKAM, Chennai, Tamil Nadu, 60008",
+      "route": "R7",
+      "area": "Chennai",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Chennai)"
+    },
+    {
+      "sno": 152,
+      "customer": "Hamara Ventures Private Limited",
+      "address": "137 & 138, Tellus Avenue Phase 1 Rajakilpakkam, Annai Kasturibhai Street, Chennai, Chengalpattu, Tamil Nadu, 600073",
+      "route": "R7",
+      "area": "Chennai",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Chennai)"
+    },
+    {
+      "sno": 157,
+      "customer": "Hindustan Coca-Cola Beverages Pvt. Ltd",
+      "address": "Plot No, 1&2, Food Processing Park, Banda Thimmapur, \nSuevey No. 168 & 170, Banda Thimmapur Village, Mulugu mandal, Siddipet Dist. \nTelangana -502336, India",
+      "route": "R7",
+      "area": "Siddipet",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Siddipet)"
+    },
+    {
+      "sno": 179,
+      "customer": "INDUSIND BANK LTD - AP",
+      "address": "First Floor,, Door No. 26-17-22,, Ward No. 61,, Chinagantyada,, Gajuwaka, Visakhapatnam, Andhra Pradesh, 500025",
+      "route": "R7",
+      "area": "Visakhapatnam",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Visakhapatnam)"
+    },
+    {
+      "sno": 180,
+      "customer": "Infizic LLP",
+      "address": "WOXSEN UNIVERSITY",
+      "route": "R7",
+      "area": "Woxsen",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Woxsen)"
+    },
+    {
+      "sno": 185,
+      "customer": "ITC LIMITED, FOODS DIVISION",
+      "address": "Medak-ICML Plant, Sy / Nos:395-401,404-406/AA,406/E, Medak,Telangana, 502336 India",
+      "route": "R7",
+      "area": "Medak",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Medak)"
+    },
+    {
+      "sno": 215,
+      "customer": "Kushal Deep Automobiles (India) Private Limited",
+      "address": "SY NO 1475 WARD NO 06 BLACK NO 09, RAGHAVENDRA COLONY, HYD ROAD, NALGONDA, Nalgonda, Telangana, 5080",
+      "route": "R7",
+      "area": "Nalgonda",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Nalgonda)"
+    },
+    {
+      "sno": 244,
+      "customer": "Made2Measures",
+      "address": "GROUND FLOOR,, 10, EMBASSY, S G N LAYOUT,2ND CROSS J C ROAD,, BANGALORE, Bengaluru Urban, Karnataka, 560027",
+      "route": "R7",
+      "area": "Bengaluru",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Bengaluru)"
+    },
+    {
+      "sno": 255,
+      "customer": "Marri Retail Limited AP",
+      "address": "NEW WARD NO 7, 6-19-18, ARUNDELPET, BLOCK NO 1,17 th LANE MAIN ROAD, GUNTUR, Guntur, Andhra Pradesh, 522007",
+      "route": "R7",
+      "area": "Guntur",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Guntur)"
+    },
+    {
+      "sno": 257,
+      "customer": "MARRI RETAIL PRIVATE LIMITED- MH",
+      "address": "House Muncipal No 1, Co-op Industrial Estate, M/s Radhika Oil Industries, Plot No 118 c, College Road, Nanded, Maharashtra 431602",
+      "route": "R7",
+      "area": "Nanded",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Nanded)"
+    },
+    {
+      "sno": 258,
+      "customer": "MARRI RETAIL PRIVATE LIMITED-Karnataka",
+      "address": "TS No. 120/2, Ward No. 1, Flat No D No. 99, CMC Ass No 196, Street Ballari Karnataka 583101 - 583101",
+      "route": "R7",
+      "area": "Ballari",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Ballari)"
+    },
+    {
+      "sno": 291,
+      "customer": "Naren Homes",
+      "address": "31/11, 31/12, 31/13, VEMPADU ROAD, CHINA AMIRAM, West Godavari, Andhra Pradesh, 534202",
+      "route": "R7",
+      "area": "China Amiram",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (China Amiram)"
+    },
+    {
+      "sno": 299,
+      "customer": "Netenrich Technologies Pvt. Ltd",
+      "address": "DOOR NO 3 131, WATER TANK ROAD, GORAGANAMUDI VILLAGE PALAKODERU MANDAL, West Godavari, Andhra Pradesh, 534244",
+      "route": "R7",
+      "area": "Andhra Pradesh",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Andhra Pradesh)"
+    },
+    {
+      "sno": 352,
+      "customer": "Ramtej Enterprise",
+      "address": "Vijayawada",
+      "route": "R7",
+      "area": "Vijayawada",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Vijayawada)"
+    },
+    {
+      "sno": 366,
+      "customer": "RSB RETAIL INDIA LIMITED - AP",
+      "address": "40/1/44, VENKATESHWARA PURAM, M.G.R, LABBIPET, MOGALARAJ PURAM, VIJAYAWADA, Krishna, Andhra Pradesh,",
+      "route": "R7",
+      "area": "Vijayawada",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Vijayawada)"
+    },
+    {
+      "sno": 368,
+      "customer": "RSB RETAIL INDIA LIMITED- Karnataka",
+      "address": "Second Floor, Unit no S53, Phoenix Mall Of Asia, Yelahanka, Byatarayanapura, Bengaluru, Bengaluru Urban, Karnataka, 560092",
+      "route": "R7",
+      "area": "Bengaluru",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Bengaluru)"
+    },
+    {
+      "sno": 369,
+      "customer": "RSB RETAIL INDIA LIMITED- MH",
+      "address": "Sy no 55-60,  H no 1-25-117 Plot no 115-C,  Manish Plaza,  Sivaji Nagar Road,  Opp Mahatma Phule Market, Late Ramgopal gupta Co op Industrial Estate, Nanded, Nanded, Maharashtra, 431602",
+      "route": "R7",
+      "area": "Nanded",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Nanded)"
+    },
+    {
+      "sno": 384,
+      "customer": "SAMSIDDHI DEVELOPERS",
+      "address": "S.Y NO-34/2, Varthu Main Road, thubarahalli, varthur hobli, Bengaluru, Bengaluru Urban, Karnataka, 560066",
+      "route": "R7",
+      "area": "Bengaluru",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Bengaluru)"
+    },
+    {
+      "sno": 385,
+      "customer": "Sandy Solutions",
+      "address": "#33, 2nd floor, 2nd C Main, B Channasandra,",
+      "route": "R7",
+      "area": "Channasandra",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Channasandra)"
+    },
+    {
+      "sno": 400,
+      "customer": "Sha Maknaji Veerchand",
+      "address": "14/123, Kamalanagar, DCMS Road, Anantapur",
+      "route": "R7",
+      "area": "Anantapur",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Anantapur)"
+    },
+    {
+      "sno": 407,
+      "customer": "Shri Bheru Enterprises",
+      "address": "244 Main Road, Wellington Bazaar, The - Nilgiris,",
+      "route": "R7",
+      "area": "Nilgiris",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Nilgiris)"
+    },
+    {
+      "sno": 429,
+      "customer": "Sri Sahasra Mayukha Jewellers",
+      "address": "Ground, 7-30-42, Main Road, Life Insurance Corporation, Rajamahendravaram, East Godavari, Andhra Pradesh, 533101",
+      "route": "R7",
+      "area": "Rajamahendravaram",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Rajamahendravaram)"
+    },
+    {
+      "sno": 434,
+      "customer": "SRI VENKATA DURGA AGENCIES\n",
+      "address": "2-129, YADAVA STREET, RAYANAPADU, Krishna,",
+      "route": "R7",
+      "area": "Rayanapadu",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Rayanapadu)"
+    },
+    {
+      "sno": 450,
+      "customer": "SUNDARAM MARKETING",
+      "address": "GRD, 137, JASIA BUILDING, MODI STREET, FORT, Mumbai, Maharashtra, 400001, Pho No :22641558/66366289/6012",
+      "route": "R7",
+      "area": "Mumbai",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Mumbai)"
+    },
+    {
+      "sno": 467,
+      "customer": "Taanya Imports and Exports",
+      "address": "Flat No 201, Sai Panya Residency, Near Sai Baba Temple,Santhapet,, ongole, Prakasam, Andhra Pradesh, 523002",
+      "route": "R7",
+      "area": "Ongole",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Ongole)"
+    },
+    {
+      "sno": 474,
+      "customer": "test customer 2",
+      "address": "New Ward No 7, 6-19-18 Arundelpet, Block No 1, 17th Lane Main Road Guntur, Andhra Pradesh-522007",
+      "route": "R7",
+      "area": "Guntur",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Guntur)"
+    },
+    {
+      "sno": 480,
+      "customer": "TITAN COMPANY LIMITED",
+      "address": "1st Floor, TIL Park, No. 727, Pathari Road, Annasalai, Tousand Light, Chennai-600006",
+      "route": "R7",
+      "area": "Chennai",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Chennai)"
+    },
+    {
+      "sno": 481,
+      "customer": "TITAN COMPANY LIMITED - UK",
+      "address": "PLOT NO. 10A, TITAN COMPANY LTD-JEWELLERY DIVISION, SECTOR-2,IIE, SIDCUL, UDHAM SINGH NAGAR, PANT NAGAR, Udham Singh Nagar, Uttarakhand, 263153",
+      "route": "R7",
+      "area": "Pant Nagar",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Pant Nagar)"
+    },
+    {
+      "sno": 482,
+      "customer": "TITAN COMPANY LIMITED - UP",
+      "address": "301/1, Regalia Towers, Mangal Pandey Nagar,, MEERUT, Meerut, Uttar Pradesh, 250004",
+      "route": "R7",
+      "area": "Meerut",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Meerut)"
+    },
+    {
+      "sno": 487,
+      "customer": "Udwik Apparels",
+      "address": "D.No. 6-59 MAIN ROAD, NEAR POLICE STATION, JADCHERLA, Mahabubnagar, Telangana, 509301",
+      "route": "R7",
+      "area": "Mahabubnagar",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Mahabubnagar)"
+    },
+    {
+      "sno": 494,
+      "customer": "UTTAM MANE PETROLEUM",
+      "address": "PUNE PANDHARPUR ROAD, DIST SOLAPUR, TAL\nMALSHIRAS, AT POST MOROCHI, PUNE PANDHARPUR\nROAD, GAT NO 345/2/B, Morochi, Solapur, Maharashtra,\n413109",
+      "route": "R7",
+      "area": "Pune",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Pune)"
+    },
+    {
+      "sno": 516,
+      "customer": "Vinay Agencies",
+      "address": "27, Apple By Road, Coonoor-643231",
+      "route": "R7",
+      "area": "Coonoor",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Coonoor)"
+    },
+    {
+      "sno": 529,
+      "customer": "Yash Social Welfare Foundation",
+      "address": "101, Bansi Trade Centre, 581/5, MG Road, Indore",
+      "route": "R7",
+      "area": "Indore",
+      "zone": "Other (non-Hyderabad)",
+      "note": "outside Hyderabad (Indore)"
+    },
+    {
+      "sno": 44,
+      "customer": "Balram Sir",
+      "address": "Hyderabad",
+      "route": "UNMATCHED-HYD",
+      "area": null,
+      "zone": "Hyderabad - review",
+      "note": "Hyderabad, area unclear"
+    },
+    {
+      "sno": 45,
+      "customer": "Bhagya Mam",
+      "address": "Hyderabad",
+      "route": "UNMATCHED-HYD",
+      "area": null,
+      "zone": "Hyderabad - review",
+      "note": "Hyderabad, area unclear"
+    },
+    {
+      "sno": 116,
+      "customer": "Durga Prasad Sir Sakshi",
+      "address": "Hyderabad",
+      "route": "UNMATCHED-HYD",
+      "area": null,
+      "zone": "Hyderabad - review",
+      "note": "Hyderabad, area unclear"
+    },
+    {
+      "sno": 146,
+      "customer": "Green stories",
+      "address": "Hyderabad",
+      "route": "UNMATCHED-HYD",
+      "area": null,
+      "zone": "Hyderabad - review",
+      "note": "Hyderabad, area unclear"
+    },
+    {
+      "sno": 176,
+      "customer": "Inder (Choudhary Traders)",
+      "address": "Hyderabad",
+      "route": "UNMATCHED-HYD",
+      "area": null,
+      "zone": "Hyderabad - review",
+      "note": "Hyderabad, area unclear"
+    },
+    {
+      "sno": 245,
+      "customer": "Madhu Mam (JC Resi.)",
+      "address": "hyderabad",
+      "route": "UNMATCHED-HYD",
+      "area": null,
+      "zone": "Hyderabad - review",
+      "note": "Hyderabad, area unclear"
+    },
+    {
+      "sno": 321,
+      "customer": "Petla Satyanarayana Sir",
+      "address": "Hyderabad",
+      "route": "UNMATCHED-HYD",
+      "area": null,
+      "zone": "Hyderabad - review",
+      "note": "Hyderabad, area unclear"
+    },
+    {
+      "sno": 342,
+      "customer": "Rahul Mashetty",
+      "address": "Hyderabad",
+      "route": "UNMATCHED-HYD",
+      "area": null,
+      "zone": "Hyderabad - review",
+      "note": "Hyderabad, area unclear"
+    },
+    {
+      "sno": 383,
+      "customer": "Sampath Sir",
+      "address": "Hyderabad",
+      "route": "UNMATCHED-HYD",
+      "area": null,
+      "zone": "Hyderabad - review",
+      "note": "Hyderabad, area unclear"
+    },
+    {
+      "sno": 389,
+      "customer": "Sanothosh Sir Ethics",
+      "address": "Hyderabad, 8121596595",
+      "route": "UNMATCHED-HYD",
+      "area": null,
+      "zone": "Hyderabad - review",
+      "note": "Hyderabad, area unclear"
+    },
+    {
+      "sno": 401,
+      "customer": "Shanker Cleaning",
+      "address": "Hyderabad",
+      "route": "UNMATCHED-HYD",
+      "area": null,
+      "zone": "Hyderabad - review",
+      "note": "Hyderabad, area unclear"
+    },
+    {
+      "sno": 443,
+      "customer": "Sudhakar Sir Bikkumalla",
+      "address": "Hyderabad",
+      "route": "UNMATCHED-HYD",
+      "area": null,
+      "zone": "Hyderabad - review",
+      "note": "Hyderabad, area unclear"
+    },
+    {
+      "sno": 473,
+      "customer": "test customer 1",
+      "address": "Hyderabad",
+      "route": "UNMATCHED-HYD",
+      "area": null,
+      "zone": "Hyderabad - review",
+      "note": "Hyderabad, area unclear"
+    },
+    {
+      "sno": 497,
+      "customer": "V Office Planet India Pvt. Ltd",
+      "address": "Hyderbad",
+      "route": "UNMATCHED-HYD",
+      "area": null,
+      "zone": "Hyderabad - review",
+      "note": "Hyderabad, area unclear"
+    },
+    {
+      "sno": 500,
+      "customer": "Value  Gold Pvt Ltd",
+      "address": "Hyderabad",
+      "route": "UNMATCHED-HYD",
+      "area": null,
+      "zone": "Hyderabad - review",
+      "note": "Hyderabad, area unclear"
+    },
+    {
+      "sno": 504,
+      "customer": "Vasanti Madam",
+      "address": "Hyderabad",
+      "route": "UNMATCHED-HYD",
+      "area": null,
+      "zone": "Hyderabad - review",
+      "note": "Hyderabad, area unclear"
+    },
+    {
+      "sno": 509,
+      "customer": "Venkat Sir- Vasanta Logistics",
+      "address": "Hyderabad",
+      "route": "UNMATCHED-HYD",
+      "area": null,
+      "zone": "Hyderabad - review",
+      "note": "Hyderabad, area unclear"
+    },
+    {
+      "sno": 510,
+      "customer": "Venkatesh Sir Manepally",
+      "address": "hyderbad",
+      "route": "UNMATCHED-HYD",
+      "area": null,
+      "zone": "Hyderabad - review",
+      "note": "Hyderabad, area unclear"
+    },
+    {
+      "sno": 135,
+      "customer": "FOX MANDAL AND ASSOCIATES",
+      "address": "3RD FLOOR, PLOT NO 1264, FM HOUSE,",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 159,
+      "customer": "HITACHI VANTARA SOFTWARE SERVICES INDIA PRIVATE LIMITED",
+      "address": "Asking me to remove",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 170,
+      "customer": "ILT ACADAMY",
+      "address": "ABOVE MAX FRIENDS JAIN  SQUARE MALL",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 261,
+      "customer": "MARVEL AUTOMOTIVES",
+      "address": "3-12-67, PLOT NO. 39, SURVEY",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 267,
+      "customer": "Mehta & Modi Realty Kowkur LLP",
+      "address": "Greenwood Heights",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 271,
+      "customer": "Modi Properties Pvt. Ltd",
+      "address": "May Flower Platinum",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 275,
+      "customer": "MOTTO SYSTEMS PRIVATE LIMITED",
+      "address": "1-98/9/3/23,1 FLOOR,JAI HIND ENCLAVE,",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 317,
+      "customer": "Param Sir",
+      "address": "Itelligence",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 320,
+      "customer": "People Tech Enterprises Pvt Ltd",
+      "address": "Door No. 1-80/1/L/NR/C/P, Survey No. 55-58",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 332,
+      "customer": "PRERNA ASSOCIATES INC",
+      "address": "Sirim Scientific Solutions, 1st floor, 3-10-85/1, Street",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 335,
+      "customer": "Proquest Health Enterprises Private Limited",
+      "address": "Plot No. 62, Kodali Park View, Balaji Enclave,",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 340,
+      "customer": "R J Organics",
+      "address": "H. No. 11-6-56/2/1nr, Plot 2, Survey No. 176,",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 346,
+      "customer": "Ram retail",
+      "address": "D.no3-83/1/PC/G-5G-6",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 361,
+      "customer": "Rithwik Projects Limited",
+      "address": "Sagar Society Road, No.2,",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 370,
+      "customer": "RSK Silks",
+      "address": "Plot No. 93, Opp Khazana Jewllery, Beside Centro,",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 376,
+      "customer": "Sagar Cements Limited",
+      "address": "Plot 111 Road No 10",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 404,
+      "customer": "Shree Gurukrupa Enterprises",
+      "address": "Blue Star Ltd, D.No.49-24-65/1,",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 442,
+      "customer": "Studio Indent",
+      "address": "Plot No.18, Opp. Vijaya Co-Operative Housing",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 490,
+      "customer": "UPL Limited",
+      "address": "Survey No: 315, 316, 324",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 498,
+      "customer": "V R Brands LLP",
+      "address": "Plot No - A3, Rukuminupuri Colony",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 518,
+      "customer": "Vivek Buildtech",
+      "address": "Plot No 2-157/6 Jetta Mallaiah Complex",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 522,
+      "customer": "Wealth Wallet Technologies Pvt Ltd",
+      "address": "3rd Floor, Trendz Venkata Sai Towers, Plot No.10, Survey No.90, 1,",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 528,
+      "customer": "XTGLOBAL INFOTECH LIMITED",
+      "address": "THIRD FLOOR, TOWER A, SUITE 301, PLOT NO 31P and 32,",
+      "route": "UNKNOWN",
+      "area": null,
+      "zone": "Review needed",
+      "note": "incomplete address - review"
+    },
+    {
+      "sno": 4,
+      "customer": "Aananda Lakshmi Spinning Mills Limited",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 14,
+      "customer": "Altruista Health Services Private Limited",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 28,
+      "customer": "Ashwamedha Imports & Exports",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 47,
+      "customer": "BHARAT",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 79,
+      "customer": "Carimela Holdings Pvt. Ltd",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 81,
+      "customer": "Casio Collections (Receipts)",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 82,
+      "customer": "Casio Debtors",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 85,
+      "customer": "Chalapati Sir",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 99,
+      "customer": "Counter Sale",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 117,
+      "customer": "Duvan Customers",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 228,
+      "customer": "M. Ramakrishna Reddy Sir",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 234,
+      "customer": "M/S SN SQUARE",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 262,
+      "customer": "Marvel Corporate Solutions",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 272,
+      "customer": "Mohan Garu Neovatic",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 278,
+      "customer": "Mr. Praveen Casio",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 279,
+      "customer": "Mr. Srinivas (Srikanth Relative)",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 280,
+      "customer": "Mr. Suresh (Kimberly-Clark)",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 313,
+      "customer": "P Durga Prasad Accountant",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 316,
+      "customer": "Papaiah Gaaru (Taski)",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 330,
+      "customer": "Pradeep (Arun KC)",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 331,
+      "customer": "Prakash",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 341,
+      "customer": "Rahul Erramshetty",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 458,
+      "customer": "Surendra (Suresh KC)",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    },
+    {
+      "sno": 472,
+      "customer": "Techril Receipts & Payments",
+      "address": "",
+      "route": "NO-ADDRESS",
+      "area": null,
+      "zone": null,
+      "note": "no address in file"
+    }
+  ]
+}
