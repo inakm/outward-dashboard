@@ -9,6 +9,7 @@ Enterprise **outward logistics / dispatch intelligence** — a zero-backend web 
 ### Data ingestion
 - **Drag & drop** Excel/CSV files (`.xlsx`, `.xls`, `.csv`) — parsed entirely in the browser with SheetJS, never uploaded
 - **Live Google Sheet sync** — pulls the public dispatch sheet via CSV export with a gviz fallback
+- **Auto-routing from `routes-planning.xlsx`** — the R1–R7 plan (R1–R4 GHMC circles, R5 Hyderabad fringe, R7 non-Hyderabad cities) is the routing authority; orders are auto-routed by matching their **Branch** column, supplemented by the GHMC ward/locality map for fine-grained Hyderabad areas
 - **Data-cleaning layer** — header aliasing, place-name typo correction (Hyderabad area), priority/ack normalisation
 - **IndexedDB persistence** — reload-safe local cache of records, customer master and branch list
 
@@ -19,7 +20,7 @@ Enterprise **outward logistics / dispatch intelligence** — a zero-backend web 
 - **Acknowledgement state** — Done · In Transit · Pending doughnut
 
 ### Operations
-- **Filters** — priority (P1–P4), ack state, **route (R1–R5)**, **order status**, **order-date range**, free-text search
+- **Filters** — priority (P1–P4), ack state, **route (R1–R7)**, **order status**, **order-date range**, free-text search
 - **Sortable matrix table** — customer · branch · location with all KPIs
 - **Backlog aging** — age buckets (0–3d → 31+d) and the oldest open P1 bottlenecks
 - **Routes overview** — per-route volume, open P1, ack breakdown and fulfilment bar; click a route to filter
@@ -80,7 +81,7 @@ Dispatch records are normalised to a canonical shape:
 | `customer` | Customer Name | trimmed / line-break cleaned |
 | `branch` | Branch | place-name typo-corrected |
 | `location` | Location | place-name typo-corrected |
-| `route` | ROUTE | delivery route (R1–R5, filterable) |
+| `route` | ROUTE | delivery route (R1–R7, filterable) — auto-assigned by matching Branch against the `routes-planning.xlsx` plan + GHMC map |
 | `priority` | Priority | normalised to P1–P4 / — |
 | `dispatchDate` | Dispatch date | |
 | `ack` | Ack | normalised to Done / In Transit / Pending |
