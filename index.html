@@ -121,7 +121,7 @@
           </button>
         </div>
         <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" multiple hidden>
-        <p class="dz-foot" id="dzFoot">Dispatch: Order Date · Customer · Branch · Ack&nbsp; · Master: Code · Name · GST&nbsp; · Branches: Branch ID · Branch Name</p>
+        <p class="dz-foot" id="dzFoot">Dispatch: Order Date · Customer · Branch · Ack · Status&nbsp; · Master: Code · Name · GST&nbsp; · Branches: Branch ID · Branch Name</p>
       </div>
       <div id="localNotice" class="info-banner" hidden>
         <i data-lucide="info"></i>
@@ -202,6 +202,10 @@
       <div class="filter-group">
         <span class="filter-label">Route</span>
         <div id="routeFilter" class="pill-row"></div>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Status</span>
+        <div id="statusFilter" class="pill-row"></div>
       </div>
       <div class="filter-group">
         <span class="filter-label">Order date</span>
@@ -326,6 +330,9 @@
               </th>
               <th data-key="ack" class="sortable">
                 <span class="th-label">Ack</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="status" class="sortable">
+                <span class="th-label">Status</span><span class="sort-ind"></span>
               </th>
             </tr>
           </thead>

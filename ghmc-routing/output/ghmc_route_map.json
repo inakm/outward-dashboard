@@ -3,9 +3,9 @@
     "title": "SkyLimit Outward Delivery Routes - GHMC Administrative Map",
     "hub": "Bowenpally",
     "source": "GHMC 2026 zones/circles/wards (G.O.Ms.No.292, 24-12-2025)",
-    "generated_at": "2026-08-06T12:22:35.509499+00:00",
-    "row_count": 421,
-    "locality_count": 128
+    "generated_at": "2026-08-06T13:07:51.885322+00:00",
+    "row_count": 423,
+    "locality_count": 130
   },
   "records": [
     {
@@ -4149,6 +4149,16 @@
       "Circle Lng": 78.461058
     },
     {
+      "Route Code": "R2",
+      "Route Name": "North-West (NW) Route",
+      "GHMC Zone": "Kukatpally/Quthbullapur Zone - North-West Wings",
+      "GHMC Circle Name": "Jeedimetla",
+      "GHMC Ward Number & Name": "- (locality): Suchitra",
+      "Logistics Sorting Note": "Quthbullapur residential circle on the ring road (north of Jeedimetla); gated layouts; combine Jeedimetla return loop.",
+      "Circle Lat": 17.519687,
+      "Circle Lng": 78.446888
+    },
+    {
       "Route Code": "R4",
       "Route Name": "South-West (SW) Route",
       "GHMC Zone": "Serilingampally Zone - South-West Belt",
@@ -4217,6 +4227,16 @@
       "Logistics Sorting Note": "Alt. spelling of Himayathnagar (ward 220); central corporate; 10 AM-5 PM.",
       "Circle Lat": 17.412974,
       "Circle Lng": 78.461058
+    },
+    {
+      "Route Code": "R2",
+      "Route Name": "North-West (NW) Route",
+      "GHMC Zone": "Kukatpally/Quthbullapur Zone - North-West Wings",
+      "GHMC Circle Name": "Jeedimetla",
+      "GHMC Ward Number & Name": "- (locality): Suchitra Circle",
+      "Logistics Sorting Note": "Alt. spelling of Suchitra; Quthbullapur residential circle; combine Jeedimetla return loop.",
+      "Circle Lat": 17.519687,
+      "Circle Lng": 78.446888
     }
   ]
 }

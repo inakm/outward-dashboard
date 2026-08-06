@@ -1206,6 +1206,8 @@ LOCALITIES = {
         "Defence colony; gated; appointments preferred; combine Neredmet."),
     "Kompally": ("R1", "Kompally",
         "Quthbullapur north-east; gated layouts; morning dispatch with Quthbullapur belt."),
+    "Suchitra": ("R2", "Jeedimetla",
+        "Quthbullapur residential circle on the ring road (north of Jeedimetla); gated layouts; combine Jeedimetla return loop."),
     # live-sheet spelling variants (typos / alt spellings) --------------------
     "Gcachibowli": ("R4", "Serilingampally",
         "Alt. spelling of Gachibowli; ORR tech belt; deliver 11 AM-4 PM."),
@@ -1221,6 +1223,8 @@ LOCALITIES = {
         "Alt. spelling of HITEC City (ward 231); same routing as Madhapur."),
     "Himayatnagar": ("R4", "Khairatabad",
         "Alt. spelling of Himayathnagar (ward 220); central corporate; 10 AM-5 PM."),
+    "Suchitra Circle": ("R2", "Jeedimetla",
+        "Alt. spelling of Suchitra; Quthbullapur residential circle; combine Jeedimetla return loop."),
 }
 
 # --------------------------------------------------------------------------- #
