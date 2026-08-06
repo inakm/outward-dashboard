@@ -19,7 +19,7 @@ Enterprise **outward logistics / dispatch intelligence** — a zero-backend web 
 - **Acknowledgement state** — Done · In Transit · Pending doughnut
 
 ### Operations
-- **Filters** — priority (P1–P4), ack state, **route (R1–R5)**, **order-date range**, free-text search
+- **Filters** — priority (P1–P4), ack state, **route (R1–R5)**, **order status**, **order-date range**, free-text search
 - **Sortable matrix table** — customer · branch · location with all KPIs
 - **Backlog aging** — age buckets (0–3d → 31+d) and the oldest open P1 bottlenecks
 - **Routes overview** — per-route volume, open P1, ack breakdown and fulfilment bar; click a route to filter
@@ -84,6 +84,7 @@ Dispatch records are normalised to a canonical shape:
 | `priority` | Priority | normalised to P1–P4 / — |
 | `dispatchDate` | Dispatch date | |
 | `ack` | Ack | normalised to Done / In Transit / Pending |
+| `status` | Status | normalised operational status (Packed / Pulled / …), optional |
 
 Pure analysis helpers (`computeKpis`, `buildBarData`, `buildTrendData`, `buildAgingData`, `auditData`, `filteredRows`, …) are exposed on `window.DashboardCore` for debugging and testing.
 

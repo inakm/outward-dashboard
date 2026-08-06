@@ -115,7 +115,10 @@
     'ack': 'Ack',
     'route': 'Route',
     'routes': 'Route',
-    'routing': 'Route'
+    'routing': 'Route',
+    'status': 'Status',
+    'order status': 'Status',
+    'orderstatus': 'Status'
   };
 
   /* Known data-entry typos → canonical place names (Hyderabad area) */
@@ -195,6 +198,7 @@
     branchesSource: null,
     priority: 'ALL',
     ack: 'ALL',
+    status: 'ALL',
     route: 'ALL',
     query: '',
     customerQuery: '',
@@ -263,6 +267,25 @@
     return 'Pending';
   }
 
+  function normalizeStatus(v) {
+    var s = String(v == null ? '' : v).trim().replace(/\s+/g, ' ');
+    if (!s) return '—';
+    var map = {
+      'packed': 'Packed', 'pack': 'Packed', 'packing': 'Packed', 'packed & ready': 'Packed',
+      'pulled': 'Pulled', 'pull': 'Pulled', 'picked': 'Picked',
+      'loaded': 'Loaded', 'loading': 'Loading',
+      'dispatched': 'Dispatched', 'out for delivery': 'Out for Delivery',
+      'delivered': 'Delivered', 'processing': 'Processing',
+      'in production': 'In Production', 'ready': 'Ready',
+      'on hold': 'On Hold', 'hold': 'On Hold', 'cancelled': 'Cancelled'
+    };
+    var key = s.toLowerCase();
+    if (map[key]) return map[key];
+    return s.split(/\s+/).map(function (w) {
+      return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+    }).join(' ');
+  }
+
   function parseDate(v) {
     if (v == null || v === '') return null;
     if (v instanceof Date) return isNaN(v.getTime()) ? null : v;
@@ -308,6 +331,7 @@
       priority: normalizePriority(raw['Priority']),
       dispatchDate: parseDate(raw['Dispatch date']),
       ack: normalizeAck(raw['Ack']),
+      status: normalizeStatus(raw['Status']),
       route: cleanCode(raw['Route'])
     };
   }
@@ -1129,6 +1153,7 @@
     var rows = state.records;
     if (state.priority !== 'ALL') rows = rows.filter(function (r) { return r.priority === state.priority; });
     if (state.ack !== 'ALL') rows = rows.filter(function (r) { return r.ack === state.ack; });
+    if (state.status !== 'ALL') rows = rows.filter(function (r) { return r.status === state.status; });
     if (!ignoreRoute && state.route !== 'ALL') rows = rows.filter(function (r) { return r.route === state.route; });
     if (state.dateFrom) {
       var from = new Date(state.dateFrom);
@@ -1145,7 +1170,8 @@
         return r.customer.toLowerCase().indexOf(q) !== -1 ||
           r.branch.toLowerCase().indexOf(q) !== -1 ||
           r.location.toLowerCase().indexOf(q) !== -1 ||
-          (r.route || '').toLowerCase().indexOf(q) !== -1;
+          (r.route || '').toLowerCase().indexOf(q) !== -1 ||
+          (r.status || '').toLowerCase().indexOf(q) !== -1;
       });
     }
     return rows;
@@ -2529,12 +2555,12 @@
   function exportCsv() {
     var rows = sortRows(filteredRows(), state.sortKey, state.sortDir);
     if (!rows.length) { toast('Nothing to export in current scope', 'info'); return; }
-    var headers = ['Order Date', 'Customer Name', 'Branch', 'Location', 'Route', 'Priority', 'Dispatch Date', 'Ack'];
+    var headers = ['Order Date', 'Customer Name', 'Branch', 'Location', 'Route', 'Priority', 'Dispatch Date', 'Ack', 'Status'];
     var lines = [headers.map(csvCell).join(',')];
     rows.forEach(function (r) {
       lines.push([
         fmtDateShort(r.orderDate), r.customer, r.branch, r.location, r.route, r.priority,
-        fmtDateShort(r.dispatchDate), r.ack
+        fmtDateShort(r.dispatchDate), r.ack, r.status || '—'
       ].map(csvCell).join(','));
     });
     var blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
@@ -2654,7 +2680,7 @@
       var msg = state.records.length
         ? 'No records match the current filters'
         : 'No data yet — drag & drop a file above, or sync the Google Sheet';
-      tbody.innerHTML = '<tr class="row-empty"><td colspan="8">' + msg + '</td></tr>';
+      tbody.innerHTML = '<tr class="row-empty"><td colspan="9">' + msg + '</td></tr>';
       return;
     }
     var html = '';
@@ -2674,6 +2700,7 @@
         '<td>' + priorityBadge(r.priority) + '</td>' +
         '<td class="td-date">' + formatDate(r.dispatchDate) + '</td>' +
         '<td>' + ackBadge(r.ack) + '</td>' +
+        '<td>' + escapeHtml(r.status || '—') + '</td>' +
         '</tr>';
     }
     tbody.innerHTML = html;
@@ -2731,6 +2758,7 @@
     var rows = filteredRows();
     renderIngestPanel();
     renderRouteFilter();
+    renderStatusFilter();
     renderKpis(rows);
     renderCharts(rows);
     renderTable();
@@ -2931,9 +2959,30 @@
     renderAll();
   }
 
+  function renderStatusFilter() {
+    var box = $('statusFilter');
+    if (!box) return;
+    var statuses = {};
+    state.records.forEach(function (r) { if (r.status && r.status !== '—') statuses[r.status] = true; });
+    var list = Object.keys(statuses).sort(function (a, b) {
+      return String(a).localeCompare(String(b), undefined, { numeric: true });
+    });
+    var html = '<button type="button" class="pill' + (state.status === 'ALL' ? ' is-active' : '') + '" data-status="ALL">All</button>';
+    for (var i = 0; i < list.length; i++) {
+      html += '<button type="button" class="pill' + (state.status === list[i] ? ' is-active' : '') + '" data-status="' + escapeHtml(list[i]) + '">' + escapeHtml(list[i]) + '</button>';
+    }
+    box.innerHTML = html;
+  }
+
+  function setStatusFilter(s) {
+    state.status = s;
+    renderAll();
+  }
+
   function resetFilters(silent) {
     state.priority = 'ALL';
     state.ack = 'ALL';
+    state.status = 'ALL';
     state.route = 'ALL';
     state.query = '';
     state.dateFrom = null;
@@ -2951,6 +3000,10 @@
     var ackPills = document.querySelectorAll('#ackFilter .pill');
     for (var j = 0; j < ackPills.length; j++) {
       ackPills[j].classList.toggle('is-active', ackPills[j].getAttribute('data-ack') === 'ALL');
+    }
+    var statusPills = document.querySelectorAll('#statusFilter .pill');
+    for (var k = 0; k < statusPills.length; k++) {
+      statusPills[k].classList.toggle('is-active', statusPills[k].getAttribute('data-status') === 'ALL');
     }
     if (!silent) renderAll();
   }
@@ -3256,6 +3309,13 @@
       routeFilter.addEventListener('click', function (ev) {
         var btn = ev.target.closest && ev.target.closest('.pill');
         if (btn && btn.getAttribute('data-route')) setRouteFilter(btn.getAttribute('data-route'));
+      });
+    }
+    var statusFilter = $('statusFilter');
+    if (statusFilter) {
+      statusFilter.addEventListener('click', function (ev) {
+        var btn = ev.target.closest && ev.target.closest('.pill');
+        if (btn && btn.getAttribute('data-status')) setStatusFilter(btn.getAttribute('data-status'));
       });
     }
 
@@ -3624,6 +3684,7 @@
     cleanCustomer: cleanCustomer,
     normalizePriority: normalizePriority,
     normalizeAck: normalizeAck,
+    normalizeStatus: normalizeStatus,
     parseDate: parseDate,
     normalizeRecord: normalizeRecord,
     detectHeaders: detectHeaders,
