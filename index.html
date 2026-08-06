@@ -70,6 +70,7 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
   <script src="https://unpkg.com/lucide@0.294.0/dist/umd/lucide.js" defer></script>
   <script src="ghmc-route-map.js" defer></script>
+  <script src="fleet.js" defer></script>
   <script src="script.js" defer></script>
 </head>
 <body>
@@ -478,6 +479,61 @@
         <div id="routeTabs" class="route-tabs"></div>
       </section>
 
+      <section class="panel command-panel">
+        <header class="card-head">
+          <div>
+            <h2 class="card-title">Dispatch Command Center</h2>
+            <p class="card-sub">Fleet readiness, P1-weighted load pressure, vehicle assignments and adjacent-route overflow guidance for open orders</p>
+          </div>
+          <div class="table-actions">
+            <span class="status-badge" id="fleetMeta">—</span>
+            <button type="button" id="exportFleetBtn" class="btn btn-secondary btn-sm">
+              <i data-lucide="download"></i><span>Export fleet plan</span>
+            </button>
+          </div>
+        </header>
+        <div id="fleetSummary" class="fleet-grid"></div>
+        <div id="fleetOverflow"></div>
+        <div class="table-wrap">
+          <table id="fleetTable">
+            <thead>
+              <tr>
+                <th>Vehicle</th>
+                <th>Route</th>
+                <th>Type</th>
+                <th>Driver</th>
+                <th>Capacity</th>
+                <th>Assigned</th>
+                <th>Load</th>
+                <th>Load order (P1 first)</th>
+                <th>Window</th>
+              </tr>
+            </thead>
+            <tbody id="fleetBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel dispatch-board-panel">
+        <header class="card-head">
+          <div>
+            <h2 class="card-title">Day-Ahead Dispatch Board</h2>
+            <p class="card-sub">What to load and when per route — open orders due on or before the planning date</p>
+          </div>
+          <div class="table-actions">
+            <div id="boardScope" class="pill-row">
+              <button type="button" class="pill is-active" data-board="today">Today</button>
+              <button type="button" class="pill" data-board="tomorrow">Tomorrow</button>
+              <button type="button" class="pill" data-board="overdue">Overdue</button>
+              <button type="button" class="pill" data-board="custom">Custom</button>
+            </div>
+            <input type="date" id="boardDate" class="date-input" aria-label="Planning date" hidden>
+            <span class="status-badge" id="boardMeta">—</span>
+          </div>
+        </header>
+        <div id="dispatchBoard"></div>
+      </section>
+
       <section class="panel sla-panel">
         <header class="card-head">
           <div>
@@ -534,14 +590,18 @@
         <header class="card-head">
           <div>
             <h2 class="card-title">Route Map</h2>
-            <p class="card-sub">Circle-level view of orders in scope, colored by route — click a circle for details</p>
+            <p class="card-sub">Circle-level view of orders in scope, colored by route — numbered in load order</p>
           </div>
           <div class="table-actions">
+            <button type="button" id="stopOrderToggle" class="btn btn-tertiary btn-sm is-active" aria-pressed="true">
+              <i data-lucide="list-ordered"></i><span>Stop order</span>
+            </button>
             <span class="status-badge" id="mapMeta">—</span>
           </div>
         </header>
         <div class="map-body">
           <div id="routeMap" class="route-map"></div>
+          <div id="mapLegend" class="map-legend"></div>
           <p class="backlog-empty route-map-msg" id="routeMapMsg" hidden>Map loading…</p>
         </div>
       </section>
@@ -572,7 +632,7 @@
       <header class="card-head">
         <div>
           <h2 class="card-title">Route Guide</h2>
-          <p class="card-sub">Delivery routes from the Old Bowenpally hub — R1 North · R2 East · R3 West · R4 South · R5 outside GHMC</p>
+          <p class="card-sub">Adjacent-Route Overlap Strategy from the Old Bowenpally hub — R1 North-East · R2 North-West · R3 South-East · R4 South-West · R5 outside GHMC</p>
         </div>
         <span class="status-badge"><i data-lucide="map"></i> Hub: Old Bowenpally</span>
       </header>
@@ -581,47 +641,84 @@
         <article class="route-guide-card rg-1">
           <header class="rg-head">
             <span class="rg-chip">R1</span>
-            <span class="rg-name">North Route</span>
-            <i data-lucide="arrow-up" class="rg-arrow"></i>
+            <span class="rg-name">North-East (NE) Route</span>
+            <i data-lucide="arrow-up-right" class="rg-arrow"></i>
           </header>
-          <p class="rg-hub">Old Bowenpally → North · 8 circles</p>
+          <p class="rg-hub">Old Bowenpally → North-East · 6 circles</p>
           <div class="rg-zone">
             <p class="rg-zone-name">Secunderabad Zone · Hub Belt</p>
             <p class="rg-circles">Bowenpally</p>
           </div>
           <div class="rg-zone">
-            <p class="rg-zone-name">Kukatpally/Quthbullapur Zone · Northern Wings</p>
-            <p class="rg-circles">Alwal · Jeedimetla · Gajularamaram · Nizampet · Chintal · Kompally · Dundigal</p>
+            <p class="rg-zone-name">Kukatpally/Quthbullapur Zone · North-East Wing</p>
+            <p class="rg-circles">Alwal · Kompally · Dundigal</p>
+          </div>
+          <div class="rg-zone">
+            <p class="rg-zone-name">Kapra Zone · North-East Belt</p>
+            <p class="rg-circles">Kapra · Keesara</p>
           </div>
         </article>
 
         <article class="route-guide-card rg-2">
           <header class="rg-head">
             <span class="rg-chip">R2</span>
-            <span class="rg-name">East Route</span>
-            <i data-lucide="arrow-right" class="rg-arrow"></i>
+            <span class="rg-name">North-West (NW) Route</span>
+            <i data-lucide="arrow-up-left" class="rg-arrow"></i>
           </header>
-          <p class="rg-hub">Old Bowenpally → East · 9 circles</p>
+          <p class="rg-hub">Old Bowenpally → North-West · 9 circles</p>
           <div class="rg-zone">
-            <p class="rg-zone-name">Kapra/Uppal Zone (East)</p>
-            <p class="rg-circles">Kapra · Uppal · Boduppal · Nacharam · Malkajgiri · Moula Ali · Keesara · Tarnaka · Mettuguda</p>
+            <p class="rg-zone-name">Kukatpally/Quthbullapur Zone · North-West Wings</p>
+            <p class="rg-circles">Jeedimetla · Gajularamaram · Nizampet · Chintal</p>
+          </div>
+          <div class="rg-zone">
+            <p class="rg-zone-name">Kukatpally Zone · North-West Wing</p>
+            <p class="rg-circles">Kukatpally · Miyapur · Allwyn Colony</p>
+          </div>
+          <div class="rg-zone">
+            <p class="rg-zone-name">Serilingampally Zone · North-West Fringe</p>
+            <p class="rg-circles">Patancheru · Ameenpur</p>
           </div>
         </article>
 
         <article class="route-guide-card rg-3">
           <header class="rg-head">
             <span class="rg-chip">R3</span>
-            <span class="rg-name">West Route</span>
-            <i data-lucide="arrow-left" class="rg-arrow"></i>
+            <span class="rg-name">South-East (SE) Route</span>
+            <i data-lucide="arrow-down-right" class="rg-arrow"></i>
           </header>
-          <p class="rg-hub">Old Bowenpally → West · 13 circles</p>
+          <p class="rg-hub">Old Bowenpally → South-East · 19 circles</p>
           <div class="rg-zone">
-            <p class="rg-zone-name">Serilingampally Zone</p>
-            <p class="rg-circles">Serilingampally · Madhapur · Miyapur · Narsingi · Patancheru · Ameenpur</p>
+            <p class="rg-zone-name">Kapra/Uppal Zone · South-East Belt</p>
+            <p class="rg-circles">Uppal · Boduppal · Nacharam · Malkajgiri · Moula Ali · Tarnaka · Mettuguda</p>
           </div>
           <div class="rg-zone">
-            <p class="rg-zone-name">Kukatpally Zone · Southern Wings</p>
-            <p class="rg-circles">Kukatpally · Moosapet · Allwyn Colony</p>
+            <p class="rg-zone-name">Secunderabad Zone · South-East Wing</p>
+            <p class="rg-circles">Kavadiguda · Musheerabad · Amberpet</p>
+          </div>
+          <div class="rg-zone">
+            <p class="rg-zone-name">Charminar Zone · South-East Belt</p>
+            <p class="rg-circles">Chandrayangutta · Yakutpura · Santoshnagar · Malakpet · Moosarambagh</p>
+          </div>
+          <div class="rg-zone">
+            <p class="rg-zone-name">L.B. Nagar Zone (South-East)</p>
+            <p class="rg-circles">Nagole · Saroornagar · L.B. Nagar · Hayathnagar</p>
+          </div>
+        </article>
+
+        <article class="route-guide-card rg-4">
+          <header class="rg-head">
+            <span class="rg-chip">R4</span>
+            <span class="rg-name">South-West (SW) Route</span>
+            <i data-lucide="arrow-down-left" class="rg-arrow"></i>
+          </header>
+          <p class="rg-hub">Old Bowenpally → South-West · 20 circles</p>
+          <div class="rg-zone">
+            <p class="rg-zone-name">Serilingampally Zone · South-West Belt</p>
+            <p class="rg-circles">Serilingampally · Madhapur · Narsingi</p>
+          </div>
+          <div class="rg-zone">
+            <p class="rg-zone-name">Kukatpally Zone · South-West Wing</p>
+            <p class="rg-circles">Moosapet</p>
           </div>
           <div class="rg-zone">
             <p class="rg-zone-name">Secunderabad Zone · West Wing</p>
@@ -631,34 +728,17 @@
             <p class="rg-zone-name">Khairatabad Zone · West Wing</p>
             <p class="rg-circles">Jubilee Hills · Yousufguda · Borabanda</p>
           </div>
-        </article>
-
-        <article class="route-guide-card rg-4">
-          <header class="rg-head">
-            <span class="rg-chip">R4</span>
-            <span class="rg-name">South Route</span>
-            <i data-lucide="arrow-down" class="rg-arrow"></i>
-          </header>
-          <p class="rg-hub">Old Bowenpally → South · 24 circles</p>
           <div class="rg-zone">
-            <p class="rg-zone-name">Charminar Zone / Old City</p>
-            <p class="rg-circles">Falaknuma · Bahadurpura · Chandrayangutta · Yakutpura · Jangammet · Santoshnagar · Charminar · Malakpet · Moosarambagh</p>
+            <p class="rg-zone-name">Charminar Zone · Old City (South-West)</p>
+            <p class="rg-circles">Falaknuma · Bahadurpura · Jangammet · Charminar</p>
           </div>
           <div class="rg-zone">
-            <p class="rg-zone-name">Golconda/Rajendranagar Zone · Central-West Belt</p>
+            <p class="rg-zone-name">Golconda/Rajendranagar Zone · South-West Belt</p>
             <p class="rg-circles">Goshamahal · Karwan · Golconda · Attapur · Rajendranagar</p>
           </div>
           <div class="rg-zone">
-            <p class="rg-zone-name">Khairatabad Zone</p>
+            <p class="rg-zone-name">Khairatabad Zone · Central-South Belt</p>
             <p class="rg-circles">Khairatabad · Mehdipatnam · Masab Tank</p>
-          </div>
-          <div class="rg-zone">
-            <p class="rg-zone-name">Secunderabad Zone · South Wing</p>
-            <p class="rg-circles">Kavadiguda · Musheerabad · Amberpet</p>
-          </div>
-          <div class="rg-zone">
-            <p class="rg-zone-name">L.B. Nagar Zone (South-East)</p>
-            <p class="rg-circles">Nagole · Saroornagar · L.B. Nagar · Hayathnagar</p>
           </div>
         </article>
 

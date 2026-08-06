@@ -9,5 +9,9 @@ Thumbs.db
 # Excel temp / lock files
 ~$*
 
+# Python
+__pycache__/
+*.pyc
+
 # Node
 node_modules/
