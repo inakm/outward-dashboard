@@ -102,7 +102,23 @@
     <section class="hero">
       <p class="eyebrow">Outward Logistics · Enterprise Intelligence</p>
       <h1 class="display">SkyLimit Outwards Dashboard</h1>
-      <p class="subhead">Outward volume, open bottlenecks, dispatch velocity and fulfilment — across every customer, branch and location, in near-real time.</p>
+      <p class="subhead">Live outward dispatch — volume, bottlenecks, velocity and fulfilment across every customer, branch and location.</p>
+    </section>
+
+    <section class="panel context-strip" id="contextStrip" hidden>
+      <div class="ctx-block">
+        <span class="ctx-label">Route description</span>
+        <span class="ctx-chips" id="routeCtxChips"></span>
+      </div>
+      <div class="ctx-block">
+        <span class="ctx-label">Priority description</span>
+        <span class="ctx-chips">
+          <span class="ctx-chip"><span class="dot dot-p1"></span>P1 · Urgent</span>
+          <span class="ctx-chip"><span class="dot dot-p2"></span>P2 · High</span>
+          <span class="ctx-chip"><span class="dot dot-p3"></span>P3 · Normal</span>
+          <span class="ctx-chip"><span class="dot dot-p4"></span>P4 · Low</span>
+        </span>
+      </div>
     </section>
 
     <section class="panel ingest-panel" id="ingestPanel">
@@ -122,7 +138,7 @@
           </button>
         </div>
         <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" multiple hidden>
-        <p class="dz-foot" id="dzFoot">Dispatch: Order Date · Customer · Branch · Ack · Status&nbsp; · Master: Code · Name · GST&nbsp; · Branches: Branch ID · Branch Name</p>
+        <p class="dz-foot" id="dzFoot">Dispatch: Order Date · Customer · Branch · Ack · Status · Master: Code · Name · GST · Branches: Branch ID · Branch Name</p>
       </div>
       <div id="localNotice" class="info-banner" hidden>
         <i data-lucide="info"></i>
@@ -130,41 +146,6 @@
         <button type="button" class="error-close" data-close aria-label="Dismiss"><i data-lucide="x"></i></button>
       </div>
       <div id="errorBanner" class="error-banner" hidden></div>
-    </section>
-
-    <section class="kpis" id="kpiGrid" aria-label="Key performance indicators">
-      <article class="kpi-card">
-        <div class="kpi-icon"><i data-lucide="package"></i></div>
-        <div class="kpi-body">
-          <p class="kpi-label">Total Outward Volume</p>
-          <p class="kpi-value" id="kpiVolume">—</p>
-          <p class="kpi-note" id="kpiVolumeNote">records in scope</p>
-        </div>
-      </article>
-      <article class="kpi-card">
-        <div class="kpi-icon kpi-icon-danger"><i data-lucide="alert-triangle"></i></div>
-        <div class="kpi-body">
-          <p class="kpi-label">Open Bottlenecks</p>
-          <p class="kpi-value" id="kpiBottleneck">—</p>
-          <p class="kpi-note">P1 orders without a Done ack</p>
-        </div>
-      </article>
-      <article class="kpi-card">
-        <div class="kpi-icon"><i data-lucide="gauge"></i></div>
-        <div class="kpi-body">
-          <p class="kpi-label">Dispatch Velocity</p>
-          <p class="kpi-value kpi-mono" id="kpiVelocity">—</p>
-          <p class="kpi-note">avg. order → dispatch, in days</p>
-        </div>
-      </article>
-      <article class="kpi-card">
-        <div class="kpi-icon kpi-icon-success"><i data-lucide="check-circle-2"></i></div>
-        <div class="kpi-body">
-          <p class="kpi-label">Fulfillment Rate</p>
-          <p class="kpi-value kpi-mono" id="kpiFulfillment">—</p>
-          <p class="kpi-note">rows acked as Done</p>
-        </div>
-      </article>
     </section>
 
     <section class="tabs" id="viewTabs" aria-label="Dashboard views">
@@ -181,6 +162,12 @@
 
     <div id="dispatchView">
     <section class="filters" aria-label="Dashboard filters">
+      <div class="filter-group">
+        <span class="filter-label">Order date</span>
+        <input type="date" id="dateFrom" class="date-input" aria-label="From order date">
+        <span class="date-sep">→</span>
+        <input type="date" id="dateTo" class="date-input" aria-label="To order date">
+      </div>
       <div class="filter-group">
         <span class="filter-label">Priority</span>
         <div id="priorityFilter" class="pill-row">
@@ -208,16 +195,144 @@
         <span class="filter-label">Status</span>
         <div id="statusFilter" class="pill-row"></div>
       </div>
-      <div class="filter-group">
-        <span class="filter-label">Order date</span>
-        <input type="date" id="dateFrom" class="date-input" aria-label="From order date">
-        <span class="date-sep">→</span>
-        <input type="date" id="dateTo" class="date-input" aria-label="To order date">
-      </div>
       <button type="button" id="resetFilters" class="btn btn-tertiary btn-sm">
         <i data-lucide="rotate-ccw"></i>
         <span>Reset</span>
       </button>
+    </section>
+
+    <section class="panel table-panel">
+      <header class="table-head">
+        <div>
+          <h2 class="card-title">Customer · Branch · Location Matrix</h2>
+          <p class="card-sub">Sort by clicking a column header, or search across customers, branches and locations</p>
+        </div>
+        <div class="table-actions">
+          <div class="search-box">
+            <i data-lucide="search"></i>
+            <input type="search" id="searchInput" placeholder="Search customer, branch or location…" autocomplete="off" spellcheck="false">
+          </div>
+          <button type="button" id="showUploadBtn" class="btn btn-secondary btn-sm" hidden>
+            <i data-lucide="upload-cloud"></i>
+            <span>Upload / replace data</span>
+          </button>
+          <span class="status-badge" id="rowCount">0 records</span>
+        </div>
+      </header>
+      <div class="table-wrap">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th data-key="orderDate" class="sortable">
+                <span class="th-label">Order Date</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="customer" class="sortable">
+                <span class="th-label">Customer Name</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="branch" class="sortable">
+                <span class="th-label">Branch</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="location" class="sortable">
+                <span class="th-label">Location</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="route" class="sortable">
+                <span class="th-label">Route</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="priority" class="sortable">
+                <span class="th-label">Priority</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="dispatchDate" class="sortable">
+                <span class="th-label">Dispatch Date</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="ack" class="sortable">
+                <span class="th-label">Ack</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="status" class="sortable">
+                <span class="th-label">Status</span><span class="sort-ind"></span>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="top-overview">
+      <section class="kpis" id="kpiGrid" aria-label="Key performance indicators">
+        <article class="kpi-card">
+          <div class="kpi-icon"><i data-lucide="package"></i></div>
+          <div class="kpi-body">
+            <p class="kpi-label">Total Outward Volume</p>
+            <p class="kpi-value" id="kpiVolume">—</p>
+            <p class="kpi-note" id="kpiVolumeNote">records in scope</p>
+          </div>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-icon kpi-icon-danger"><i data-lucide="alert-triangle"></i></div>
+          <div class="kpi-body">
+            <p class="kpi-label">Open Bottlenecks</p>
+            <p class="kpi-value" id="kpiBottleneck">—</p>
+            <p class="kpi-note">P1 orders without a Done ack</p>
+          </div>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-icon"><i data-lucide="gauge"></i></div>
+          <div class="kpi-body">
+            <p class="kpi-label">Dispatch Velocity</p>
+            <p class="kpi-value kpi-mono" id="kpiVelocity">—</p>
+            <p class="kpi-note">avg. order → dispatch, in days</p>
+          </div>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-icon kpi-icon-success"><i data-lucide="check-circle-2"></i></div>
+          <div class="kpi-body">
+            <p class="kpi-label">Fulfillment Rate</p>
+            <p class="kpi-value kpi-mono" id="kpiFulfillment">—</p>
+            <p class="kpi-note">rows acked as Done</p>
+          </div>
+        </article>
+      </section>
+
+      <aside class="panel alert-center" id="alertCenter" aria-label="Priority and aging alerts">
+        <header class="alert-head">
+          <div>
+            <h2 class="card-title">Alerts</h2>
+            <p class="card-sub">Priority pressure · bottleneck aging</p>
+          </div>
+          <span class="status-badge" id="alertMeta">—</span>
+        </header>
+        <p class="alert-section-label">Priority</p>
+        <div id="priorityAlerts" class="alert-list"></div>
+        <p class="alert-section-label">Aging</p>
+        <div id="agingAlerts" class="alert-list"></div>
+      </aside>
+    </section>
+
+    <section class="panel zones-panel">
+      <header class="table-head">
+        <div>
+          <h2 class="card-title">Zone-wise Traffic</h2>
+          <p class="card-sub">Order volume and dispatch health per circle / zone in current scope — click a row to filter its route</p>
+        </div>
+        <span class="status-badge" id="zonesMeta">—</span>
+      </header>
+      <div class="table-wrap">
+        <table id="zonesTable">
+          <thead>
+            <tr>
+              <th class="th-mono">Route</th>
+              <th>Zone / Circle</th>
+              <th>Orders</th>
+              <th>Open P1</th>
+              <th>Done</th>
+              <th>In Transit</th>
+              <th>Pending</th>
+              <th>Fulfillment</th>
+            </tr>
+          </thead>
+          <tbody id="zonesBody"></tbody>
+        </table>
+      </div>
     </section>
 
     <section class="panel chart-card trend-card">
@@ -284,82 +399,6 @@
           </div>
         </div>
       </article>
-    </section>
-
-    <section class="panel table-panel">
-      <header class="table-head">
-        <div>
-          <h2 class="card-title">Customer · Branch · Location Matrix</h2>
-          <p class="card-sub">Sort by clicking a column header, or search across customers, branches and locations</p>
-        </div>
-        <div class="table-actions">
-          <div class="search-box">
-            <i data-lucide="search"></i>
-            <input type="search" id="searchInput" placeholder="Search customer, branch or location…" autocomplete="off" spellcheck="false">
-          </div>
-          <button type="button" id="showUploadBtn" class="btn btn-secondary btn-sm" hidden>
-            <i data-lucide="upload-cloud"></i>
-            <span>Upload / replace data</span>
-          </button>
-          <span class="status-badge" id="rowCount">0 records</span>
-        </div>
-      </header>
-      <div class="table-wrap">
-        <table id="dataTable">
-          <thead>
-            <tr>
-              <th data-key="orderDate" class="sortable">
-                <span class="th-label">Order Date</span><span class="sort-ind"></span>
-              </th>
-              <th data-key="customer" class="sortable">
-                <span class="th-label">Customer Name</span><span class="sort-ind"></span>
-              </th>
-              <th data-key="branch" class="sortable">
-                <span class="th-label">Branch</span><span class="sort-ind"></span>
-              </th>
-              <th data-key="location" class="sortable">
-                <span class="th-label">Location</span><span class="sort-ind"></span>
-              </th>
-              <th data-key="route" class="sortable">
-                <span class="th-label">Route</span><span class="sort-ind"></span>
-              </th>
-              <th data-key="priority" class="sortable">
-                <span class="th-label">Priority</span><span class="sort-ind"></span>
-              </th>
-              <th data-key="dispatchDate" class="sortable">
-                <span class="th-label">Dispatch Date</span><span class="sort-ind"></span>
-              </th>
-              <th data-key="ack" class="sortable">
-                <span class="th-label">Ack</span><span class="sort-ind"></span>
-              </th>
-              <th data-key="status" class="sortable">
-                <span class="th-label">Status</span><span class="sort-ind"></span>
-              </th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="panel backlog-panel" id="backlogPanel">
-      <header class="card-head">
-        <div>
-          <h2 class="card-title">Backlog Aging</h2>
-          <p class="card-sub">Open P1 bottlenecks aged by days since order date</p>
-        </div>
-        <span class="status-badge" id="backlogMeta">—</span>
-      </header>
-      <div class="backlog-grid">
-        <div class="chart-box compact" id="agingChartBox">
-          <canvas id="agingChart"></canvas>
-          <div id="agingEmpty" class="chart-empty" hidden>
-            <i data-lucide="hourglass"></i>
-            <p>No open bottlenecks in scope</p>
-          </div>
-        </div>
-        <div class="backlog-list" id="backlogList"></div>
-      </div>
     </section>
 
     <section class="panel routes-panel">
