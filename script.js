@@ -216,7 +216,7 @@
     abc: 'ALL',
     dateFrom: null,
     dateTo: null,
-    trendGranularity: 'month',
+    trendGranularity: 'day',
     barDimension: 'customer',
     mapRoute: null,
     showStopOrder: true,
@@ -230,7 +230,6 @@
   var barChart = null;
   var doughnutChart = null;
   var trendChart = null;
-  var agingChart = null;
   var autoRefreshTimer = null;
   var lastUpdatedTick = null;
   var syncing = false;
@@ -259,7 +258,8 @@
   }
 
   function cleanCode(v) {
-    return String(v == null ? '' : v).trim();
+    var s = String(v == null ? '' : v).trim();
+    return (s === '—' || s === '-') ? '' : s;
   }
 
   function normalizePriority(v) {
@@ -308,7 +308,7 @@
     if (!s) return null;
 
     var gviz = s.match(/^Date\((\d{4}),(\d{1,2}),(\d{1,2})\)$/);
-    if (gviz) return new Date(+gviz[1], +gviz[2], +gviz[3]);
+    if (gviz) return validDate(+gviz[1], +gviz[2] + 1, +gviz[3]);
 
     /* dd/mm/yyyy (dataset format) — defensively swap if month>12 */
     var sl = s.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{2,4})$/);
@@ -318,15 +318,18 @@
       if (mon > 12 && day <= 12) {
         var t = day; day = mon; mon = t;
       }
-      if (mon >= 1 && mon <= 12 && day >= 1 && day <= 31) {
-        var dt = new Date(yr, mon - 1, day);
-        return isNaN(dt.getTime()) ? null : dt;
-      }
-      return null;
+      return validDate(yr, mon, day);
     }
 
     var iso = new Date(s);
     return isNaN(iso.getTime()) ? null : iso;
+  }
+
+  function validDate(y, m, d) {
+    if (!(m >= 1 && m <= 12 && d >= 1 && d <= 31)) return null;
+    var dt = new Date(y, m - 1, d);
+    if (dt.getFullYear() !== y || dt.getMonth() !== m - 1 || dt.getDate() !== d) return null;
+    return dt;
   }
 
   function normalizeRecord(raw) {
@@ -411,9 +414,9 @@
 
   function enrichRoutes(records, idx) {
     idx = idx || routeMap;
-    if (!idx) return records;
     for (var i = 0; i < records.length; i++) {
-      if (!records[i].route) records[i].route = routeFromBranch(records[i].branch, idx) || '';
+      if (records[i].route === '—' || records[i].route === '-') records[i].route = '';
+      if (!records[i].route && idx) records[i].route = routeFromBranch(records[i].branch, idx) || '';
     }
     return records;
   }
@@ -431,34 +434,50 @@
   }
 
   function detectHeaders(rows) {
-    var headerMap = {};
-    var startIndex = 0;
+    var fallback = null;
+    var fallbackIndex = 0;
     for (var i = 0; i < rows.length; i++) {
       var row = rows[i];
-      if (!row || !row.some(function (c) { return String(c == null ? '' : c).trim() !== ''; })) {
-        startIndex = i + 1;
-        continue;
-      }
+      if (!row || !row.some(function (c) { return String(c == null ? '' : c).trim() !== ''; })) continue;
+      var headerMap = {};
       row.forEach(function (cell, colIdx) {
         var key = normHeaderKey(cell);
         if (HEADER_ALIASES[key] && !(HEADER_ALIASES[key] in headerMap)) {
           headerMap[HEADER_ALIASES[key]] = colIdx;
         }
       });
-      startIndex = i + 1;
-      break;
+      if (fallback === null) {
+        fallback = headerMap;
+        fallbackIndex = i;
+      }
+      var missing = REQUIRED_COLUMNS.filter(function (c) { return !(c in headerMap); });
+      if (!missing.length) {
+        return { headerMap: headerMap, missing: [], startIndex: i + 1, headerRow: row.slice() };
+      }
     }
-    var missing = REQUIRED_COLUMNS.filter(function (c) { return !(c in headerMap); });
-    return { headerMap: headerMap, missing: missing, startIndex: startIndex };
+    if (fallback) {
+      var missing = REQUIRED_COLUMNS.filter(function (c) { return !(c in fallback); });
+      return { headerMap: fallback, missing: missing, startIndex: fallbackIndex + 1, headerRow: null };
+    }
+    return { headerMap: {}, missing: REQUIRED_COLUMNS.slice(), startIndex: 0, headerRow: null };
   }
 
-  function buildRecords(rows, headerMap, startIndex) {
+  function buildRecords(rows, headerMap, startIndex, headerRow) {
     var records = [];
+    var headerKeys = headerRow ? headerRow.map(function (c) { return normHeaderKey(c); }) : null;
     for (var i = startIndex; i < rows.length; i++) {
       var row = rows[i];
       if (!row || !row.some(function (c) { return String(c == null ? '' : c).trim() !== ''; })) continue;
+      if (headerKeys) {
+        var looksLikeHeader = true;
+        for (var canon in headerMap) {
+          var ci = headerMap[canon];
+          if (normHeaderKey(row[ci]) !== headerKeys[ci]) { looksLikeHeader = false; break; }
+        }
+        if (looksLikeHeader) continue;
+      }
       var raw = {};
-      for (var canon in headerMap) raw[canon] = row[headerMap[canon]] == null ? '' : row[headerMap[canon]];
+      for (var c2 in headerMap) raw[c2] = row[headerMap[c2]] == null ? '' : row[headerMap[c2]];
       var rec = normalizeRecord(raw);
       if (!rec.customer && !rec.branch && !rec.location) continue;
       records.push(rec);
@@ -475,7 +494,7 @@
     }
     var detection = detectHeaders(allRows);
     if (detection.missing.length) return { records: [], missing: detection.missing };
-    return { records: buildRecords(allRows, detection.headerMap, detection.startIndex), missing: [] };
+    return { records: buildRecords(allRows, detection.headerMap, detection.startIndex, detection.headerRow), missing: [] };
   }
 
   /* -------------------------------------------------------------
@@ -502,7 +521,7 @@
       if (k) keys[k] = true;
     });
     if (keys['branch id'] && keys['branch name']) return 'branches';
-    if (keys['code'] && keys['name'] && (keys['gst number'] || keys['gst no'])) return 'customers';
+    if (keys['code'] && keys['name'] && (keys['gst number'] || keys['gst no'] || keys['gstin'])) return 'customers';
     var detection = detectHeaders(rows);
     return detection.missing.length ? null : 'dispatch';
   }
@@ -612,17 +631,18 @@
     var missing = REQUIRED_COLUMNS.filter(function (c) { return !(c in headerIdx); });
     if (missing.length) throw new Error('Required columns missing: ' + missing.join(', '));
     return rows.filter(function (r) { return r && r.c; }).map(function (r) {
-      var raw = {};
-      for (var canon in headerIdx) {
-        var cell = r.c[headerIdx[canon]];
-        var val = '';
-        if (cell) {
-          if (cell.f != null) val = cell.f;
-          else if (Array.isArray(cell.v)) val = cell.v.join(', ');
-          else val = cell.v;
+        var raw = {};
+        for (var canon in headerIdx) {
+          var cell = r.c[headerIdx[canon]];
+          var val = '';
+          if (cell) {
+            if (Array.isArray(cell.v)) val = cell.v.join(', ');
+            else if (typeof cell.v === 'string' && /^Date\(\d/.test(cell.v)) val = cell.v;
+            else if (cell.f != null) val = cell.f;
+            else val = cell.v;
+          }
+          raw[canon] = val == null ? '' : val;
         }
-        raw[canon] = val == null ? '' : val;
-      }
       return raw;
     });
   }
@@ -640,7 +660,7 @@
       else if (r.ack === 'In Transit') transit++;
       else pending++;
       if (r.orderDate && r.dispatchDate) {
-        var diff = (r.dispatchDate.getTime() - r.orderDate.getTime()) / 86400000;
+        var diff = (startOfDay(r.dispatchDate).getTime() - startOfDay(r.orderDate).getTime()) / 86400000;
         if (diff >= 0) { days += diff; velocityCount++; }
       }
     }
@@ -746,6 +766,28 @@
     list.forEach(function (s) {
       s.fulfillment = s.total ? (s.done / s.total) * 100 : 0;
     });
+    return list;
+  }
+
+  function buildZoneTraffic(rows) {
+    var map = {};
+    rows.forEach(function (r) {
+      var info = routeCircleFor(r);
+      var zone = (info && info.circle) ? info.circle : 'Unmapped';
+      var route = r.route || (info && info.route) || '—';
+      if (!map[zone]) map[zone] = { zone: zone, route: route, total: 0, done: 0, transit: 0, pending: 0, openP1: 0 };
+      var s = map[zone];
+      s.total++;
+      if (r.ack === 'Done') s.done++;
+      else if (r.ack === 'In Transit') s.transit++;
+      else s.pending++;
+      if (r.priority === 'P1' && r.ack !== 'Done') s.openP1++;
+    });
+    var list = Object.keys(map).map(function (k) { return map[k]; }).sort(function (a, b) {
+      return String(a.route).localeCompare(String(b.route), undefined, { numeric: true }) ||
+        (b.total - a.total) || String(a.zone).localeCompare(String(b.zone));
+    });
+    list.forEach(function (s) { s.fulfillment = s.total ? (s.done / s.total) * 100 : 0; });
     return list;
   }
 
@@ -1162,15 +1204,25 @@
     if (state.priority !== 'ALL') rows = rows.filter(function (r) { return r.priority === state.priority; });
     if (state.ack !== 'ALL') rows = rows.filter(function (r) { return r.ack === state.ack; });
     if (state.status !== 'ALL') rows = rows.filter(function (r) { return r.status === state.status; });
-    if (!ignoreRoute && state.route !== 'ALL') rows = rows.filter(function (r) { return r.route === state.route; });
+    if (!ignoreRoute && state.route !== 'ALL') {
+      if (state.route === '—') {
+        rows = rows.filter(function (r) { return !r.route; });
+      } else {
+        rows = rows.filter(function (r) { return r.route === state.route; });
+      }
+    }
     if (state.dateFrom) {
-      var from = new Date(state.dateFrom);
-      rows = rows.filter(function (r) { return r.orderDate && r.orderDate.getTime() >= from.getTime(); });
+      var from = new Date(state.dateFrom + 'T00:00:00');
+      if (isNaN(from.getTime())) from = null;
+      if (from) rows = rows.filter(function (r) { return r.orderDate && r.orderDate.getTime() >= from.getTime(); });
     }
     if (state.dateTo) {
-      var to = new Date(state.dateTo);
-      to.setHours(23, 59, 59, 999);
-      rows = rows.filter(function (r) { return r.orderDate && r.orderDate.getTime() <= to.getTime(); });
+      var to = new Date(state.dateTo + 'T00:00:00');
+      if (isNaN(to.getTime())) to = null;
+      if (to) {
+        to.setHours(23, 59, 59, 999);
+        rows = rows.filter(function (r) { return r.orderDate && r.orderDate.getTime() <= to.getTime(); });
+      }
     }
     if (state.query) {
       var q = state.query.toLowerCase();
@@ -1190,9 +1242,16 @@
     return rows.slice().sort(function (a, b) {
       var cmp = 0;
       if (key === 'orderDate' || key === 'dispatchDate') {
-        var av = a[key] ? a[key].getTime() : Infinity;
-        var bv = b[key] ? b[key].getTime() : Infinity;
-        cmp = av === bv ? 0 : (av < bv ? -1 : 1);
+        var aNull = !a[key];
+        var bNull = !b[key];
+        if (aNull && bNull) cmp = 0;
+        else if (aNull) cmp = 1;
+        else if (bNull) cmp = -1;
+        else {
+          var av = a[key].getTime();
+          var bv = b[key].getTime();
+          cmp = av === bv ? 0 : (av < bv ? -1 : 1);
+        }
       } else if (key === 'priority') {
         cmp = (PRIORITY_RANK[a.priority] != null ? PRIORITY_RANK[a.priority] : 4) -
               (PRIORITY_RANK[b.priority] != null ? PRIORITY_RANK[b.priority] : 4);
@@ -1655,55 +1714,6 @@
         }
       });
     }
-
-    var agingCtx = $('agingChart');
-    if (agingCtx) {
-      agingChart = new Chart(agingCtx, {
-        type: 'bar',
-        data: {
-          labels: [],
-          datasets: [{
-            data: [],
-            backgroundColor: '#f5a623',
-            hoverBackgroundColor: '#e99b16',
-            borderRadius: 5,
-            borderSkipped: false,
-            maxBarThickness: 20
-          }]
-        },
-        options: {
-          indexAxis: 'y',
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              backgroundColor: '#ffffff',
-              borderColor: '#e5e8ec',
-              borderWidth: 1,
-              titleColor: '#1a1d21',
-              bodyColor: '#3f454d',
-              padding: 10,
-              cornerRadius: 8,
-              displayColors: false
-            }
-          },
-          scales: {
-            x: {
-              beginAtZero: true,
-              grid: { color: '#eceff3' },
-              border: { color: '#d4d8de' },
-              ticks: { color: '#6b7078', precision: 0 }
-            },
-            y: {
-              grid: { display: false },
-              border: { color: '#d4d8de' },
-              ticks: { color: '#3f454d', autoSkip: false, font: { size: 12 } }
-            }
-          }
-        }
-      });
-    }
   }
 
   function renderCharts(rows) {
@@ -1759,40 +1769,77 @@
   /* -------------------------------------------------------------
      Backlog aging + data quality
      ------------------------------------------------------------- */
+  function renderPriorityAlerts(rows) {
+    var box = $('priorityAlerts');
+    if (!box) return;
+    var order = ['P1', 'P2', 'P3', 'P4'];
+    var counts = { P1: 0, P2: 0, P3: 0, P4: 0 };
+    rows.forEach(function (r) {
+      if (r.ack !== 'Done' && counts[r.priority] != null) counts[r.priority]++;
+    });
+    var html = '';
+    for (var i = 0; i < order.length; i++) {
+      var p = order[i];
+      var n = counts[p];
+      var sev = (p === 'P1' || p === 'P2') ? (n ? (p === 'P1' ? 'alert-critical' : 'alert-warn') : 'alert-ok') : 'alert-info';
+      var dot = p === 'P1' ? 'dot-p1' : p === 'P2' ? 'dot-p2' : p === 'P3' ? 'dot-p3' : 'dot-p4';
+      var active = state.priority === p;
+      html +=
+        '<button type="button" class="alert-item alert-priority ' + sev + (active ? ' is-active' : '') + '" data-alert-priority="' + p + '" aria-pressed="' + active + '" title="Filter to ' + p + ' orders">' +
+        '<span class="dot ' + dot + '"></span>' +
+        '<span class="alert-title">' + p + ' open</span>' +
+        '<span class="alert-count">' + formatNum(n) + '</span>' +
+        '</button>';
+    }
+    box.innerHTML = html;
+    refreshIcons();
+  }
+
   function renderAging(rows) {
-    var panel = $('backlogPanel');
-    if (!panel) return;
-    var list = $('backlogList');
+    var list = $('agingAlerts');
+    if (!list) return;
     var aData = buildAgingData(rows);
     var has = aData.total > 0;
-    setText('backlogMeta', has ? formatNum(aData.total) + ' open' : '0 open');
-    setChartEmpty('agingEmpty', !has);
-    if (agingChart) {
-      agingChart.data.labels = aData.buckets.map(function (b) { return b.label; });
-      agingChart.data.datasets[0].data = aData.buckets.map(function (b) { return b.count; });
-      agingChart.update();
-    }
-    if (!list) return;
     if (!has) {
-      list.innerHTML = '<p class="backlog-empty">No open P1 bottlenecks in current scope</p>';
+      list.innerHTML = '<div class="alert-item alert-ok"><i data-lucide="shield-check"></i><span class="alert-title">No open P1 bottlenecks in scope</span></div>';
+      refreshIcons();
       return;
     }
     var html = '';
     for (var i = 0; i < aData.oldest.length; i++) {
       var r = aData.oldest[i];
-      var ageCls = r.age >= 15 ? ' is-old' : '';
+      var sev = r.age >= 15 ? 'alert-critical' : (r.age >= 8 ? 'alert-warn' : 'alert-info');
+      var icon = sev === 'alert-critical' ? 'alert-octagon' : (sev === 'alert-warn' ? 'alert-triangle' : 'clock');
       html +=
-        '<div class="backlog-item">' +
-        '<span class="bl-cust">' + escapeHtml(r.customer || '—') + '</span>' +
-        '<span class="bl-meta">' + escapeHtml((r.branch || '—') + (r.location ? ' · ' + r.location : '')) + '</span>' +
-        '<span class="bl-date">' + formatDate(r.orderDate) + '</span>' +
-        '<span class="bl-age' + ageCls + '">' + formatNum(r.age) + 'd</span>' +
+        '<div class="alert-item ' + sev + '">' +
+        '<i data-lucide="' + icon + '"></i>' +
+        '<span class="alert-body">' +
+        '<span class="alert-title">' + escapeHtml(r.customer || '—') + '</span>' +
+        '<span class="alert-meta">' + escapeHtml((r.branch || '—') + (r.location ? ' · ' + r.location : '')) + '</span>' +
+        '</span>' +
+        '<span class="alert-age">' + formatNum(r.age) + 'd</span>' +
         '</div>';
     }
-    list.innerHTML =
-      '<div class="backlog-list-head"><span class="bl-title">Oldest open P1 bottlenecks</span>' +
-      '<span class="mono">' + formatNum(aData.total) + ' total</span></div>' +
-      html;
+    list.innerHTML = html;
+    refreshIcons();
+  }
+
+  function renderAlertCenter(rows) {
+    renderPriorityAlerts(rows);
+    renderAging(rows);
+    var meta = $('alertMeta');
+    if (!meta) return;
+    var open = 0;
+    rows.forEach(function (r) { if (r.ack !== 'Done') open++; });
+    var aging = buildAgingData(rows).total;
+    if (!open && !aging) {
+      meta.textContent = 'All clear';
+    } else {
+      var parts = [];
+      if (open) parts.push(formatNum(open) + ' open');
+      if (aging) parts.push(formatNum(aging) + ' aging');
+      meta.textContent = parts.join(' · ');
+    }
   }
 
   function renderRouteOverview(rows) {
@@ -1814,6 +1861,58 @@
       html +=
         '<tr class="route-row' + (active ? ' is-active' : '') + '" data-route="' + escapeHtml(s.route) + '" tabindex="0" aria-label="Filter to route ' + escapeHtml(s.route) + '">' +
         '<td class="td-strong"><span class="route-chip">' + escapeHtml(s.route) + '</span></td>' +
+        '<td class="td-strong">' + formatNum(s.total) + '</td>' +
+        '<td>' + (s.openP1 ? '<span class="badge badge-p1">' + formatNum(s.openP1) + '</span>' : '—') + '</td>' +
+        '<td>' + formatNum(s.done) + '</td>' +
+        '<td>' + formatNum(s.transit) + '</td>' +
+        '<td>' + formatNum(s.pending) + '</td>' +
+        '<td><span class="fulfillment"><span class="fulfillment-track"><span class="fulfillment-fill' + pctCls + '" style="width:' + Math.min(100, Math.max(0, pct)) + '%"></span></span><span class="fulfillment-num">' + pct + '%</span></span></td>' +
+        '</tr>';
+    }
+    tbody.innerHTML = html;
+  }
+
+  var ROUTE_DESCRIPTIONS = { R1: 'North-East', R2: 'North-West', R3: 'South-East', R4: 'South-West', R5: 'Outside GHMC', R7: 'Non-Hyderabad' };
+
+  function renderRouteContext() {
+    var strip = $('contextStrip');
+    var box = $('routeCtxChips');
+    if (!strip || !box) return;
+    var used = {};
+    state.records.forEach(function (r) { if (r.route) used[r.route] = true; });
+    var html = '';
+    Object.keys(ROUTE_DESCRIPTIONS).sort(function (a, b) {
+      return String(a).localeCompare(String(b), undefined, { numeric: true });
+    }).forEach(function (k) {
+      var name = (routeNames && routeNames[k]) ? routeNames[k] : ROUTE_DESCRIPTIONS[k];
+      html += '<span class="ctx-chip' + (used[k] ? ' is-active' : '') + '">' +
+        '<span class="dot" style="background:' + (ROUTE_COLOR[k] || '#8a8f98') + '"></span>' +
+        escapeHtml(k) + ' · ' + escapeHtml(name) + '</span>';
+    });
+    box.innerHTML = html;
+    strip.hidden = false;
+  }
+
+  function renderZoneTraffic(rows) {
+    var tbody = $('zonesBody');
+    var meta = $('zonesMeta');
+    if (!tbody) return;
+    var list = buildZoneTraffic(rows);
+    if (meta) meta.textContent = list.length ? formatNum(list.length) + ' zones' : 'No zones';
+    if (!list.length) {
+      tbody.innerHTML = '<tr class="row-empty"><td colspan="8">No zone data in current scope</td></tr>';
+      return;
+    }
+    var html = '';
+    for (var i = 0; i < list.length; i++) {
+      var s = list[i];
+      var pct = Math.round(s.fulfillment);
+      var pctCls = pct < 60 ? ' is-low' : (pct < 90 ? ' is-mid' : '');
+      var active = state.route === s.route;
+      html +=
+        '<tr class="zone-row' + (active ? ' is-active' : '') + '" data-route="' + escapeHtml(s.route) + '" tabindex="0" aria-label="Filter to route ' + escapeHtml(s.route) + '">' +
+        '<td><span class="route-chip">' + escapeHtml(s.route) + '</span></td>' +
+        '<td class="td-strong">' + escapeHtml(s.zone || '—') + '</td>' +
         '<td class="td-strong">' + formatNum(s.total) + '</td>' +
         '<td>' + (s.openP1 ? '<span class="badge badge-p1">' + formatNum(s.openP1) + '</span>' : '—') + '</td>' +
         '<td>' + formatNum(s.done) + '</td>' +
@@ -2017,8 +2116,10 @@
     var msg = $('routeMapMsg');
     if (!host) return;
     if (typeof L === 'undefined') {
-      setMapMessage(msg, 'Map library unavailable — load plans and exports still work.');
-      if (meta) meta.textContent = 'Offline';
+      setMapMessage(msg, leafletPromise
+        ? 'Map loading…'
+        : 'Map library unavailable — load plans and exports still work.');
+      if (meta) meta.textContent = leafletPromise ? 'Loading…' : 'Offline';
       return;
     }
     var scope = state.mapRoute;
@@ -2118,8 +2219,6 @@
         }).addTo(routeMapObj)
           .bindPopup('<b>Hub</b> · ' + escapeHtml(fleetHub.name || 'Warehouse'));
       }
-    } else {
-      routeMapObj.setView([17.42, 78.42], 11);
     }
     if (routeMapLayer) {
       routeMapObj.removeLayer(routeMapLayer);
@@ -2127,9 +2226,12 @@
     }
     routeMapLayer = layer;
     layer.addTo(routeMapObj);
-    try {
-      routeMapObj.fitBounds(layer.getBounds().pad(0.15));
-    } catch (e) { /* bounds unavailable */ }
+    var mapVisible = host.offsetParent !== null || host.offsetWidth > 0;
+    if (mapVisible) {
+      try {
+        routeMapObj.fitBounds(layer.getBounds().pad(0.15));
+      } catch (e) { /* bounds unavailable */ }
+    }
     if (meta) meta.textContent = label + nMarkers + ' circles · ' + scopedOrders + ' orders' + (path.length > 1 ? ' · path drawn' : '');
   }
 
@@ -2811,17 +2913,19 @@
     renderRouteFilter();
     renderStatusFilter();
     renderKpis(rows);
+    renderRouteContext();
+    renderAlertCenter(rows);
     renderCharts(rows);
     renderTable();
     renderSource();
     renderCustomers();
     renderDirectoryMeta();
-    renderAging(rows);
+    renderZoneTraffic(filteredRows(true));
     renderRouteOverview(filteredRows(true));
     renderQuality(rows);
     renderSla(rows);
     renderRouteMap(filteredRows(true));
-    renderLoadPlan(rows);
+    renderLoadPlan(filteredRows(true));
     renderRouteOpsTabs();
     renderFleetCenter(filteredRows(true));
     renderDispatchBoard();
@@ -2994,11 +3098,18 @@
     var box = $('routeFilter');
     if (!box) return;
     var routes = {};
-    state.records.forEach(function (r) { if (r.route) routes[r.route] = true; });
+    var unmapped = 0;
+    state.records.forEach(function (r) {
+      if (r.route) routes[r.route] = true;
+      else unmapped++;
+    });
     var list = Object.keys(routes).sort(function (a, b) {
       return String(a).localeCompare(String(b), undefined, { numeric: true });
     });
     var html = '<button type="button" class="pill' + (state.route === 'ALL' ? ' is-active' : '') + '" data-route="ALL">All</button>';
+    if (unmapped) {
+      html += '<button type="button" class="pill' + (state.route === '—' ? ' is-active' : '') + '" data-route="—">Unmapped</button>';
+    }
     for (var i = 0; i < list.length; i++) {
       html += '<button type="button" class="pill' + (state.route === list[i] ? ' is-active' : '') + '" data-route="' + escapeHtml(list[i]) + '">' + escapeHtml(list[i]) + '</button>';
     }
@@ -3124,7 +3235,7 @@
     lastUpdatedTick = setInterval(function () {
       updateLastUpdated();
       if (state.records.length) {
-        renderAging(filteredRows());
+        renderAlertCenter(filteredRows());
         renderQuality(filteredRows());
       }
     }, 60000);
@@ -3304,6 +3415,7 @@
         fileInput.click();
       });
       dz.addEventListener('keydown', function (e) {
+        if (e.target.closest && e.target.closest('button, input')) return;
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           fileInput.click();
@@ -3353,6 +3465,29 @@
     for (var j = 0; j < ackPills.length; j++) {
       ackPills[j].addEventListener('click', function (ev) {
         setAckFilter(ev.currentTarget.getAttribute('data-ack'));
+      });
+    }
+    var priorityAlertBox = $('priorityAlerts');
+    if (priorityAlertBox) {
+      priorityAlertBox.addEventListener('click', function (ev) {
+        var btn = ev.target.closest && ev.target.closest('[data-alert-priority]');
+        if (btn) setPriorityFilter(btn.getAttribute('data-alert-priority'));
+      });
+    }
+    var zonesBody = $('zonesBody');
+    if (zonesBody) {
+      zonesBody.addEventListener('click', function (ev) {
+        var row = ev.target.closest && ev.target.closest('tr.zone-row');
+        if (row && row.getAttribute('data-route')) toggleRoute(row.getAttribute('data-route'));
+      });
+      zonesBody.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          var row = ev.target.closest && ev.target.closest('tr.zone-row');
+          if (row && row.getAttribute('data-route')) {
+            ev.preventDefault();
+            toggleRoute(row.getAttribute('data-route'));
+          }
+        }
       });
     }
     var routeFilter = $('routeFilter');
@@ -3639,6 +3774,7 @@
     if (cached) {
       if (cached.records && cached.records.length) {
         state.records = cached.records;
+        enrichRoutes(state.records);
         state.source = cached.meta && cached.meta.name ? { name: cached.meta.name, syncedAt: cached.meta.syncedAt } : null;
         toast('Restored ' + formatNum(state.records.length) + ' rows from local cache', 'info');
       }
@@ -3734,6 +3870,9 @@
       if (!routeMapCircle[slug]) {
         routeMapCircle[slug] = { route: rec.route, circle: rec.name, note: rec.zone || '' };
       }
+      if (!(rec.route in routeNames) && ROUTE_DESCRIPTIONS[rec.route]) {
+        routeNames[rec.route] = ROUTE_DESCRIPTIONS[rec.route];
+      }
     });
     var hadRoute = 0;
     for (var i = 0; i < state.records.length; i++) if (state.records[i].route) hadRoute++;
@@ -3765,6 +3904,7 @@
     fleetHub = data.hub || null;
     renderFleetCenter(filteredRows(true));
     renderDispatchBoard();
+    renderRouteMap(filteredRows(true));
   }
 
   /* Expose pure core for debugging + tests */
@@ -3793,6 +3933,7 @@
     buildTrendData: buildTrendData,
     buildAgingData: buildAgingData,
     buildRouteStats: buildRouteStats,
+    buildZoneTraffic: buildZoneTraffic,
     auditData: auditData,
     customerOrderStats: customerOrderStats,
     sortRows: sortRows,

@@ -1,4 +1,18 @@
-Route Map
-- add legend 
+Lets make these changes:
 
-make the Route Load Plans more in-depth and advance
+Put the Customer · Branch · Location Matrix at very top section after the filter tabs, and put graphs, pie chart below
+
+2. have the route description and priority desc on the top, 
+
+3. then filters and the list of orders on the top
+
+4.  this bottom line from the title.." Outward volume, open bottlenecks, dispatch velocity and fulfilment — across every customer, branch and location, in near-real time." - make it short and simplify. 
+
+6. the total and other calculation tabs also on top
+
+7. date filter on top
+
+ageing should be like alert notifications. Priority and ageing should be like alert on the top right
+
+and the zone wise traffic description below the orders table
+
