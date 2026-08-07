@@ -1895,7 +1895,7 @@
   /* -------------------------------------------------------------
      Route Ops: interactive route map (Leaflet)
      ------------------------------------------------------------- */
-  var ROUTE_COLOR = { R1: '#27a644', R2: '#5e6ad2', R3: '#e5484d', R4: '#b87800', R5: '#6b7280' };
+  var ROUTE_COLOR = { R1: '#27a644', R2: '#5e6ad2', R3: '#e5484d', R4: '#b87800', R5: '#6b7280', R7: '#0d9488' };
   var routeMapObj = null;
   var routeMapLayer = null;
 
@@ -1984,18 +1984,31 @@
   function renderMapLegend(counts) {
     var box = $('mapLegend');
     if (!box) return;
-    var routes = Object.keys(counts).map(function (c) { return counts[c].route; });
-    var seen = {};
-    var html = '';
-    ['R1', 'R2', 'R3', 'R4', 'R5'].forEach(function (rc) {
-      if (!seen[rc] && routes.indexOf(rc) !== -1) {
-        seen[rc] = true;
-        var color = ROUTE_COLOR[rc] || '#5e6ad2';
-        var nm = routeNames[rc] ? ' · ' + routeNames[rc] : '';
-        html += '<span class="map-legend-item"><i style="background:' + color + '"></i>' + escapeHtml(rc) + nm + '</span>';
-      }
+    var totals = {};
+    Object.keys(counts).forEach(function (c) {
+      var rt = counts[c].route;
+      if (!totals[rt]) totals[rt] = { total: 0, open: 0, p1: 0 };
+      totals[rt].total += counts[c].total;
+      totals[rt].open += counts[c].open;
+      totals[rt].p1 += counts[c].p1;
     });
-    box.innerHTML = html || '';
+    var html = '<div class="map-legend-row">';
+    ['R1', 'R2', 'R3', 'R4', 'R5', 'R7'].forEach(function (rc) {
+      var color = ROUTE_COLOR[rc] || '#5e6ad2';
+      var t = totals[rc];
+      var nm = routeNames[rc] ? ' · ' + routeNames[rc] : '';
+      html += '<span class="map-legend-item' + (t ? ' is-active' : ' is-dim') + '">' +
+        '<i style="background:' + color + '"></i>' + escapeHtml(rc) + nm +
+        (t ? '<b>' + formatNum(t.total) + (t.p1 ? ' · ' + t.p1 + ' P1' : '') + '</b>' : '') +
+        '</span>';
+    });
+    html += '</div>' +
+      '<div class="map-legend-row">' +
+      '<span class="map-legend-item"><i class="lg-hub"></i>Hub (Bowenpally)</span>' +
+      '<span class="map-legend-item"><span class="lg-stop">1</span>stop order</span>' +
+      '<span class="map-legend-item"><i class="lg-bubble"></i>marker size = open orders</span>' +
+      '</div>';
+    box.innerHTML = html;
   }
 
   function renderRouteMap(rows) {
@@ -2177,27 +2190,54 @@
       host.innerHTML = '<p class="backlog-empty">No routed orders in the current scope.</p>';
       return;
     }
+    var dispatch = computeDispatchPlan(filteredRows(true));
     var html = '';
     for (var i = 0; i < plan.length; i++) {
       var r = plan[i];
       var name = routeNames[r.route] ? ' · ' + routeNames[r.route] : '';
+      var done = r.total - r.open;
+      var donePct = r.total ? Math.round(100 * done / r.total) : 0;
+      var units = 0;
+      r.circles.forEach(function (c) { units += weightedUnitsForCircle(c); });
+      var st = dispatch.stats[r.route];
+      var w = windowFor(st ? st.window : 'any');
+      var winLabel = w.label + (w.loadBy !== '—' ? ' · ' + w.loadBy + ' → ' + w.dispatchBy : (w.dispatchBy !== '—' ? ' · ' + w.dispatchBy : ''));
+      var veh = st ? st.vehicles : 0;
+      var needed = st ? st.needed : 0;
+      var pressure = st && st.capacity ? Math.round(st.pressure * 100) : 0;
+      var stopIdx = {};
+      buildRouteStops(r.route).forEach(function (s) { stopIdx[s.circle] = s.index; });
       html += '<div class="lp-route">' +
         '<header class="lp-head">' +
         '<span class="route-chip">' + escapeHtml(r.route) + '</span>' +
         '<span class="lp-name">' + escapeHtml(name.replace(/^ · /, '')) +
-        '<span class="lp-dim"> — ' + r.total + ' orders · ' + r.open + ' open' + (r.p1 ? ' · ' + r.p1 + ' P1' : '') + '</span></span>' +
+        '<span class="lp-dim"> — ' + r.total + ' orders · ' + r.open + ' open' + (r.p1 ? ' · ' + r.p1 + ' P1' : '') + ' · ' + formatNum(units) + ' units</span></span>' +
         '<button type="button" class="btn btn-tertiary btn-sm lp-export" data-export-route="' + escapeHtml(r.route) + '">' +
         '<i data-lucide="download"></i><span>Export ' + escapeHtml(r.route) + ' Manifest</span></button>' +
-        '</header>';
+        '</header>' +
+        '<div class="lp-meta">' +
+        '<span class="lp-stat"><b>' + donePct + '%</b> delivered</span>' +
+        '<span class="lp-stat"><b>' + formatNum(units) + '</b> P1-weighted units</span>' +
+        '<span class="lp-stat"><b>' + needed + '/' + veh + '</b> vehicles needed / assigned</span>' +
+        '<span class="lp-stat"><b>' + pressure + '%</b> capacity used</span>' +
+        '<span class="lp-stat"><b>' + escapeHtml(winLabel) + '</b> dispatch window</span>' +
+        '</div>' +
+        '<div class="lp-bar"><span class="lp-fill lp-fill-done" style="width:' + donePct + '%"></span></div>';
       for (var c = 0; c < r.circles.length; c++) {
         var circle = r.circles[c];
+        var cUnits = weightedUnitsForCircle(circle);
+        var cDone = circle.total - circle.open;
+        var cDonePct = circle.total ? Math.round(100 * cDone / circle.total) : 0;
+        var cw = windowFor(circle.bucket);
         html += '<div class="lp-circle">' +
           '<div class="lp-circle-head">' +
-          '<span class="lp-bucket lp-bucket-' + circle.bucket + '">' + bucketLabel(circle.bucket) + '</span>' +
+          (stopIdx[circle.circle] ? '<span class="lp-stop">' + stopIdx[circle.circle] + '</span>' : '') +
+          '<span class="lp-bucket lp-bucket-' + circle.bucket + '">' + bucketLabel(circle.bucket) + (cw.loadBy !== '—' ? ' · ' + cw.loadBy : '') + '</span>' +
           '<span class="lp-circle-name">' + escapeHtml(circle.circle) + '</span>' +
-          '<span class="lp-count">' + circle.total + ' · ' + circle.open + ' open' + (circle.p1 ? ' · ' + circle.p1 + ' P1' : '') + '</span>' +
+          '<span class="lp-count">' + circle.total + ' · ' + circle.open + ' open' + (circle.p1 ? ' · ' + circle.p1 + ' P1' : '') + ' · ' + formatNum(cUnits) + 'u</span>' +
           '</div>';
         if (circle.note) html += '<p class="lp-note">' + escapeHtml(circle.note) + '</p>';
+        html += '<div class="lp-bar lp-bar-sm"><span class="lp-fill lp-fill-done" style="width:' + cDonePct + '%"></span></div>';
         html += '<div class="lp-rows">';
         for (var k = 0; k < circle.rows.length; k++) {
           var row = circle.rows[k];
@@ -2205,6 +2245,8 @@
             '<span>' + priorityBadge(row.priority) + '</span>' +
             '<span class="lp-row-c">' + escapeHtml(row.customer || '—') + '</span>' +
             '<span class="lp-row-b">' + escapeHtml(row.location || row.branch || '—') + '</span>' +
+            '<span class="lp-row-date">' + fmtDateShort(row.orderDate) + '</span>' +
+            '<span class="lp-row-status">' + escapeHtml(row.status || '—') + '</span>' +
             '<span>' + ackBadge(row.ack) + '</span>' +
             '</div>';
         }
@@ -2487,19 +2529,19 @@
     });
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summary), 'Load Plan');
     plan.forEach(function (r) {
-      var aoa = [['Sort #', 'Circle', 'Time bucket', 'Branch', 'Customer', 'Location', 'Priority', 'Order Date', 'Dispatch Date', 'Ack', 'Sorting Note']];
+      var aoa = [['Sort #', 'Circle', 'Time bucket', 'Window', 'Branch', 'Customer', 'Location', 'Priority', 'Order Date', 'Dispatch Date', 'Ack', 'Status', 'Sorting Note']];
       var n = 0;
       r.circles.forEach(function (c) {
         c.rows.forEach(function (row) {
           n++;
           aoa.push([
-            n, c.circle, bucketLabel(c.bucket), row.branch, row.customer, row.location,
-            row.priority, fmtDateShort(row.orderDate), fmtDateShort(row.dispatchDate), row.ack, c.note
+            n, c.circle, bucketLabel(c.bucket), windowFor(c.bucket).label, row.branch, row.customer, row.location,
+            row.priority, fmtDateShort(row.orderDate), fmtDateShort(row.dispatchDate), row.ack, row.status || '—', c.note
           ]);
         });
       });
       var ws = XLSX.utils.aoa_to_sheet(aoa);
-      ws['!cols'] = [{ wch: 6 }, { wch: 18 }, { wch: 12 }, { wch: 16 }, { wch: 26 }, { wch: 22 }, { wch: 8 }, { wch: 11 }, { wch: 11 }, { wch: 10 }, { wch: 60 }];
+      ws['!cols'] = [{ wch: 6 }, { wch: 18 }, { wch: 12 }, { wch: 12 }, { wch: 16 }, { wch: 26 }, { wch: 22 }, { wch: 8 }, { wch: 11 }, { wch: 11 }, { wch: 10 }, { wch: 16 }, { wch: 60 }];
       XLSX.utils.book_append_sheet(wb, ws, sheetName(r.route));
     });
     XLSX.writeFile(wb, 'outward-dispatch-plan-' + fmtDateShort(new Date()) + '.xlsx');
@@ -2517,7 +2559,7 @@
       if (plan[i].route === route) { r = plan[i]; break; }
     }
     if (!r) { toast('Nothing to export for ' + route + ' in current scope', 'info'); return; }
-    var aoa = [['Sort #', 'Circle', 'Time bucket', 'Branch', 'Customer', 'Location', 'Priority', 'Order Date', 'Dispatch Date', 'Ack', 'Sorting Note']];
+    var aoa = [['Sort #', 'Circle', 'Time bucket', 'Window', 'Branch', 'Customer', 'Location', 'Priority', 'Order Date', 'Dispatch Date', 'Ack', 'Status', 'Sorting Note']];
     var list = [];
     r.circles.forEach(function (c) {
       c.rows.forEach(function (row) {
@@ -2525,6 +2567,7 @@
           circle: c.circle,
           bucket: bucketLabel(c.bucket),
           bucketOrder: BUCKET_ORDER[c.bucket] != null ? BUCKET_ORDER[c.bucket] : 4,
+          window: windowFor(c.bucket).label,
           note: c.note,
           row: row
         });
@@ -2542,12 +2585,12 @@
       n++;
       var row = x.row;
       aoa.push([
-        n, x.circle, x.bucket, row.branch, row.customer, row.location,
-        row.priority, fmtDateShort(row.orderDate), fmtDateShort(row.dispatchDate), row.ack, x.note
+        n, x.circle, x.bucket, x.window, row.branch, row.customer, row.location,
+        row.priority, fmtDateShort(row.orderDate), fmtDateShort(row.dispatchDate), row.ack, row.status || '—', x.note
       ]);
     });
     var ws = XLSX.utils.aoa_to_sheet(aoa);
-    ws['!cols'] = [{ wch: 6 }, { wch: 18 }, { wch: 12 }, { wch: 16 }, { wch: 26 }, { wch: 22 }, { wch: 8 }, { wch: 11 }, { wch: 11 }, { wch: 10 }, { wch: 60 }];
+    ws['!cols'] = [{ wch: 6 }, { wch: 18 }, { wch: 12 }, { wch: 12 }, { wch: 16 }, { wch: 26 }, { wch: 22 }, { wch: 8 }, { wch: 11 }, { wch: 11 }, { wch: 10 }, { wch: 16 }, { wch: 60 }];
     var wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Manifest');
     XLSX.writeFile(wb, 'outward-manifest-' + route + '-' + fmtDateShort(new Date()) + '.xlsx');
