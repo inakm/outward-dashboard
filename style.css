@@ -336,6 +336,45 @@ textarea {
   max-width: 640px;
 }
 
+/* ---------- No-JavaScript fallback ---------- */
+.noscript-banner {
+  margin: var(--s-xl) 0;
+  padding: var(--s-xl);
+  background: var(--surface-1);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  max-width: 720px;
+}
+.noscript-banner h2 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.4px;
+  color: var(--ink);
+  margin: 0 0 var(--s-sm);
+}
+.noscript-banner p {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  margin: 0 0 var(--s-sm);
+}
+.noscript-banner ul {
+  margin: 0 0 var(--s-sm);
+  padding-left: 20px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+.noscript-banner a {
+  color: var(--primary-focus);
+  font-weight: 600;
+  text-decoration: none;
+}
+.noscript-banner a:hover {
+  text-decoration: underline;
+}
+
 /* ---------- Panels ---------- */
 .panel {
   background: var(--surface-1);
@@ -558,6 +597,106 @@ textarea {
 
 .top-overview .kpis {
   margin-top: 0;
+}
+
+/* ---------- Route KPIs (R1–R7) ---------- */
+.route-kpis {
+  margin-top: var(--s-md);
+}
+
+.route-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+  gap: var(--s-sm);
+  margin-top: var(--s-md);
+}
+
+.route-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-xs);
+  align-items: flex-start;
+  text-align: left;
+  font: inherit;
+  background: var(--surface-1);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  padding: var(--s-sm);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+.route-kpi:hover {
+  border-color: var(--hairline-strong);
+  box-shadow: 0 1px 4px rgba(26, 29, 33, 0.06);
+}
+.route-kpi:focus-visible {
+  outline: 2px solid var(--primary-focus);
+  outline-offset: 2px;
+}
+.route-kpi.is-active {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+.route-kpi.is-empty {
+  opacity: 0.55;
+}
+
+.route-kpi-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-xxs);
+  min-width: 0;
+  width: 100%;
+}
+.route-kpi-code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.route-kpi-name {
+  font-size: 12px;
+  color: var(--ink-subtle);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.route-kpi-value {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.6px;
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.route-kpi-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-xxs);
+  min-width: 0;
+  width: 100%;
+}
+.route-kpi-pct {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-subtle);
+}
+.route-kpi-pct.is-mid {
+  color: var(--p2);
+}
+.route-kpi-pct.is-low {
+  color: var(--p1);
+}
+.route-kpi-dim {
+  font-size: 11px;
+  color: var(--ink-tertiary);
 }
 
 .alert-center {
@@ -1265,6 +1404,16 @@ tr.cust-row.is-clickable:focus-visible {
   color: var(--ink-tertiary);
 }
 
+.footer-link {
+  color: var(--ink-subtle);
+  text-decoration: none;
+  font-weight: 600;
+}
+.footer-link:hover {
+  color: var(--primary-focus);
+  text-decoration: underline;
+}
+
 /* ---------- Toasts ---------- */
 .toast-stack {
   position: fixed;
@@ -1601,6 +1750,46 @@ tr.cust-row.is-clickable:focus-visible {
   line-height: 1.5;
   color: var(--ink);
   margin: 0;
+}
+
+.rg-overlap {
+  margin-top: var(--s-sm);
+  padding-top: var(--s-sm);
+  border-top: 1px dashed var(--hairline-strong);
+}
+
+.rg-overlap-row {
+  margin: 4px 0 0;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ink-muted);
+}
+
+.rg-overlap-key {
+  display: inline-block;
+  min-width: 108px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-tertiary);
+}
+
+.rg-overlap-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-right: 8px;
+  white-space: nowrap;
+}
+
+.rg-overlap-name {
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+
+.rg-overlap-none {
+  color: var(--ink-tertiary);
 }
 
 /* ---------- Responsive ---------- */

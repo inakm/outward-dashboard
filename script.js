@@ -1526,6 +1526,44 @@
     setText('kpiFulfillment', k.total ? k.fulfillment.toFixed(1) + '%' : '—');
   }
 
+  function renderRouteKpis(rows) {
+    var grid = $('routeKpiGrid');
+    if (!grid) return;
+    var stats = {};
+    buildRouteStats(rows).forEach(function (s) { stats[s.route] = s; });
+    var set = {};
+    Object.keys(ROUTE_DESCRIPTIONS).forEach(function (k) { set[k] = true; });
+    rows.forEach(function (r) { if (r.route) set[r.route] = true; });
+    var order = Object.keys(set).sort(function (a, b) {
+      return String(a).localeCompare(String(b), undefined, { numeric: true });
+    });
+    var html = '';
+    for (var i = 0; i < order.length; i++) {
+      var rt = order[i];
+      var s = stats[rt] || { route: rt, total: 0, done: 0, transit: 0, pending: 0, openP1: 0, fulfillment: 0 };
+      var active = state.route === rt;
+      var pct = s.total ? Math.round(s.fulfillment) : 0;
+      var pctCls = pct < 60 ? ' is-low' : (pct < 90 ? ' is-mid' : '');
+      var name = (routeNames && routeNames[rt]) ? routeNames[rt] : (ROUTE_DESCRIPTIONS[rt] || '');
+      html +=
+        '<button type="button" class="route-kpi' + (active ? ' is-active' : '') + (s.total ? '' : ' is-empty') + '" data-route="' + escapeHtml(rt) + '" aria-pressed="' + active + '" title="Filter to route ' + escapeHtml(rt) + (name ? ' · ' + escapeHtml(name) : '') + '">' +
+        '<span class="route-kpi-head">' +
+        '<span class="dot" style="background:' + (ROUTE_COLOR[rt] || '#8a8f98') + '"></span>' +
+        '<span class="route-kpi-code">' + escapeHtml(rt) + '</span>' +
+        '<span class="route-kpi-name">' + escapeHtml(name || '—') + '</span>' +
+        '</span>' +
+        '<span class="route-kpi-value">' + formatNum(s.total) + '</span>' +
+        '<span class="route-kpi-meta">' +
+        (s.openP1 ? '<span class="badge badge-p1">' + formatNum(s.openP1) + ' open P1</span>' : '<span class="route-kpi-dim">no open P1</span>') +
+        '<span class="route-kpi-pct' + pctCls + '">' + (s.total ? pct + '%' : '—') + '</span>' +
+        '</span>' +
+        '</button>';
+    }
+    grid.innerHTML = html;
+    var meta = $('routeKpiMeta');
+    if (meta) meta.textContent = order.length + ' routes · ' + formatNum(rows.length) + ' records';
+  }
+
   /* -------------------------------------------------------------
      Charts
      ------------------------------------------------------------- */
@@ -1891,6 +1929,41 @@
     });
     box.innerHTML = html;
     strip.hidden = false;
+  }
+
+  function routeOverlapInfo(route) {
+    var rules = fleetSettings();
+    var adjacent = (rules.adjacency && rules.adjacency[route]) || [];
+    var opposite = [];
+    (rules.opposite || []).forEach(function (pair) {
+      if (pair.indexOf(route) !== -1) opposite.push(pair[0] === route ? pair[1] : pair[0]);
+    });
+    return { adjacent: adjacent, opposite: opposite };
+  }
+
+  function routeGuideChips(routes) {
+    if (!routes.length) return '<span class="rg-overlap-none">—</span>';
+    return routes.map(function (r) {
+      var name = (routeNames && routeNames[r]) ? routeNames[r] : (ROUTE_DESCRIPTIONS[r] || '');
+      var color = ROUTE_COLOR[r] || '#8a8f98';
+      return '<span class="rg-overlap-chip"><span class="rg-chip" style="border-color:' + color + ';color:' + color + ';background:' + color + '1a">' + escapeHtml(r) + '</span>' +
+        (name ? '<span class="rg-overlap-name">' + escapeHtml(name) + '</span>' : '') + '</span>';
+    }).join('');
+  }
+
+  function renderRouteGuideAdjacency() {
+    var cards = document.querySelectorAll('.route-guide-card[data-route]');
+    for (var i = 0; i < cards.length; i++) {
+      var card = cards[i];
+      var slot = card.querySelector('.rg-overlap');
+      if (!slot) continue;
+      var info = routeOverlapInfo(card.getAttribute('data-route'));
+      if (!info.adjacent.length && !info.opposite.length) continue;
+      slot.innerHTML =
+        '<p class="rg-zone-name">Adjacent-Route Overlap</p>' +
+        '<p class="rg-overlap-row"><span class="rg-overlap-key">Allowed Adjacent</span>' + routeGuideChips(info.adjacent) + '</p>' +
+        '<p class="rg-overlap-row"><span class="rg-overlap-key">Blocked Opposite</span>' + routeGuideChips(info.opposite) + '</p>';
+    }
   }
 
   function renderZoneTraffic(rows) {
@@ -2913,7 +2986,9 @@
     renderRouteFilter();
     renderStatusFilter();
     renderKpis(rows);
+    renderRouteKpis(rows);
     renderRouteContext();
+    renderRouteGuideAdjacency();
     renderAlertCenter(rows);
     renderCharts(rows);
     renderTable();
@@ -3497,6 +3572,13 @@
         if (btn && btn.getAttribute('data-route')) setRouteFilter(btn.getAttribute('data-route'));
       });
     }
+    var routeKpiGrid = $('routeKpiGrid');
+    if (routeKpiGrid) {
+      routeKpiGrid.addEventListener('click', function (ev) {
+        var card = ev.target.closest && ev.target.closest('.route-kpi');
+        if (card && card.getAttribute('data-route')) toggleRoute(card.getAttribute('data-route'));
+      });
+    }
     var statusFilter = $('statusFilter');
     if (statusFilter) {
       statusFilter.addEventListener('click', function (ev) {
@@ -3905,6 +3987,7 @@
     renderFleetCenter(filteredRows(true));
     renderDispatchBoard();
     renderRouteMap(filteredRows(true));
+    renderRouteGuideAdjacency();
   }
 
   /* Expose pure core for debugging + tests */

@@ -64,11 +64,25 @@ Your data is restored automatically from the local cache on reload. Everything r
 ## Project structure
 
 ```
-index.html     — markup, SEO/OG meta, structured data
-style.css      — Linear-inspired light design system (CSS variables)
-script.js      — ingestion, cleaning, persistence, analytics, charts, events
-DESIGN.md      — original design-system reference
-logo.png       — brand mark
+index.html              — markup, SEO/OG meta, JSON-LD structured data
+style.css               — Linear-inspired light design system (CSS variables)
+script.js               — ingestion, cleaning, persistence, analytics, charts, events
+route-plan.js           — R1–R7 route plan (window.ROUTE_PLAN)
+ghmc-route-map.js       — GHMC circle/locality route map (window.GHMC_ROUTE_MAP)
+fleet.js                — fleet config (window.GHMC_FLEET)
+vehicles.json           — fallback fleet config
+routes-planning.xlsx    — routing authority workbook
+manifest.webmanifest    — PWA / add-to-home-screen metadata
+logo.png                — brand mark (header)
+apple-touch-icon.png    — iOS home-screen icon (180×180)
+icon-192.png            — manifest icon 192×192
+icon-512.png            — manifest icon 512×512
+og-image.png            — Open Graph / Twitter share card (1200×630)
+robots.txt              — crawl rules (hides raw data files)
+sitemap.xml             — XML sitemap (hosted SPA root)
+404.html                — branded not-found page (noindex)
+_config.yml             — GitHub Pages / Jekyll build config
+DESIGN.md               — original design-system reference
 ```
 
 ### Data model
@@ -92,6 +106,21 @@ Pure analysis helpers (`computeKpis`, `buildBarData`, `buildTrendData`, `buildAg
 ## Deployment
 
 This repo is deployed to GitHub Pages from the `main` branch. Push and it publishes automatically.
+
+`_config.yml` keeps the Jekyll build minimal and explicitly publishes the `.xlsx` / `.json` / `.webmanifest` assets the app fetches at runtime. It is safe to extend with core Jekyll keys, but avoid plugins — the Pages builder only allows Jekyll's built-in allowlist.
+
+## SEO & discoverability
+
+The dashboard is a JS-rendered single-page app, so the SEO weight lives in the document shell:
+
+- **Meta & OG/Twitter** — title, description, Open Graph and Twitter Card tags with a 1200×630 share image (`og-image.png`).
+- **JSON-LD** — `WebApplication` structured data (features, versioning, free offer, publisher) in `index.html`.
+- **Manifest** — `manifest.webmanifest` for installability / home-screen metadata with square icons (`icon-192.png`, `icon-512.png`).
+- **Crawl control** — `robots.txt` blocks indexing of raw workbooks (`*.xlsx`) and the customer master; `sitemap.xml` lists the single hosted URL with its image.
+- **Fallbacks** — branded `404.html` (noindex) and a `<noscript>` block with crawlable feature content.
+- **Performance** — preconnect to fonts/CDNs and `preload` of `style.css`.
+
+> Note: live data is fetched client-side, so crawlers see the empty dashboard shell — the meta tags and structured data carry the indexable description.
 
 ## Roadmap ideas
 

@@ -1,6 +1,13 @@
+# SkyLimit Outwards Dashboard — robots
+# Hosted at https://inakm.github.io/outward-dashboard/
+# The dashboard is a single-page app served from / ; raw workbooks and the
+# customer master are operational data and are kept out of search results.
+
 User-agent: *
 Allow: /
 
+# Raw data files / directories that should not be indexed
+Disallow: /*.xlsx
 Disallow: /Customers/
 Disallow: /ghmc-routing/
 
