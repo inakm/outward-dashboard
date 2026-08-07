@@ -1,0 +1,42 @@
+{
+  "name": "SkyLimit Outwards Dashboard",
+  "short_name": "SkyLimit Outwards",
+  "description": "Enterprise outward logistics and dispatch intelligence — volume, open bottlenecks, dispatch velocity and fulfilment across customers, branches and locations, in near-real time.",
+  "lang": "en-IN",
+  "dir": "ltr",
+  "id": "/outward-dashboard/",
+  "start_url": ".",
+  "scope": "/outward-dashboard/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f7f8fa",
+  "theme_color": "#f7f8fa",
+  "categories": ["business", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dispatch dashboard",
+      "url": "/outward-dashboard/",
+      "description": "Open the outward dispatch dashboard"
+    }
+  ]
+}

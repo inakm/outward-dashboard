@@ -3,19 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta name="format-detection" content="telephone=no">
 
   <!-- Primary SEO -->
   <title>SkyLimit Outwards Dashboard — Dispatch Intelligence</title>
   <meta name="description" content="SkyLimit outward logistics: volume, open bottlenecks, dispatch velocity and fulfilment across customers, branches and locations, live from Google Sheets.">
   <meta name="keywords" content="SkyLimit, outward logistics, dispatch dashboard, order tracking, fulfilment rate, dispatch velocity, logistics analytics, enterprise dashboard">
   <meta name="author" content="SkyLimit">
+  <meta name="application-name" content="SkyLimit Outwards">
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="googlebot" content="index, follow, max-image-preview:large">
   <meta name="theme-color" content="#f7f8fa">
+  <meta name="msapplication-TileColor" content="#f7f8fa">
   <link rel="canonical" href="https://inakm.github.io/outward-dashboard/">
 
   <!-- Icons -->
   <link rel="icon" type="image/png" href="logo.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
@@ -23,14 +29,18 @@
   <meta property="og:title" content="SkyLimit Outwards Dashboard — Dispatch Intelligence">
   <meta property="og:description" content="Track outward volume, open bottlenecks, dispatch velocity and fulfilment across every customer, branch and location — in near-real time.">
   <meta property="og:image" content="https://inakm.github.io/outward-dashboard/og-image.png">
+  <meta property="og:image:secure_url" content="https://inakm.github.io/outward-dashboard/og-image.png">
+  <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="SkyLimit Outwards Dashboard overview">
   <meta property="og:url" content="https://inakm.github.io/outward-dashboard/">
   <meta property="og:locale" content="en_IN">
+  <meta property="og:locale:alternate" content="en_US">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://inakm.github.io/outward-dashboard/">
   <meta name="twitter:title" content="SkyLimit Outwards Dashboard — Dispatch Intelligence">
   <meta name="twitter:description" content="Enterprise outward logistics intelligence — volume, bottlenecks, dispatch velocity and fulfilment, visualised live from Google Sheets.">
   <meta name="twitter:image" content="https://inakm.github.io/outward-dashboard/og-image.png">
@@ -48,22 +58,43 @@
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "SkyLimit Outwards Dashboard",
+    "alternateName": "SkyLimit Outwards",
     "url": "https://inakm.github.io/outward-dashboard/",
     "image": "https://inakm.github.io/outward-dashboard/og-image.png",
     "description": "Enterprise outward logistics dashboard tracking order volume, open bottlenecks (P1 not yet acknowledged), dispatch velocity and fulfilment rate across customers, branches and locations.",
     "applicationCategory": "BusinessApplication",
+    "applicationSubCategory": "Logistics Analytics",
     "operatingSystem": "Any (browser based)",
     "browserRequirements": "Requires JavaScript. Client-side only — no server or data storage required.",
+    "softwareVersion": "2.0",
+    "datePublished": "2026-06-01",
+    "dateModified": "2026-08-07",
+    "isAccessibleForFree": true,
     "inLanguage": "en-IN",
-    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "publisher": { "@type": "Organization", "name": "SkyLimit", "logo": { "@type": "ImageObject", "url": "https://inakm.github.io/outward-dashboard/logo.png" } }
+    "keywords": "outward logistics, dispatch dashboard, order tracking, fulfilment rate, dispatch velocity, logistics analytics, SkyLimit",
+    "featureList": [
+      "Customer, branch and location outward volume matrix",
+      "Priority and bottleneck aging alerts",
+      "Dispatch velocity and fulfilment KPIs",
+      "Route and zone-wise traffic analysis",
+      "Customer directory with branch master",
+      "Google Sheets live sync and offline Excel/CSV import",
+      "Fleet dispatch planning and route load plans"
+    ],
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock" },
+    "publisher": { "@type": "Organization", "name": "SkyLimit", "logo": { "@type": "ImageObject", "url": "https://inakm.github.io/outward-dashboard/logo.png" } },
+    "provider": { "@type": "Organization", "name": "SkyLimit" }
   }
   </script>
 
+  <!-- Performance: connect early to the CDNs that serve the app -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
+  <link rel="preload" href="style.css" as="style">
   <link rel="stylesheet" href="style.css">
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
@@ -75,6 +106,21 @@
   <script src="script.js" defer></script>
 </head>
 <body>
+
+  <noscript>
+    <div class="noscript-banner" role="note">
+      <p class="eyebrow">SkyLimit · Outward Logistics Intelligence</p>
+      <h2>SkyLimit Outwards Dashboard requires JavaScript</h2>
+      <p>This is a client-side web application: enable JavaScript to view outward order volume, open bottlenecks, dispatch velocity and fulfilment across customers, branches and locations. All data is processed in your browser — nothing is uploaded to a server.</p>
+      <ul>
+        <li>Customer · branch · location volume matrix with live KPIs</li>
+        <li>Priority pressure and bottleneck aging alerts</li>
+        <li>Route and zone-wise traffic with fulfilment tracking</li>
+        <li>Customer directory, fleet dispatch planning and route load plans</li>
+      </ul>
+      <p><a href="https://inakm.github.io/outward-dashboard/">Reload with JavaScript enabled</a></p>
+    </div>
+  </noscript>
 
   <header class="topnav">
     <div class="topnav-inner">
@@ -148,7 +194,7 @@
       <div id="errorBanner" class="error-banner" hidden></div>
     </section>
 
-    <section class="tabs" id="viewTabs" aria-label="Dashboard views">
+    <nav class="tabs" id="viewTabs" aria-label="Dashboard views">
       <button type="button" class="tab is-active" data-view="dispatch">
         <i data-lucide="layout-grid"></i><span>Dispatch</span>
       </button>
@@ -158,7 +204,7 @@
       <button type="button" class="tab" data-view="routeops">
         <i data-lucide="truck"></i><span>Route Ops</span>
       </button>
-    </section>
+    </nav>
 
     <div id="dispatchView">
     <section class="filters" aria-label="Dashboard filters">
@@ -306,6 +352,17 @@
         <p class="alert-section-label">Aging</p>
         <div id="agingAlerts" class="alert-list"></div>
       </aside>
+    </section>
+
+    <section class="panel route-kpis">
+      <header class="table-head">
+        <div>
+          <h2 class="card-title">Route KPIs</h2>
+          <p class="card-sub">Per-route volume, open P1 and fulfilment in current scope — click a card to filter</p>
+        </div>
+        <span class="status-badge" id="routeKpiMeta">—</span>
+      </header>
+      <div id="routeKpiGrid" class="route-kpi-grid"></div>
     </section>
 
     <section class="panel zones-panel">
@@ -685,7 +742,7 @@
       </header>
       <div class="route-guide-grid">
 
-        <article class="route-guide-card rg-1">
+        <article class="route-guide-card rg-1" data-route="R1">
           <header class="rg-head">
             <span class="rg-chip">R1</span>
             <span class="rg-name">North-East (NE) Route</span>
@@ -704,9 +761,10 @@
             <p class="rg-zone-name">Kapra Zone · North-East Belt</p>
             <p class="rg-circles">Kapra · Keesara</p>
           </div>
+          <div class="rg-overlap"></div>
         </article>
 
-        <article class="route-guide-card rg-2">
+        <article class="route-guide-card rg-2" data-route="R2">
           <header class="rg-head">
             <span class="rg-chip">R2</span>
             <span class="rg-name">North-West (NW) Route</span>
@@ -725,9 +783,10 @@
             <p class="rg-zone-name">Serilingampally Zone · North-West Fringe</p>
             <p class="rg-circles">Patancheru · Ameenpur</p>
           </div>
+          <div class="rg-overlap"></div>
         </article>
 
-        <article class="route-guide-card rg-3">
+        <article class="route-guide-card rg-3" data-route="R3">
           <header class="rg-head">
             <span class="rg-chip">R3</span>
             <span class="rg-name">South-East (SE) Route</span>
@@ -750,9 +809,10 @@
             <p class="rg-zone-name">L.B. Nagar Zone (South-East)</p>
             <p class="rg-circles">Nagole · Saroornagar · L.B. Nagar · Hayathnagar</p>
           </div>
+          <div class="rg-overlap"></div>
         </article>
 
-        <article class="route-guide-card rg-4">
+        <article class="route-guide-card rg-4" data-route="R4">
           <header class="rg-head">
             <span class="rg-chip">R4</span>
             <span class="rg-name">South-West (SW) Route</span>
@@ -787,6 +847,7 @@
             <p class="rg-zone-name">Khairatabad Zone · Central-South Belt</p>
             <p class="rg-circles">Khairatabad · Mehdipatnam · Masab Tank</p>
           </div>
+          <div class="rg-overlap"></div>
         </article>
 
         <article class="route-guide-card rg-5">
@@ -808,7 +869,7 @@
     <div id="printArea" class="print-only" hidden></div>
 
     <footer class="footer">
-      <span>SkyLimit Outwards Dashboard · processed locally with SheetJS · cached in IndexedDB</span>
+      <span><a href="https://inakm.github.io/outward-dashboard/" class="footer-link">SkyLimit Outwards Dashboard</a> · processed locally with SheetJS · cached in IndexedDB</span>
       <span class="footer-meta">Linear-grade light canvas · <span class="mono">#f7f8fa</span></span>
     </footer>
 

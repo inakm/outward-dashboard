@@ -1,0 +1,21 @@
+# GitHub Pages (Jekyll) configuration for the SkyLimit Outwards Dashboard.
+# Keep keys to core Jekyll only so the Pages build never fails.
+title: SkyLimit Outwards Dashboard
+description: Enterprise outward logistics and dispatch intelligence — volume, open bottlenecks, dispatch velocity and fulfilment across customers, branches and locations.
+url: https://inakm.github.io
+baseurl: /outward-dashboard
+locale: en_IN
+
+# Publish these asset types explicitly so the app can fetch them at runtime.
+include:
+  - "*.xlsx"
+  - "*.json"
+  - "*.webmanifest"
+
+# Never publish internal working files.
+exclude:
+  - README.md
+  - DESIGN.md
+  - prompts.txt
+  - todo
+  - .gitignore
