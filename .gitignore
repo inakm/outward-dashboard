@@ -1,5 +1,7 @@
 # Business data — keep out of the public repo
 Customers/
+routes-planning.xlsx
+ghmc-routing/output/customers_route_map.json
 
 # OS / editor noise
 .DS_Store

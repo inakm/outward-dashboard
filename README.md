@@ -67,11 +67,10 @@ Your data is restored automatically from the local cache on reload. Everything r
 index.html              — markup, SEO/OG meta, JSON-LD structured data
 style.css               — Linear-inspired light design system (CSS variables)
 script.js               — ingestion, cleaning, persistence, analytics, charts, events
-route-plan.js           — R1–R7 route plan (window.ROUTE_PLAN)
-ghmc-route-map.js       — GHMC circle/locality route map (window.GHMC_ROUTE_MAP)
+route-plan.js           — R1–R7 route plan (window.ROUTE_PLAN, includes map coordinates)
 fleet.js                — fleet config (window.GHMC_FLEET)
 vehicles.json           — fallback fleet config
-routes-planning.xlsx    — routing authority workbook
+routes-planning.xlsx    — routing authority workbook (local; gitignored)
 manifest.webmanifest    — PWA / add-to-home-screen metadata
 logo.png                — brand mark (header)
 apple-touch-icon.png    — iOS home-screen icon (180×180)
@@ -95,7 +94,7 @@ Dispatch records are normalised to a canonical shape:
 | `customer` | Customer Name | trimmed / line-break cleaned |
 | `branch` | Branch | place-name typo-corrected |
 | `location` | Location | place-name typo-corrected |
-| `route` | ROUTE | delivery route (R1–R7, filterable) — auto-assigned by matching Branch against the `routes-planning.xlsx` plan + GHMC map |
+| `route` | ROUTE | delivery route (R1–R7, filterable) — auto-assigned by matching Branch against the `routes-planning.xlsx` R1–R7 plan |
 | `priority` | Priority | normalised to P1–P4 / — |
 | `dispatchDate` | Dispatch date | |
 | `ack` | Ack | normalised to Done / In Transit / Pending |
