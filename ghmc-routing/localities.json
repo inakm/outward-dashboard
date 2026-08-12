@@ -1,0 +1,659 @@
+{
+ "meta": {
+  "title": "SkyLimit R1-R7 locality aliases",
+  "purpose": "Maps dispatch Branch/Location values (localities + live-sheet spellings) to parent circles so every branch auto-routes.",
+  "source": "Recovered from removed GHMC routing layer"
+ },
+ "localities": {
+  "Secunderabad": [
+   "R3",
+   "Kavadiguda",
+   "Secunderabad city centre (Parade Grounds, Clock Tower); avoid 5-7 PM rush; LCV/2W."
+  ],
+  "Karkhana": [
+   "R1",
+   "Alwal",
+   "Army supply area; gate protocols; combine Alwal loop."
+  ],
+  "Dilsukhnagar": [
+   "R3",
+   "Saroornagar",
+   "Major commercial hub on LB Nagar ring; metro corridor; two trips; post-10 AM."
+  ],
+  "ECIL": [
+   "R1",
+   "Kapra",
+   "ECIL township; security check at gates; 10 AM-4 PM."
+  ],
+  "LB Nagar": [
+   "R3",
+   "L.B. Nagar",
+   "L.B. Nagar commercial hub; split into two trips; afternoon + evening runs."
+  ],
+  "Financial District": [
+   "R4",
+   "Serilingampally",
+   "ORR/Gachibowli offices; 11 AM-4 PM window; corporate receptions."
+  ],
+  "Gowliguda": [
+   "R4",
+   "Charminar",
+   "Old City belt near Koti/Chaderghat; narrow lanes; 2W only; morning window."
+  ],
+  "Koti": [
+   "R4",
+   "Goshamahal",
+   "Commercial + textile market; pedestrian-heavy; early drops; hand-cart final mile."
+  ],
+  "Abids": [
+   "R4",
+   "Khairatabad",
+   "Commercial centre near Gunfoundry; metered parking; post-11 AM."
+  ],
+  "Nampally": [
+   "R4",
+   "Masab Tank",
+   "Railway station + hotel belt; early morning + evening peaks."
+  ],
+  "Punjagutta": [
+   "R4",
+   "Khairatabad",
+   "Commercial corridor (Banjara Hills/Greenlands); combine Somajiguda; mid-day."
+  ],
+  "Chaderghat": [
+   "R3",
+   "Malakpet",
+   "Musi-bridge belt between old city & LB Nagar; combine Malakpet."
+  ],
+  "Sainikpuri": [
+   "R3",
+   "Moula Ali",
+   "Defence colony; gated; appointments preferred; combine Neredmet."
+  ],
+  "Kompally": [
+   "R1",
+   "Kompally",
+   "Quthbullapur north-east; gated layouts; morning dispatch with Quthbullapur belt."
+  ],
+  "Suchitra": [
+   "R2",
+   "Jeedimetla",
+   "Quthbullapur residential circle on the ring road (north of Jeedimetla); gated layouts; combine Jeedimetla return loop."
+  ],
+  "Gcachibowli": [
+   "R4",
+   "Serilingampally",
+   "Alt. spelling of Gachibowli; ORR tech belt; deliver 11 AM-4 PM."
+  ],
+  "Kkatpally": [
+   "R2",
+   "Kukatpally",
+   "Alt. spelling of Kukatpally; KPHB high-density; 6-10 AM window."
+  ],
+  "Malkpet": [
+   "R3",
+   "Malakpet",
+   "Alt. spelling of Malakpet; commercial mid-belt; post-11 AM."
+  ],
+  "Mehndipatnam": [
+   "R4",
+   "Mehdipatnam",
+   "Alt. spelling of Mehdipatnam; market + residential; after 11 AM."
+  ],
+  "Myapur": [
+   "R2",
+   "Miyapur",
+   "Alt. spelling of Miyapur; NH65 corridor; mid-day."
+  ],
+  "Hitech City": [
+   "R4",
+   "Madhapur",
+   "Alt. spelling of HITEC City (ward 231); same routing as Madhapur."
+  ],
+  "Himayatnagar": [
+   "R4",
+   "Khairatabad",
+   "Alt. spelling of Himayathnagar (ward 220); central corporate; 10 AM-5 PM."
+  ],
+  "Suchitra Circle": [
+   "R2",
+   "Jeedimetla",
+   "Alt. spelling of Suchitra; Quthbullapur residential circle; combine Jeedimetla return loop."
+  ]
+ },
+ "groups": {
+  "R1|Bowenpally": [
+   "Hub-adjacent (Bowenpally); first sort batch; dispatch before 08:30 AM.",
+   [
+    "Old Bowenpally",
+    "Hasmathpet",
+    "Bowenpally Crossroads",
+    "Bolarum"
+   ]
+  ],
+  "R1|Alwal": [
+   "North-east wing on NH44 flank; batch with Quthbullapur belt; morning dispatch.",
+   [
+    "Old Alwal",
+    "Rathifile",
+    "Temple Alwal",
+    "Cantonment Alwal"
+   ]
+  ],
+  "R1|Kompally": [
+   "Quthbullapur north-east; gated layouts; morning dispatch.",
+   [
+    "Kompally (Ecopark)",
+    "Doolapally",
+    "Almasguda",
+    "Bachupally (north)"
+   ]
+  ],
+  "R1|Dundigal": [
+   "Quthbullapur far north-east; drone/air-force flank; morning only.",
+   [
+    "Dundigal",
+    "Bowrampet",
+    "Bahadurpally"
+   ]
+  ],
+  "R1|Kapra": [
+   "ECIL & A.S. Rao Nagar belt; security gate protocols; 10 AM-3 PM.",
+   [
+    "ECIL X Roads",
+    "A.S. Rao Nagar",
+    "Kushaiguda",
+    "Cherlapally",
+    "Vampuguda",
+    "Dr. A.S. Rao Nagar"
+   ]
+  ],
+  "R1|Keesara": [
+   "North-east fringe via Nagaram road; one morning loop.",
+   [
+    "Dammaiguda",
+    "Yapral",
+    "Nagaram",
+    "Chandrapuri Colony",
+    "Keesara Gutta"
+   ]
+  ],
+  "R2|Jeedimetla": [
+   "IDA Jeedimetla industrial belt; truck dock 10 AM-4 PM; gate passes required.",
+   [
+    "IDA Jeedimetla",
+    "Pet Basheerabad",
+    "Suraram Colony"
+   ]
+  ],
+  "R2|Gajularamaram": [
+   "Pharma/industrial corridor; gate-based drop-offs; combine Alwal loop.",
+   [
+    "IDA Gajularamaram",
+    "Mahadevpuram",
+    "Shapur Nagar"
+   ]
+  ],
+  "R2|Nizampet": [
+   "Residential north-west wing (Bachupally); off-peak after 10 AM.",
+   [
+    "Bachupally",
+    "Pragathi Nagar",
+    "Kukatpally Housing Board fringe"
+   ]
+  ],
+  "R2|Chintal": [
+   "Quthbullapur industrial north-west; truck-friendly; combine Jeedimetla.",
+   [
+    "Chintal",
+    "Jagathgiri Gutta",
+    "Giri Nagar"
+   ]
+  ],
+  "R2|Kukatpally": [
+   "KPHB high-density residential; small vehicles; 6-10 AM window.",
+   [
+    "Old Kukatpally",
+    "Kukatpally Housing Board",
+    "KPHB Colony",
+    "Balaji Nagar",
+    "Vasanth Nagar",
+    "Kaithalapur",
+    "Gayatri Nagar"
+   ]
+  ],
+  "R2|Miyapur": [
+   "Chandanagar/Hafeezpet/Miyapur on NH65; combine Kukatpally south; mid-day.",
+   [
+    "Chandanagar",
+    "Madeenaguda",
+    "Deepthisri Nagar",
+    "Old Hafeezpet",
+    "Maktha Mahabubpet"
+   ]
+  ],
+  "R2|Allwyn Colony": [
+   "Kukatpally south residential; narrow lanes; 2W last mile.",
+   [
+    "Hyder Nagar",
+    "Shamshiguda",
+    "Bhagya Nagar Colony",
+    "Vivekananda Nagar Colony"
+   ]
+  ],
+  "R2|Patancheru": [
+   "West fringe on NH65; industrial belt; truck-friendly; plan toll.",
+   [
+    "ICRISAT",
+    "IDA Patancheru",
+    "Tellapur",
+    "Muthangi",
+    "JP Colony"
+   ]
+  ],
+  "R2|Ameenpur": [
+   "West fringe (RC Puram, Beeramguda); NH65 corridor; mid-day.",
+   [
+    "RC Puram",
+    "Beeramguda",
+    "Bharathi Nagar",
+    "Bollaram"
+   ]
+  ],
+  "R3|Uppal": [
+   "IT/industrial mix; IDA Uppal truck gates till 4 PM; combine Boduppal.",
+   [
+    "IDA Uppal",
+    "Habsiguda",
+    "Ramanthapur",
+    "Chilkanagar",
+    "Uppal Depot"
+   ]
+  ],
+  "R3|Boduppal": [
+   "Fast-growing corridor; wide roads; multiple quick stops.",
+   [
+    "Medipally",
+    "Peerzadiguda",
+    "Chengicherla",
+    "Boduppal X Road"
+   ]
+  ],
+  "R3|Nacharam": [
+   "IDA Nacharam industrial; ORR feeder restrictions 6-9 PM; mid-day runs.",
+   [
+    "IDA Nacharam",
+    "Mallapur",
+    "HMT Nagar",
+    "Shakthi Sai Nagar"
+   ]
+  ],
+  "R3|Malkajgiri": [
+   "Railway colony + gated societies; combine Kapra/Nacharam loop; early start.",
+   [
+    "Safilguda",
+    "Old Malkajgiri",
+    "Malkajgiri Railway Colony",
+    "Anandbagh"
+   ]
+  ],
+  "R3|Moula Ali": [
+   "East-central (Neredmet, Moula Ali); combine Malkajgiri/Sainikpuri loop.",
+   [
+    "Neredmet",
+    "Sainikpuri",
+    "Vinayak Nagar",
+    "Kakatiya Nagar",
+    "Balram Nagar"
+   ]
+  ],
+  "R3|Tarnaka": [
+   "Defence-research corridor; gate-entry paperwork; 15-min dwell per stop.",
+   [
+    "Osmania University",
+    "Lalapet",
+    "AOC Camp",
+    "Golconda X Roads (Tarnaka)"
+   ]
+  ],
+  "R3|Mettuguda": [
+   "Railway-colony lanes; narrow roads; 2W/LCV only; morning slots.",
+   [
+    "Lalaguda",
+    "Old Tarnaka",
+    "Metro JBS flank"
+   ]
+  ],
+  "R3|Kavadiguda": [
+   "Secunderabad core + cantonment belt; avoid 5-7 PM rush; LCV/2W.",
+   [
+    "Trimulgherry",
+    "Marredpally",
+    "Rasoolpura",
+    "Regimental Bazaar",
+    "Parsigutta",
+    "North Secunderabad",
+    "Rani Gunj",
+    "General Bazaar",
+    "Mahatma Gandhi Road",
+    "JBS Paradise",
+    "Patny",
+    "King Koti",
+    "Tadbund",
+    "Sangeet Nagar",
+    "Bhoiguda"
+   ]
+  ],
+  "R3|Amberpet": [
+   "OU/university belt + market; schedule after 11 AM; combine Kavadiguda/Musheerabad belt.",
+   [
+    "Vidyanagar",
+    "OU Campus",
+    "Kachiguda (railway)",
+    "Chikoti Gardens"
+   ]
+  ],
+  "R3|Chandrayangutta": [
+   "Barkas belt; steep lanes; small vehicles; morning window.",
+   [
+    "Barkas",
+    "Kanchanbagh",
+    "Bandlaguda",
+    "Noori Nagar"
+   ]
+  ],
+  "R3|Yakutpura": [
+   "Charminar market spill; pedestrian-heavy; early morning drops.",
+   [
+    "Dabeerpura",
+    "Rein Bazar",
+    "Madannapet",
+    "Gowlipura",
+    "Talab Chanchalam"
+   ]
+  ],
+  "R3|Santoshnagar": [
+   "Mixed density mid-commercial; schedule 10 AM-1 PM.",
+   [
+    "Talab Katta",
+    "Bhanu Nagar",
+    "IS Sadan",
+    "Saraswati Nagar"
+   ]
+  ],
+  "R3|Malakpet": [
+   "Commercial mid-belt; combine Moosarambagh; post-11 AM.",
+   [
+    "Malakpet",
+    "Chaderghat",
+    "Saidabad",
+    "Asmangadh",
+    "Akberbagh",
+    "Chawani"
+   ]
+  ],
+  "R3|Moosarambagh": [
+   "Ring-road access; quick drops; combine Malakpet.",
+   [
+    "Old Malakpet",
+    "Kala Dera",
+    "Azampura",
+    "MCH Colony"
+   ]
+  ],
+  "R3|Saroornagar": [
+   "High-density residential/market; avoid 9-11 AM; schedule 11 AM onward.",
+   [
+    "Dilsukhnagar",
+    "Kothapet",
+    "Chaitanyapuri",
+    "Gaddiannaram",
+    "P&T Colony",
+    "Saroornagar Lake",
+    "Laxminagar",
+    "Alkapuri Colony"
+   ]
+  ],
+  "R3|L.B. Nagar": [
+   "Busy commercial hub; split into two trips; afternoon + evening runs.",
+   [
+    "Lingojiguda",
+    "Champapet",
+    "Kharmanghat",
+    "Bairamalguda",
+    "Hastinapuram",
+    "Buddha Nagar"
+   ]
+  ],
+  "R3|Nagole": [
+   "South-east gateway; start after 9 AM; combine Saroornagar/LB Nagar.",
+   [
+    "Mansoorabad",
+    "Kuntloor",
+    "Pedda Amberpet",
+    "GSI Colony"
+   ]
+  ],
+  "R3|Hayathnagar": [
+   "Fringe up to Vanasthalipuram; one round trip/day; return via LB Nagar ring.",
+   [
+    "Vanasthalipuram",
+    "Sahebnagar",
+    "BN Reddy Nagar",
+    "Nagarjuna Sagar Road stretch"
+   ]
+  ],
+  "R4|Serilingampally": [
+   "ORR tech belt (Gachibowli-Kondapur); deliver 11 AM-4 PM.",
+   [
+    "Raidurg",
+    "Nanakramguda",
+    "Gopanpally",
+    "Kothaguda",
+    "Nallagandla",
+    "Financial District",
+    "Inorbit Mall",
+    "The HUB",
+    "Masjid Banda"
+   ]
+  ],
+  "R4|Madhapur": [
+   "HITEC City core; parking premium; last-mile on 2W; after 11 AM.",
+   [
+    "Cyber Towers",
+    "Durgam Cheruvu",
+    "Jubilee Enclave",
+    "Izzath Nagar",
+    "Matrusri Nagar",
+    "Mayuri Nagar",
+    "Mindspace"
+   ]
+  ],
+  "R4|Narsingi": [
+   "ORR new corridor; wide roads; low stop density; morning loop.",
+   [
+    "Kokapet",
+    "Manikonda",
+    "Gandipet",
+    "Neknampur",
+    "Narsingi (ORR)"
+   ]
+  ],
+  "R4|Moosapet": [
+   "Balanagar industrial + residential; truck-friendly mid-day.",
+   [
+    "IDA Balanagar",
+    "Ferozguda",
+    "Moti Nagar",
+    "Prashanth Nagar",
+    "Allapur"
+   ]
+  ],
+  "R4|Ameerpet": [
+   "Ameerpet/Begumpet commercial core; metered curbside drops; avoid 9-11 AM peak.",
+   [
+    "Balkampet",
+    "West Marredpally",
+    "Divya Nagar",
+    "Sai Baba Temple Road"
+   ]
+  ],
+  "R4|Jubilee Hills": [
+   "High-end gated societies; appointment-based; concierge delivery preferred.",
+   [
+    "Banjara Hills",
+    "Film Nagar",
+    "Road No. 12",
+    "Venkateshwara Colony"
+   ]
+  ],
+  "R4|Yousufguda": [
+   "Residential (Srinagar Colony); combine Ameerpet/SR Nagar; mid-morning.",
+   [
+    "Srinagar Colony",
+    "Erragadda",
+    "Vengal Rao Nagar",
+    "AG Colony"
+   ]
+  ],
+  "R4|Borabanda": [
+   "Residential; narrow roads; 2W last mile; combine Yousufguda.",
+   [
+    "Karmika Nagar",
+    "Rajeev Nagar",
+    "Krishna Nagar",
+    "Rahamath Nagar"
+   ]
+  ],
+  "R4|Charminar": [
+   "Heritage core with vehicle curfews; offload at feeder point; hand-cart final mile.",
+   [
+    "Afzalgunj",
+    "Moghalpura",
+    "Aliabad",
+    "Darulshifa",
+    "Hussaini Alam",
+    "Purani Haveli",
+    "Pathergatti"
+   ]
+  ],
+  "R4|Falaknuma": [
+   "Old City core; narrow lanes; 2W only; 6-11 AM window.",
+   [
+    "Falaknuma Palace Road",
+    "Shah Ali Banda",
+    "Jahanuma",
+    "Nawab Saheb Kunta"
+   ]
+  ],
+  "R4|Bahadurpura": [
+   "Dense old city; plan around Friday prayer; 6-10 AM deliveries.",
+   [
+    "Bahadurpura",
+    "Doodh Bowli",
+    "Kishanbagh",
+    "Teegal Kunta",
+    "Chandu Lal Baradari",
+    "Ramnasthpura"
+   ]
+  ],
+  "R4|Goshamahal": [
+   "Central market belt; dense; early morning or post-8 PM drops.",
+   [
+    "Begum Bazar",
+    "Jambagh",
+    "Dattatreya Nagar",
+    "Exhibition Grounds",
+    "Koti"
+   ]
+  ],
+  "R4|Karwan": [
+   "Central-west market belt; combine Mehdipatnam.",
+   [
+    "Langar Houz",
+    "Gudimalkapur",
+    "Tappachabutra",
+    "Ziaguda"
+   ]
+  ],
+  "R4|Golconda": [
+   "West-south belt; narrow fort lanes; morning window.",
+   [
+    "Tolichowki",
+    "Shaikpet",
+    "Nanalnagar",
+    "Nizam Colony",
+    "Ibrahimbagh",
+    "Golconda Fort",
+    "OU Colony"
+   ]
+  ],
+  "R4|Mehdipatnam": [
+   "Busy market + residential; after 11 AM; small vehicles.",
+   [
+    "Asif Nagar",
+    "Syed Nagar",
+    "Padmanabha Nagar",
+    "Gudimalkapur fringe"
+   ]
+  ],
+  "R4|Masab Tank": [
+   "Dense mixed belt; 2W friendly; morning + evening peaks.",
+   [
+    "Public Gardens",
+    "Saifabad",
+    "Lakdikapul",
+    "Vijayanagar Colony",
+    "Ahmed Nagar"
+   ]
+  ],
+  "R4|Khairatabad": [
+   "Central govt/corporate corridor; 10 AM-5 PM windows.",
+   [
+    "Greenlands",
+    "Gunfoundry",
+    "Red Hills",
+    "Somajiguda",
+    "Irrum Manzil"
+   ]
+  ],
+  "R4|Attapur": [
+   "South-west fringe; combine Rajendranagar; mid-day.",
+   [
+    "Katedan",
+    "Mailardevpally",
+    "Hyderguda",
+    "Suleman Nagar",
+    "Shastripuram"
+   ]
+  ],
+  "R4|Rajendranagar": [
+   "South fringe; avoid college rush 9-10 AM; combine Attapur.",
+   [
+    "Bandlaguda Jagir",
+    "Kismatpur",
+    "Hydershahkote"
+   ]
+  ],
+  "R5|Medchal-Malkajgiri Rural": [
+   "NH44 north fringe; Medchal check-post docs; truck only; weekly run.",
+   [
+    "Medchal",
+    "Shamirpet",
+    "Rampally",
+    "Baswapur",
+    "Thumkunta"
+   ]
+  ],
+  "R5|Ghatkesar Belt": [
+   "NH163 east fringe; IDA Ghatkesar industrial; truck; weekly consolidation.",
+   [
+    "Ghatkesar",
+    "Nagaram",
+    "Pocharam",
+    "Edulabad",
+    "Ibrahimpatnam"
+   ]
+  ]
+ }
+}

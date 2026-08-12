@@ -25,6 +25,7 @@ XLSX_PATH = REPO_ROOT / "routes-planning.xlsx"
 OUT_DIR = Path(__file__).resolve().parent / "output"
 JSON_PATH = OUT_DIR / "route_plan.json"
 JS_PATH = REPO_ROOT / "route-plan.js"
+LOCALITIES_PATH = Path(__file__).resolve().parent / "localities.json"
 
 # (route_code, column_index, kind) — column index is the 0-based cell index
 # into the Routes sheet row tuple: A=0, B=1, C=2, D=3, E=4, F=5, G=6
@@ -108,6 +109,116 @@ CIRCLE_COORDS = {
     "Yadadri-Bhuvanagiri District": [17.517279, 78.886338],
 }
 
+# Live-sheet Branch spellings not covered by the recovered GHMC locality
+# aliases. Each maps to (route, parent_circle, note); the parent circle
+# supplies the zone, centroids and dispatch guidance.
+#
+# Names are stored in the form cleanPlace() produces (title-cased, suffix
+# words kept) so their slugs match dispatch Branch values after the trailing
+# noise tokens ("Branch", "Road No 12", "2nd Floor", …) are stripped.
+EXTRA_LOCALITIES = {
+    "Gachibowli": (
+        "R4",
+        "Serilingampally",
+        "ORR/Gachibowli offices; 11 AM-4 PM window; corporate receptions.",
+    ),
+    "Gacchibowli": (
+        "R4",
+        "Serilingampally",
+        "Alt. spelling of Gachibowli (live sheet); ORR tech belt; 11 AM-4 PM.",
+    ),
+    "Kondapur": (
+        "R4",
+        "Serilingampally",
+        "Gachibowli-HITEC ORR tech belt; deliver 11 AM-4 PM.",
+    ),
+    "Begumpet": (
+        "R4",
+        "Ameerpet",
+        "Ameerpet/Begumpet commercial core; metered curbside drops; avoid 9-11 AM peak.",
+    ),
+    "SR Nagar": (
+        "R4",
+        "Yousufguda",
+        "Residential (Srinagar Colony/SR Nagar); combine Ameerpet; mid-morning.",
+    ),
+    "AJC": (
+        "R4",
+        "Madhapur",
+        "AJC building (2nd-4th floor branches) in HITEC City core; after 11 AM.",
+    ),
+    "Bala Nagar": (
+        "R4",
+        "Moosapet",
+        "Balanagar industrial/residential belt (MSME-DI side); mid-day.",
+    ),
+    "MSME": (
+        "R4",
+        "Moosapet",
+        "MSME Development Institute, Narsapur X Roads, Balanagar; office hours.",
+    ),
+    "East Marredpally": (
+        "R3",
+        "Kavadiguda",
+        "Marredpally east wing, Secunderabad cantonment; avoid 5-7 PM rush.",
+    ),
+    "JNTU": (
+        "R2",
+        "Kukatpally",
+        "JNTU Kukatpally campus belt; combine KPHB; 6-10 AM window.",
+    ),
+    "Kodad": (
+        "R7",
+        None,
+        "Kodad, Suryapet district (~150 km); long-haul, plan toll; R7.",
+    ),
+    "MG Road": (
+        "R3",
+        "Kavadiguda",
+        "Mahatma Gandhi Road, Secunderabad core; combine Patny; morning.",
+    ),
+    "Narayanguda": (
+        "R4",
+        "Khairatabad",
+        "Central corridor (Himayatnagar side); 10 AM-5 PM windows.",
+    ),
+    "Puppalaguda": (
+        "R4",
+        "Narsingi",
+        "ORR corridor near Manikonda; wide roads; morning loop.",
+    ),
+    "R P Road": (
+        "R3",
+        "Kavadiguda",
+        "RP Road, Secunderabad (Paradise/Patny side); LCV/2W.",
+    ),
+    "Sardar Patel Road": (
+        "R3",
+        "Kavadiguda",
+        "SP Road, Secunderabad; dense commercial; early morning.",
+    ),
+    "Shivam Road": (
+        "R3",
+        "Saroornagar",
+        "Shivam Road, Dilsukhnagar; combine Kothapet; after 11 AM.",
+    ),
+    "Suryodaya Chambers": (
+        "R4",
+        "Ameerpet",
+        "Suryodaya building, Begumpet belt; metered curbside; mid-day.",
+    ),
+    "SVM Grand Medipally": (
+        "R3",
+        "Boduppal",
+        "Branch master (C0178) - Medipally; combine Boduppal loop.",
+    ),
+    "Allu Cinemas - Dolby Cinema & Cineplex": (
+        "R4",
+        "Narsingi",
+        "ALLU Cinemas, Kokapet/Narsingi (500075); morning loop.",
+    ),
+}
+
 
 def clean(v):
     return str(v).strip() if v is not None else ""
@@ -121,6 +232,30 @@ def planning_rows(rows):
         if clean(row[3]).strip().lower() == "route":
             break
         yield i, row
+
+
+def locality_specs():
+    """Yield (route, circle, name, note) locality aliases.
+
+    Sources, in merge order (earlier wins on duplicate names):
+      1. localities.json groups   — circle memberships (54 groups)
+      2. localities.json localities — standalone alias records (23)
+      3. EXTRA_LOCALITIES           — live-sheet spellings missing above
+    """
+    specs = []
+    try:
+        loc_data = json.loads(LOCALITIES_PATH.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        loc_data = {}
+    for key, (note, names) in loc_data.get("groups", {}).items():
+        route, circle = key.split("|", 1)
+        for name in names:
+            specs.append((route, circle, name, note))
+    for name, (route, circle, note) in loc_data.get("localities", {}).items():
+        specs.append((route, circle, name, note))
+    for name, (route, circle, note) in EXTRA_LOCALITIES.items():
+        specs.append((route, circle, name, note))
+    return specs
 
 
 def build_records():
@@ -164,6 +299,42 @@ def build_records():
                     "lng": CIRCLE_COORDS.get(val, [None, None])[1],
                 }
             )
+
+    index = {(r["route"], r["name"].lower()): r for r in records}
+    for route, circle, name, note in locality_specs():
+        parent = index.get((route, circle.lower())) if circle else None
+        key = (route, name.lower())
+        if key in seen:
+            continue
+        if not parent:
+            if route != "R7":
+                continue
+            seen.add(key)
+            records.append(
+                {
+                    "name": name,
+                    "route": route,
+                    "zone": R7_ZONE,
+                    "kind": "locality",
+                    "note": note,
+                    "lat": None,
+                    "lng": None,
+                }
+            )
+            continue
+        seen.add(key)
+        records.append(
+            {
+                "name": name,
+                "route": route,
+                "circle": parent["name"],
+                "zone": parent["zone"],
+                "kind": "locality",
+                "note": note,
+                "lat": parent["lat"],
+                "lng": parent["lng"],
+            }
+        )
 
     order = {"R1": 0, "R2": 1, "R3": 2, "R4": 3, "R5": 4, "R7": 5}
     records.sort(key=lambda r: (order[r["route"]], r["name"].lower()))

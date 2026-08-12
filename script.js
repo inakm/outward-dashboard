@@ -356,8 +356,36 @@
   function routeFromBranch(branch, idx) {
     idx = idx || routeMap;
     if (!idx) return '';
-    var slug = routeNameSlug(cleanPlace(branch));
-    return slug && idx[slug] ? idx[slug] : '';
+    var hit = branchInfo(branch, idx);
+    return hit || '';
+  }
+
+  /* Branch name → plan info, with a tolerant fallback.
+
+     Dispatch sheets name branches "Abids Branch", "Jubilee Hills Road no. 45",
+     "AJC 2nd Floor Branch", etc. cleanPlace() keeps those suffix words, so the
+     exact slug misses. Strip trailing noise tokens (Branch / Road No N /
+     No. 36 / 2nd Floor / …) and retry against the R1-R7 plan; the first
+     match wins. info = { route, circle, note } or null.
+  */
+  var BRANCH_NOISE = { branch: 1, brach: 1, floor: 1, road: 1, rd: 1, no: 1 };
+  var BRANCH_ORDINAL = /^(\d+)(st|nd|rd|th)$/i;
+  function branchInfo(branch, idx) {
+    idx = idx || routeMapCircle;
+    if (!idx) return null;
+    var s = cleanPlace(branch);
+    var tokens = s.split(' ').filter(Boolean);
+    var first = routeNameSlug(tokens.join(' '));
+    if (first && idx[first]) return idx[first];
+    while (tokens.length > 1) {
+      var w = tokens[tokens.length - 1];
+      var wk = w.toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (!(BRANCH_NOISE[wk] || /^\d+$/.test(wk) || BRANCH_ORDINAL.test(wk))) break;
+      tokens.pop();
+      var cand = routeNameSlug(tokens.join(' '));
+      if (cand && idx[cand]) return idx[cand];
+    }
+    return null;
   }
 
   function enrichRoutes(records, idx) {
@@ -889,7 +917,7 @@
     circleIdx = circleIdx || routeMapCircle;
     var plan = {};
     rows.forEach(function (r) {
-      var info = circleIdx && circleIdx[routeNameSlug(cleanPlace(r.branch))];
+      var info = circleIdx ? branchInfo(r.branch, circleIdx) : null;
       var route = r.route || (info && info.route) || 'Unknown';
       var circle = (info && info.circle) || '—';
       if (!plan[route]) plan[route] = {};
@@ -2039,7 +2067,7 @@
 
   function routeCircleFor(r) {
     if (!routeMapCircle) return null;
-    return routeMapCircle[routeNameSlug(cleanPlace(r.branch))] || null;
+    return branchInfo(r.branch, routeMapCircle);
   }
 
   function setMapMessage(msg, text) {
@@ -3859,7 +3887,7 @@
         added++;
       }
       if (!routeMapCircle[slug]) {
-        routeMapCircle[slug] = { route: rec.route, circle: rec.name, note: rec.zone || '' };
+        routeMapCircle[slug] = { route: rec.route, circle: rec.circle || rec.name, note: rec.note || rec.zone || '' };
       }
       if (rec.lat != null && rec.lng != null && !(rec.name in coordsIndex)) {
         coordsIndex[rec.name] = { lat: Number(rec.lat), lng: Number(rec.lng) };
