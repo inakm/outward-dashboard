@@ -60,7 +60,14 @@
     'state': 'state',
     'pincode': 'pincode',
     'pin code': 'pincode',
-    'postal code': 'pincode'
+    'postal code': 'pincode',
+    'primary zone': 'zone',
+    'zone': 'zone',
+    'area': 'area',
+    'neighbourhood s': 'neighbourhood',
+    'neighbourhood': 'neighbourhood',
+    'neighborhood s': 'neighbourhood',
+    'neighborhood': 'neighbourhood'
   };
 
   var BRANCH_HEADER_ALIASES = {
@@ -92,6 +99,11 @@
     'order': 'Order Date',
     'od': 'Order Date',
     'date': 'Order Date',
+    'invoice no': 'Invoice No.',
+    'invoiceno': 'Invoice No.',
+    'invoice number': 'Invoice No.',
+    'invoice no.': 'Invoice No.',
+    'invoice': 'Invoice No.',
     'customer name': 'Customer Name',
     'customername': 'Customer Name',
     'customer': 'Customer Name',
@@ -119,7 +131,14 @@
     'routing': 'Route',
     'status': 'Status',
     'order status': 'Status',
-    'orderstatus': 'Status'
+    'orderstatus': 'Status',
+    'delivery person': 'Delivery Person',
+    'deliveryperson': 'Delivery Person',
+    'delivery man': 'Delivery Person',
+    'deliveryman': 'Delivery Person',
+    'delivery boy': 'Delivery Person',
+    'assigned to': 'Delivery Person',
+    'delivery agent': 'Delivery Person'
   };
 
   /* Known data-entry typos → canonical place names (Hyderabad area) */
@@ -201,6 +220,7 @@
     ack: 'ALL',
     status: 'ALL',
     route: 'ALL',
+    deliveryPerson: 'ALL',
     query: '',
     customerQuery: '',
     sortKey: 'orderDate',
@@ -330,6 +350,7 @@
     return {
       id: makeId(),
       orderDate: parseDate(raw['Order Date']),
+      invoiceNo: cleanCode(raw['Invoice No.']),
       customer: cleanCustomer(raw['Customer Name']),
       branch: cleanPlace(raw['Branch']),
       location: cleanPlace(raw['Location']),
@@ -337,6 +358,7 @@
       dispatchDate: parseDate(raw['Dispatch date']),
       ack: normalizeAck(raw['Ack']),
       status: normalizeStatus(raw['Status']),
+      deliveryPerson: cleanCustomer(raw['Delivery Person']),
       route: cleanCode(raw['Route'])
     };
   }
@@ -395,6 +417,43 @@
       if (!records[i].route && idx) records[i].route = routeFromBranch(records[i].branch, idx) || '';
     }
     return records;
+  }
+
+  /* Master Primary Zone → R-code fallback. Branch-based route_plan matching
+     stays the authority; this only fills orders whose branch didn't match. */
+  var ZONE_ROUTE = {
+    'North-East': 'R1',
+    'North-West': 'R2',
+    'South-East': 'R3',
+    'South-West': 'R4',
+    'Outside Hyderabad': 'R5',
+    'Madhapur': 'R6',
+    'Outside Telangana': 'R7'
+  };
+
+  function zoneRouteFromCustomer(customerName, customers) {
+    var list = customers || state.customers;
+    if (!list || !customerName) return '';
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].name === customerName && ZONE_ROUTE[list[i].zone]) {
+        return ZONE_ROUTE[list[i].zone];
+      }
+    }
+    return '';
+  }
+
+  function enrichRoutesFromMaster(records, customers) {
+    records = records || state.records;
+    var added = 0;
+    for (var i = 0; i < records.length; i++) {
+      if (records[i].route) continue;
+      var rt = zoneRouteFromCustomer(records[i].customer, customers);
+      if (rt) {
+        records[i].route = rt;
+        added++;
+      }
+    }
+    return added;
   }
 
   /* -------------------------------------------------------------
@@ -497,7 +556,7 @@
       if (k) keys[k] = true;
     });
     if (keys['branch id'] && keys['branch name']) return 'branches';
-    if (keys['code'] && keys['name'] && (keys['gst number'] || keys['gst no'] || keys['gstin'])) return 'customers';
+    if (keys['code'] && keys['name'] && (keys['gst number'] || keys['gst no'] || keys['gstin'] || keys['address'] || keys['primary zone'])) return 'customers';
     var detection = detectHeaders(rows);
     return detection.missing.length ? null : 'dispatch';
   }
@@ -539,7 +598,10 @@
         address: cleanCustomer(row[map['address']]),
         city: cleanPlace(row[map['city']]),
         state: cleanCustomer(row[map['state']]),
-        pincode: cleanCode(row[map['pincode']])
+        pincode: cleanCode(row[map['pincode']]),
+        zone: cleanCustomer(row[map['zone']]),
+        area: cleanCustomer(row[map['area']]),
+        neighbourhood: cleanCustomer(row[map['neighbourhood']])
       });
     }
     return out;
@@ -1180,6 +1242,7 @@
     if (state.priority !== 'ALL') rows = rows.filter(function (r) { return r.priority === state.priority; });
     if (state.ack !== 'ALL') rows = rows.filter(function (r) { return r.ack === state.ack; });
     if (state.status !== 'ALL') rows = rows.filter(function (r) { return r.status === state.status; });
+    if (state.deliveryPerson !== 'ALL') rows = rows.filter(function (r) { return r.deliveryPerson === state.deliveryPerson; });
     if (!ignoreRoute && state.route !== 'ALL') {
       if (state.route === '—') {
         rows = rows.filter(function (r) { return !r.route; });
@@ -1204,10 +1267,12 @@
       var q = state.query.toLowerCase();
       rows = rows.filter(function (r) {
         return r.customer.toLowerCase().indexOf(q) !== -1 ||
+          (r.invoiceNo || '').toLowerCase().indexOf(q) !== -1 ||
           r.branch.toLowerCase().indexOf(q) !== -1 ||
           r.location.toLowerCase().indexOf(q) !== -1 ||
           (r.route || '').toLowerCase().indexOf(q) !== -1 ||
-          (r.status || '').toLowerCase().indexOf(q) !== -1;
+          (r.status || '').toLowerCase().indexOf(q) !== -1 ||
+          (r.deliveryPerson || '').toLowerCase().indexOf(q) !== -1;
       });
     }
     return rows;
@@ -1886,7 +1951,7 @@
     tbody.innerHTML = html;
   }
 
-  var ROUTE_DESCRIPTIONS = { R1: 'North-East', R2: 'North-West', R3: 'South-East', R4: 'South-West', R5: 'Outside GHMC', R7: 'Non-Hyderabad' };
+  var ROUTE_DESCRIPTIONS = { R1: 'North-East', R2: 'North-West', R3: 'South-East', R4: 'South-West', R5: 'Outside GHMC', R6: 'Madhapur', R7: 'Non-Hyderabad' };
 
   function renderRouteContext() {
     var strip = $('contextStrip');
@@ -2043,7 +2108,7 @@
   /* -------------------------------------------------------------
      Route Ops: interactive route map (Leaflet)
      ------------------------------------------------------------- */
-  var ROUTE_COLOR = { R1: '#27a644', R2: '#5e6ad2', R3: '#e5484d', R4: '#b87800', R5: '#6b7280', R7: '#0d9488' };
+  var ROUTE_COLOR = { R1: '#27a644', R2: '#5e6ad2', R3: '#e5484d', R4: '#b87800', R5: '#6b7280', R6: '#9333ea', R7: '#0d9488' };
   var routeMapObj = null;
   var routeMapLayer = null;
 
@@ -2394,10 +2459,12 @@
           var row = circle.rows[k];
           html += '<div class="lp-row">' +
             '<span>' + priorityBadge(row.priority) + '</span>' +
+            '<span class="lp-row-inv">' + escapeHtml(row.invoiceNo || '—') + '</span>' +
             '<span class="lp-row-c">' + escapeHtml(row.customer || '—') + '</span>' +
             '<span class="lp-row-b">' + escapeHtml(row.location || row.branch || '—') + '</span>' +
             '<span class="lp-row-date">' + fmtDateShort(row.orderDate) + '</span>' +
             '<span class="lp-row-status">' + escapeHtml(row.status || '—') + '</span>' +
+            '<span class="lp-row-person">' + escapeHtml(row.deliveryPerson || '—') + '</span>' +
             '<span>' + ackBadge(row.ack) + '</span>' +
             '</div>';
         }
@@ -2614,10 +2681,14 @@
             else if (lv === 'at-risk') acc.atrisk++;
             return acc;
           }, { breached: 0, atrisk: 0 });
+          var people = {};
+          c.rows.forEach(function (r) { if (r.deliveryPerson) people[r.deliveryPerson] = true; });
+          var peopleList = Object.keys(people);
           html += '<div class="db-stop">' +
             '<span class="db-stop-num">' + c.stop + '</span>' +
             '<span class="db-stop-name">' + escapeHtml(c.circle) + '</span>' +
-            '<span class="db-stop-meta">' + c.total + ' · ' + c.open + ' open · ' + c.p1 + ' P1' + '</span>' +
+            '<span class="db-stop-meta">' + c.total + ' · ' + c.open + ' open · ' + c.p1 + ' P1' +
+            (peopleList.length ? ' · ' + escapeHtml(peopleList.join(', ')) : '') + '</span>' +
             (slaCounts.breached ? '<span class="sla-chip sla-breached">' + slaCounts.breached + ' breached</span>' : '') +
             (slaCounts.atrisk ? '<span class="sla-chip sla-at-risk">' + slaCounts.atrisk + ' at risk</span>' : '') +
             '</div>';
@@ -2680,19 +2751,21 @@
     });
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summary), 'Load Plan');
     plan.forEach(function (r) {
-      var aoa = [['Sort #', 'Circle', 'Time bucket', 'Window', 'Branch', 'Customer', 'Location', 'Priority', 'Order Date', 'Dispatch Date', 'Ack', 'Status', 'Sorting Note']];
+      var aoa = [['Sort #', 'Circle', 'Time bucket', 'Window', 'Branch', 'Customer', 'Invoice No.', 'Location', 'Priority', 'Order Date', 'Dispatch Date', 'Ack', 'Status', 'Delivery Person', 'Sorting Note']];
       var n = 0;
       r.circles.forEach(function (c) {
         c.rows.forEach(function (row) {
           n++;
           aoa.push([
-            n, c.circle, bucketLabel(c.bucket), windowFor(c.bucket).label, row.branch, row.customer, row.location,
-            row.priority, fmtDateShort(row.orderDate), fmtDateShort(row.dispatchDate), row.ack, row.status || '—', c.note
+            n, c.circle, bucketLabel(c.bucket), windowFor(c.bucket).label, row.branch, row.customer,
+            row.invoiceNo || '', row.location,
+            row.priority, fmtDateShort(row.orderDate), fmtDateShort(row.dispatchDate), row.ack, row.status || '—',
+            row.deliveryPerson || '', c.note
           ]);
         });
       });
       var ws = XLSX.utils.aoa_to_sheet(aoa);
-      ws['!cols'] = [{ wch: 6 }, { wch: 18 }, { wch: 12 }, { wch: 12 }, { wch: 16 }, { wch: 26 }, { wch: 22 }, { wch: 8 }, { wch: 11 }, { wch: 11 }, { wch: 10 }, { wch: 16 }, { wch: 60 }];
+      ws['!cols'] = [{ wch: 6 }, { wch: 18 }, { wch: 12 }, { wch: 12 }, { wch: 16 }, { wch: 26 }, { wch: 18 }, { wch: 22 }, { wch: 8 }, { wch: 11 }, { wch: 11 }, { wch: 10 }, { wch: 16 }, { wch: 18 }, { wch: 60 }];
       XLSX.utils.book_append_sheet(wb, ws, sheetName(r.route));
     });
     XLSX.writeFile(wb, 'outward-dispatch-plan-' + fmtDateShort(new Date()) + '.xlsx');
@@ -2710,7 +2783,7 @@
       if (plan[i].route === route) { r = plan[i]; break; }
     }
     if (!r) { toast('Nothing to export for ' + route + ' in current scope', 'info'); return; }
-    var aoa = [['Sort #', 'Circle', 'Time bucket', 'Window', 'Branch', 'Customer', 'Location', 'Priority', 'Order Date', 'Dispatch Date', 'Ack', 'Status', 'Sorting Note']];
+    var aoa = [['Sort #', 'Circle', 'Time bucket', 'Window', 'Branch', 'Customer', 'Invoice No.', 'Location', 'Priority', 'Order Date', 'Dispatch Date', 'Ack', 'Status', 'Delivery Person', 'Sorting Note']];
     var list = [];
     r.circles.forEach(function (c) {
       c.rows.forEach(function (row) {
@@ -2736,12 +2809,14 @@
       n++;
       var row = x.row;
       aoa.push([
-        n, x.circle, x.bucket, x.window, row.branch, row.customer, row.location,
-        row.priority, fmtDateShort(row.orderDate), fmtDateShort(row.dispatchDate), row.ack, row.status || '—', x.note
+        n, x.circle, x.bucket, x.window, row.branch, row.customer,
+        row.invoiceNo || '', row.location,
+        row.priority, fmtDateShort(row.orderDate), fmtDateShort(row.dispatchDate), row.ack, row.status || '—',
+        row.deliveryPerson || '', x.note
       ]);
     });
     var ws = XLSX.utils.aoa_to_sheet(aoa);
-    ws['!cols'] = [{ wch: 6 }, { wch: 18 }, { wch: 12 }, { wch: 12 }, { wch: 16 }, { wch: 26 }, { wch: 22 }, { wch: 8 }, { wch: 11 }, { wch: 11 }, { wch: 10 }, { wch: 16 }, { wch: 60 }];
+    ws['!cols'] = [{ wch: 6 }, { wch: 18 }, { wch: 12 }, { wch: 12 }, { wch: 16 }, { wch: 26 }, { wch: 18 }, { wch: 22 }, { wch: 8 }, { wch: 11 }, { wch: 11 }, { wch: 10 }, { wch: 16 }, { wch: 18 }, { wch: 60 }];
     var wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Manifest');
     XLSX.writeFile(wb, 'outward-manifest-' + route + '-' + fmtDateShort(new Date()) + '.xlsx');
@@ -2757,12 +2832,12 @@
   function exportCsv() {
     var rows = sortRows(filteredRows(), state.sortKey, state.sortDir);
     if (!rows.length) { toast('Nothing to export in current scope', 'info'); return; }
-    var headers = ['Order Date', 'Customer Name', 'Branch', 'Location', 'Route', 'Priority', 'Dispatch Date', 'Ack', 'Status'];
+    var headers = ['Order Date', 'Invoice No.', 'Customer Name', 'Branch', 'Location', 'Route', 'Priority', 'Dispatch Date', 'Ack', 'Status', 'Delivery Person'];
     var lines = [headers.map(csvCell).join(',')];
     rows.forEach(function (r) {
       lines.push([
-        fmtDateShort(r.orderDate), r.customer, r.branch, r.location, r.route, r.priority,
-        fmtDateShort(r.dispatchDate), r.ack, r.status || '—'
+        fmtDateShort(r.orderDate), r.invoiceNo || '', r.customer, r.branch, r.location, r.route, r.priority,
+        fmtDateShort(r.dispatchDate), r.ack, r.status || '—', r.deliveryPerson || ''
       ].map(csvCell).join(','));
     });
     var blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
@@ -2798,9 +2873,11 @@
           html += '<div class="pm-row">' +
             '<span class="pm-seq">' + n + '.</span>' +
             '<span class="pm-circle">' + escapeHtml(c.circle) + '</span>' +
+            '<span class="pm-inv">' + escapeHtml(row.invoiceNo || '—') + '</span>' +
             '<span class="pm-cust">' + escapeHtml(row.customer || '—') + '</span>' +
             '<span class="pm-loc">' + escapeHtml(row.location || row.branch || '—') + '</span>' +
             '<span class="pm-prio">' + escapeHtml(row.priority) + '</span>' +
+            '<span class="pm-person">' + escapeHtml(row.deliveryPerson || '—') + '</span>' +
             '<span class="pm-ack">' + escapeHtml(row.ack) + '</span>' +
             '</div>';
         });
@@ -2893,7 +2970,7 @@
       var msg = state.records.length
         ? 'No records match the current filters'
         : 'No data yet — drag & drop a file above, or sync the Google Sheet';
-      tbody.innerHTML = '<tr class="row-empty"><td colspan="9">' + msg + '</td></tr>';
+      tbody.innerHTML = '<tr class="row-empty"><td colspan="11">' + msg + '</td></tr>';
     } else {
       var html = '';
       for (i = 0; i < open.length; i++) {
@@ -2903,6 +2980,7 @@
         html +=
           '<tr class="' + slaCls + '">' +
           '<td class="td-date">' + formatDate(r.orderDate) + '</td>' +
+          '<td class="td-mono">' + escapeHtml(r.invoiceNo || '—') + '</td>' +
           '<td class="td-strong">' + escapeHtml(r.customer || '—') + '</td>' +
           '<td>' + escapeHtml(r.branch || '—') + '</td>' +
           '<td>' + escapeHtml(r.location || '—') + '</td>' +
@@ -2913,12 +2991,13 @@
           '<td class="td-date">' + formatDate(r.dispatchDate) + '</td>' +
           '<td>' + ackBadge(r.ack) + '</td>' +
           '<td>' + escapeHtml(r.status || '—') + '</td>' +
+          '<td>' + escapeHtml(r.deliveryPerson || '—') + '</td>' +
           '</tr>';
       }
       tbody.innerHTML = html;
     }
     if (!complete.length) {
-      cbody.innerHTML = '<tr class="row-empty"><td colspan="9">No complete records (Status = Dispatched and Ack = Done) in the current scope.</td></tr>';
+      cbody.innerHTML = '<tr class="row-empty"><td colspan="11">No complete records (Status = Dispatched and Ack = Done) in the current scope.</td></tr>';
     } else {
       var chtml = '';
       for (i = 0; i < complete.length; i++) {
@@ -2926,6 +3005,7 @@
         chtml +=
           '<tr class="row-complete">' +
           '<td class="td-date">' + formatDate(c.orderDate) + '</td>' +
+          '<td class="td-mono">' + escapeHtml(c.invoiceNo || '—') + '</td>' +
           '<td class="td-strong">' + escapeHtml(c.customer || '—') + '</td>' +
           '<td>' + escapeHtml(c.branch || '—') + '</td>' +
           '<td>' + escapeHtml(c.location || '—') + '</td>' +
@@ -2934,6 +3014,7 @@
           '<td class="td-date">' + formatDate(c.dispatchDate) + '</td>' +
           '<td>' + ackBadge(c.ack) + '</td>' +
           '<td>' + escapeHtml(c.status || '—') + '</td>' +
+          '<td>' + escapeHtml(c.deliveryPerson || '—') + '</td>' +
           '</tr>';
       }
       cbody.innerHTML = chtml;
@@ -2993,6 +3074,7 @@
     renderIngestPanel();
     renderRouteFilter();
     renderStatusFilter();
+    renderDeliveryPersonFilter();
     renderKpis(rows);
     renderRouteKpis(rows);
     renderRouteContext();
@@ -3078,6 +3160,16 @@
     }
   }
 
+  function zoneRouteCode(zone) {
+    return (zone && ZONE_ROUTE[zone]) || '';
+  }
+
+  function zoneChipHtml(zone) {
+    if (!zone) return '<span class="count-chip is-muted">—</span>';
+    var color = ROUTE_COLOR[zoneRouteCode(zone)] || '#8a8f98';
+    return '<span class="zone-chip" style="color:' + color + ';background:' + color + '1a;border-color:' + color + '">' + escapeHtml(zone) + '</span>';
+  }
+
   function renderCustomers() {
     var tbody = $('customerBody');
     if (!tbody) return;
@@ -3092,7 +3184,7 @@
       }
     }
     if (!state.customers.length) {
-      tbody.innerHTML = '<tr class="row-empty"><td colspan="9">No customer data yet — use "Upload / replace data" and drop the ALL_Customers master file, plus per-customer branch workbooks.</td></tr>';
+      tbody.innerHTML = '<tr class="row-empty"><td colspan="10">No customer data yet — use "Upload / replace data" and drop the ALL_Customers master file, plus per-customer branch workbooks.</td></tr>';
       return;
     }
     var q = state.customerQuery.toLowerCase();
@@ -3103,6 +3195,8 @@
         String(c.name).toLowerCase().indexOf(q) !== -1 ||
         String(c.city).toLowerCase().indexOf(q) !== -1 ||
         String(c.state).toLowerCase().indexOf(q) !== -1 ||
+        String(c.zone).toLowerCase().indexOf(q) !== -1 ||
+        String(c.area).toLowerCase().indexOf(q) !== -1 ||
         String(c.contact).toLowerCase().indexOf(q) !== -1;
     });
     list.sort(function (a, b) {
@@ -3122,6 +3216,7 @@
         '<td class="td-mono">' + escapeHtml(c.code || '—') + '</td>' +
         '<td class="td-strong">' + escapeHtml(c.name || '—') + '</td>' +
         '<td>' + escapeHtml(c.city || '—') + '</td>' +
+        '<td>' + zoneChipHtml(c.zone) + '</td>' +
         '<td>' + escapeHtml(c.contact || '—') + (c.mobile ? '<span class="td-mono"><br>' + escapeHtml(c.mobile) + '</span>' : '') + '</td>' +
         '<td class="td-mono td-dim">' + escapeHtml(c.gst || '—') + '</td>' +
         '<td>' + (clickable
@@ -3132,7 +3227,7 @@
         '</tr>';
     }
     if (!list.length) {
-      tbody.innerHTML = '<tr class="row-empty"><td colspan="9">No customers match the current search.</td></tr>';
+      tbody.innerHTML = '<tr class="row-empty"><td colspan="10">No customers match the current search.</td></tr>';
     } else {
       tbody.innerHTML = html;
     }
@@ -3149,7 +3244,7 @@
     var title = $('drawerTitle');
     if (title) title.textContent = code + (cust && cust.name ? ' · ' + cust.name : '') + ' — Branches';
     var sub = $('drawerSub');
-    if (sub) sub.textContent = formatNum(list.length) + ' branches';
+    if (sub) sub.textContent = formatNum(list.length) + ' branches' + (cust && cust.zone ? ' · Primary Zone: ' + cust.zone : '');
     var body = $('branchBody');
     if (body) {
       if (!list.length) {
@@ -3224,11 +3319,36 @@
     renderAll();
   }
 
+  function renderDeliveryPersonFilter() {
+    var box = $('deliveryPersonFilter');
+    if (!box) return;
+    var people = {};
+    state.records.forEach(function (r) { if (r.deliveryPerson) people[r.deliveryPerson] = true; });
+    var list = Object.keys(people).sort(function (a, b) {
+      return String(a).localeCompare(String(b), undefined, { numeric: true });
+    });
+    var html = '<button type="button" class="pill' + (state.deliveryPerson === 'ALL' ? ' is-active' : '') + '" data-person="ALL">All</button>';
+    for (var i = 0; i < list.length; i++) {
+      html += '<button type="button" class="pill' + (state.deliveryPerson === list[i] ? ' is-active' : '') + '" data-person="' + escapeHtml(list[i]) + '">' + escapeHtml(list[i]) + '</button>';
+    }
+    box.innerHTML = html;
+  }
+
+  function setDeliveryPersonFilter(p) {
+    state.deliveryPerson = p;
+    var pills = document.querySelectorAll('#deliveryPersonFilter .pill');
+    for (var i = 0; i < pills.length; i++) {
+      pills[i].classList.toggle('is-active', pills[i].getAttribute('data-person') === p);
+    }
+    renderAll();
+  }
+
   function resetFilters(silent) {
     state.priority = 'ALL';
     state.ack = 'ALL';
     state.status = 'ALL';
     state.route = 'ALL';
+    state.deliveryPerson = 'ALL';
     state.query = '';
     state.dateFrom = null;
     state.dateTo = null;
@@ -3249,6 +3369,10 @@
     var statusPills = document.querySelectorAll('#statusFilter .pill');
     for (var k = 0; k < statusPills.length; k++) {
       statusPills[k].classList.toggle('is-active', statusPills[k].getAttribute('data-status') === 'ALL');
+    }
+    var personPills = document.querySelectorAll('#deliveryPersonFilter .pill');
+    for (var m = 0; m < personPills.length; m++) {
+      personPills[m].classList.toggle('is-active', personPills[m].getAttribute('data-person') === 'ALL');
     }
     if (!silent) renderAll();
   }
@@ -3341,9 +3465,9 @@
   function applyCustomers(list, source) {
     state.customers = list;
     state.customersSource = source || null;
-    renderCustomers();
-    renderDirectoryMeta();
-    renderIngestPanel();
+    var routed = enrichRoutesFromMaster(state.records, list);
+    if (routed) toast('Auto-routed ' + formatNum(routed) + ' orders from customer Primary Zone', 'info');
+    renderAll();
     persistCustomers(list, source).catch(function (e) {
       console.warn('Could not persist customers to IndexedDB:', e);
     });
@@ -3384,15 +3508,23 @@
       try {
         if (typeof XLSX === 'undefined') throw new Error('SheetJS failed to load — check your internet connection.');
         var wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+        var sheetRows = [];
         var rows = [];
         for (var i = 0; i < wb.SheetNames.length; i++) {
           var sheet = wb.Sheets[wb.SheetNames[i]];
           if (!sheet || !sheet['!ref']) continue;
-          rows = rows.concat(XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: true }));
+          var sr = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: true });
+          sheetRows.push(sr);
+          rows = rows.concat(sr);
         }
         var kind = classifyWorkbook(rows);
         if (kind === 'customers') {
-          var custs = parseCustomerMaster(rows);
+          var masterRows = null;
+          for (var s = 0; s < sheetRows.length; s++) {
+            if (classifyWorkbook(sheetRows[s]) === 'customers') { masterRows = sheetRows[s]; break; }
+          }
+          if (!masterRows) masterRows = rows;
+          var custs = parseCustomerMaster(masterRows);
           if (!custs.length) throw new Error('No customer rows found in ' + file.name + '.');
           applyCustomers(custs, { name: file.name, syncedAt: Date.now() });
           toast('Loaded ' + formatNum(custs.length) + ' customers from ' + file.name, 'success');
@@ -3592,6 +3724,13 @@
       statusFilter.addEventListener('click', function (ev) {
         var btn = ev.target.closest && ev.target.closest('.pill');
         if (btn && btn.getAttribute('data-status')) setStatusFilter(btn.getAttribute('data-status'));
+      });
+    }
+    var personFilter = $('deliveryPersonFilter');
+    if (personFilter) {
+      personFilter.addEventListener('click', function (ev) {
+        var btn = ev.target.closest && ev.target.closest('.pill');
+        if (btn && btn.getAttribute('data-person')) setDeliveryPersonFilter(btn.getAttribute('data-person'));
       });
     }
 
@@ -3931,6 +4070,7 @@
     var hadRoute = 0;
     for (var i = 0; i < state.records.length; i++) if (state.records[i].route) hadRoute++;
     enrichRoutes(state.records, routeMap);
+    enrichRoutesFromMaster(state.records);
     renderAll();
     var withRoute = 0;
     for (var j = 0; j < state.records.length; j++) if (state.records[j].route) withRoute++;
@@ -3995,6 +4135,9 @@
     filteredRows: filteredRows,
     routeFromBranch: routeFromBranch,
     enrichRoutes: enrichRoutes,
+    zoneRouteFromCustomer: zoneRouteFromCustomer,
+    enrichRoutesFromMaster: enrichRoutesFromMaster,
+    ZONE_ROUTE: ZONE_ROUTE,
     slaTier: slaTier,
     buildEscalationQueue: buildEscalationQueue,
     loadSlaTiers: loadSlaTiers,

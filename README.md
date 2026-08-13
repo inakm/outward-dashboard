@@ -9,7 +9,7 @@ Enterprise **outward logistics / dispatch intelligence** — a zero-backend web 
 ### Data ingestion
 - **Drag & drop** Excel/CSV files (`.xlsx`, `.xls`, `.csv`) — parsed entirely in the browser with SheetJS, never uploaded
 - **Live Google Sheet sync** — pulls the public dispatch sheet via CSV export with a gviz fallback
-- **Auto-routing from `routes-planning.xlsx`** — the R1–R7 plan (R1–R4 GHMC circles, R5 Hyderabad fringe, R7 non-Hyderabad cities) is the routing authority; orders are auto-routed by matching their **Branch** column, supplemented by the GHMC ward/locality map for fine-grained Hyderabad areas
+- **Auto-routing from `routes-planning.xlsx`** — the R1–R7 plan (R1–R4 GHMC circles, R5 Hyderabad fringe, R6 Madhapur belt, R7 non-Hyderabad cities) is the routing authority; orders are auto-routed by matching their **Branch** column, supplemented by the GHMC ward/locality map for fine-grained Hyderabad areas. Orders whose branch isn't in the plan fall back to the customer master's **Primary Zone**.
 - **Data-cleaning layer** — header aliasing, place-name typo correction (Hyderabad area), priority/ack normalisation
 - **IndexedDB persistence** — reload-safe local cache of records, customer master and branch list
 
@@ -24,7 +24,7 @@ Enterprise **outward logistics / dispatch intelligence** — a zero-backend web 
 - **Sortable matrix table** — customer · branch · location with all KPIs
 - **Backlog aging** — age buckets (0–3d → 31+d) and the oldest open P1 bottlenecks
 - **Routes overview** — per-route volume, open P1, ack breakdown and fulfilment bar; click a route to filter
-- **Customer directory** — master list with branches and outward activity, expandable branch drawer
+- **Customer directory** — master list (code, city, **primary zone**, contact, GST) with branches and outward activity, expandable branch drawer
 
 ### Reliability & data quality
 - **Auto-refresh** — optional 5-minute poll of the Google Sheet (persisted in `localStorage`)
@@ -87,10 +87,11 @@ Dispatch records are normalised to a canonical shape:
 | Field | Source column | Notes |
 |---|---|---|
 | `orderDate` | Order Date | `dd/mm/yyyy` etc. |
+| `invoiceNo` | Invoice No. | invoice reference, searchable via the matrix search box |
 | `customer` | Customer Name | trimmed / line-break cleaned |
 | `branch` | Branch | place-name typo-corrected |
 | `location` | Location | place-name typo-corrected |
-| `route` | ROUTE | delivery route (R1–R7, filterable) — auto-assigned by matching Branch against the `routes-planning.xlsx` R1–R7 plan |
+| `route` | ROUTE | delivery route (R1–R7, filterable) — auto-assigned by matching Branch against the `routes-planning.xlsx` R1–R7 plan; falls back to the customer master's Primary Zone (North-East→R1, North-West→R2, South-East→R3, South-West→R4, Outside Hyderabad→R5, Madhapur→R6, Outside Telangana→R7) when the branch isn't in the plan |
 | `priority` | Priority | normalised to P1–P4 / — |
 | `dispatchDate` | Dispatch date | |
 | `ack` | Ack | normalised to Done / In Transit / Pending |

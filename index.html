@@ -255,6 +255,10 @@
         <span class="filter-label">Status</span>
         <div id="statusFilter" class="pill-row"></div>
       </div>
+      <div class="filter-group">
+        <span class="filter-label">Delivery person</span>
+        <div id="deliveryPersonFilter" class="pill-row"></div>
+      </div>
       <button type="button" id="resetFilters" class="btn btn-tertiary btn-sm">
         <i data-lucide="rotate-ccw"></i>
         <span>Reset</span>
@@ -265,12 +269,12 @@
       <header class="table-head">
         <div>
           <h2 class="card-title">Customer · Branch · Location Matrix</h2>
-          <p class="card-sub">Sort by clicking a column header, or search across customers, branches and locations</p>
+          <p class="card-sub">Sort by clicking a column header, or search across invoice numbers, customers, branches and locations</p>
         </div>
         <div class="table-actions">
           <div class="search-box">
             <i data-lucide="search"></i>
-            <input type="search" id="searchInput" placeholder="Search customer, branch or location…" autocomplete="off" spellcheck="false">
+            <input type="search" id="searchInput" placeholder="Search invoice no., customer, branch or location…" autocomplete="off" spellcheck="false">
           </div>
           <button type="button" id="showUploadBtn" class="btn btn-secondary btn-sm" hidden>
             <i data-lucide="upload-cloud"></i>
@@ -285,6 +289,9 @@
             <tr>
               <th data-key="orderDate" class="sortable">
                 <span class="th-label">Order Date</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="invoiceNo" class="sortable">
+                <span class="th-label">Invoice No.</span><span class="sort-ind"></span>
               </th>
               <th data-key="customer" class="sortable">
                 <span class="th-label">Customer Name</span><span class="sort-ind"></span>
@@ -309,6 +316,9 @@
               </th>
               <th data-key="status" class="sortable">
                 <span class="th-label">Status</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="deliveryPerson" class="sortable">
+                <span class="th-label">Delivery Person</span><span class="sort-ind"></span>
               </th>
             </tr>
           </thead>
@@ -330,6 +340,9 @@
               <th data-key="orderDate" class="sortable">
                 <span class="th-label">Order Date</span><span class="sort-ind"></span>
               </th>
+              <th data-key="invoiceNo" class="sortable">
+                <span class="th-label">Invoice No.</span><span class="sort-ind"></span>
+              </th>
               <th data-key="customer" class="sortable">
                 <span class="th-label">Customer Name</span><span class="sort-ind"></span>
               </th>
@@ -353,6 +366,9 @@
               </th>
               <th data-key="status" class="sortable">
                 <span class="th-label">Status</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="deliveryPerson" class="sortable">
+                <span class="th-label">Delivery Person</span><span class="sort-ind"></span>
               </th>
             </tr>
           </thead>
@@ -571,7 +587,7 @@
         <div class="table-actions">
           <div class="search-box">
             <i data-lucide="search"></i>
-            <input type="search" id="customerSearch" placeholder="Search code, name, city or state…" autocomplete="off" spellcheck="false">
+            <input type="search" id="customerSearch" placeholder="Search code, name, city, zone or state…" autocomplete="off" spellcheck="false">
           </div>
           <div id="abcFilter" class="pill-row" aria-label="Filter by ABC class">
             <button type="button" class="pill is-active" data-abc="ALL">All</button>
@@ -592,6 +608,7 @@
               <th class="th-mono">Code</th>
               <th>Customer Name</th>
               <th>City</th>
+              <th>Primary Zone</th>
               <th>Contact</th>
               <th class="th-mono">GST No</th>
               <th>Branches</th>
