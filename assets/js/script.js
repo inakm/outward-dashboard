@@ -23,7 +23,7 @@
      Bundled as route-plan.js (window.ROUTE_PLAN) for file:// mode.
      Records carry Circle Lat/Lng so the interactive map needs no separate
      GHMC layer. */
-  var ROUTE_PLAN_URL = 'ghmc-routing/output/route_plan.json';
+  var ROUTE_PLAN_URL = 'assets/json/route_plan.json';
 
   var DB_NAME = 'outward-dashboard';
   var DB_VERSION = 2;
@@ -2873,39 +2873,71 @@
     refreshIcons();
   }
 
+  function isComplete(r) {
+    return r.ack === 'Done' && r.status === 'Dispatched';
+  }
+
   function renderTable() {
     var tbody = $('tableBody');
-    if (!tbody) return;
+    var cbody = $('completeBody');
+    if (!tbody || !cbody) return;
     var rows = sortRows(filteredRows(), state.sortKey, state.sortDir);
-    setText('rowCount', formatNum(rows.length) + ' of ' + formatNum(state.records.length) + ' records');
-    if (!rows.length) {
+    var complete = [];
+    var open = [];
+    for (var i = 0; i < rows.length; i++) {
+      (isComplete(rows[i]) ? complete : open).push(rows[i]);
+    }
+    setText('rowCount', formatNum(open.length) + ' of ' + formatNum(state.records.length) + ' records');
+    setText('completeCount', formatNum(complete.length) + ' records');
+    if (!open.length) {
       var msg = state.records.length
         ? 'No records match the current filters'
         : 'No data yet — drag & drop a file above, or sync the Google Sheet';
       tbody.innerHTML = '<tr class="row-empty"><td colspan="9">' + msg + '</td></tr>';
-      return;
+    } else {
+      var html = '';
+      for (i = 0; i < open.length; i++) {
+        var r = open[i];
+        var s = slaTier(r, null);
+        var slaCls = s.level === 'breached' ? ' row-sla-breached' : (s.level === 'at-risk' ? ' row-sla-at-risk' : '');
+        html +=
+          '<tr class="' + slaCls + '">' +
+          '<td class="td-date">' + formatDate(r.orderDate) + '</td>' +
+          '<td class="td-strong">' + escapeHtml(r.customer || '—') + '</td>' +
+          '<td>' + escapeHtml(r.branch || '—') + '</td>' +
+          '<td>' + escapeHtml(r.location || '—') + '</td>' +
+          '<td>' + (s.level !== 'none' && s.level !== 'on-track'
+            ? '<span class="sla-chip sla-' + s.level + '">' + s.level + '</span> ' + escapeHtml(r.route || '—')
+            : escapeHtml(r.route || '—')) + '</td>' +
+          '<td>' + priorityBadge(r.priority) + '</td>' +
+          '<td class="td-date">' + formatDate(r.dispatchDate) + '</td>' +
+          '<td>' + ackBadge(r.ack) + '</td>' +
+          '<td>' + escapeHtml(r.status || '—') + '</td>' +
+          '</tr>';
+      }
+      tbody.innerHTML = html;
     }
-    var html = '';
-    for (var i = 0; i < rows.length; i++) {
-      var r = rows[i];
-      var s = slaTier(r, null);
-      var slaCls = s.level === 'breached' ? ' row-sla-breached' : (s.level === 'at-risk' ? ' row-sla-at-risk' : '');
-      html +=
-        '<tr class="' + slaCls + '">' +
-        '<td class="td-date">' + formatDate(r.orderDate) + '</td>' +
-        '<td class="td-strong">' + escapeHtml(r.customer || '—') + '</td>' +
-        '<td>' + escapeHtml(r.branch || '—') + '</td>' +
-        '<td>' + escapeHtml(r.location || '—') + '</td>' +
-        '<td>' + (s.level !== 'none' && s.level !== 'on-track'
-          ? '<span class="sla-chip sla-' + s.level + '">' + s.level + '</span> ' + escapeHtml(r.route || '—')
-          : escapeHtml(r.route || '—')) + '</td>' +
-        '<td>' + priorityBadge(r.priority) + '</td>' +
-        '<td class="td-date">' + formatDate(r.dispatchDate) + '</td>' +
-        '<td>' + ackBadge(r.ack) + '</td>' +
-        '<td>' + escapeHtml(r.status || '—') + '</td>' +
-        '</tr>';
+    if (!complete.length) {
+      cbody.innerHTML = '<tr class="row-empty"><td colspan="9">No complete records (Status = Dispatched and Ack = Done) in the current scope.</td></tr>';
+    } else {
+      var chtml = '';
+      for (i = 0; i < complete.length; i++) {
+        var c = complete[i];
+        chtml +=
+          '<tr class="row-complete">' +
+          '<td class="td-date">' + formatDate(c.orderDate) + '</td>' +
+          '<td class="td-strong">' + escapeHtml(c.customer || '—') + '</td>' +
+          '<td>' + escapeHtml(c.branch || '—') + '</td>' +
+          '<td>' + escapeHtml(c.location || '—') + '</td>' +
+          '<td>' + escapeHtml(c.route || '—') + '</td>' +
+          '<td>' + priorityBadge(c.priority) + '</td>' +
+          '<td class="td-date">' + formatDate(c.dispatchDate) + '</td>' +
+          '<td>' + ackBadge(c.ack) + '</td>' +
+          '<td>' + escapeHtml(c.status || '—') + '</td>' +
+          '</tr>';
+      }
+      cbody.innerHTML = chtml;
     }
-    tbody.innerHTML = html;
   }
 
   /* -------------------------------------------------------------
@@ -3913,7 +3945,7 @@
       data = window.GHMC_FLEET;
     } else {
       try {
-        var res = await fetch('vehicles.json');
+        var res = await fetch('assets/json/vehicles.json');
         if (!res.ok) throw new Error('HTTP ' + res.status);
         data = await res.json();
       } catch (e) {
@@ -3982,5 +4014,140 @@
     boardScopeRows: boardScopeRows
   };
 
+  /* -------------------------------------------------------------
+     Access gate (code: 1947)
+     ------------------------------------------------------------- */
+  var ACCESS_CODE = '1947';
+  var ACCESS_KEY = 'outward-access-unlocked';
+  var gateEntry = '';
+  var gateOpen = false;
+
+  function renderGateCode() {
+    var el = $('gateCode');
+    if (!el) return;
+    var dots = '';
+    for (var i = 0; i < 4; i++) {
+      dots += '<span class="gate-dot' + (i < gateEntry.length ? ' is-filled' : '') + '"></span>';
+    }
+    el.innerHTML = dots;
+  }
+
+  function gateShowError(show) {
+    var err = $('gateError');
+    if (err) err.hidden = !show;
+  }
+
+  function gateTryUnlock() {
+    if (gateEntry === ACCESS_CODE) {
+      try { localStorage.setItem(ACCESS_KEY, '1'); } catch (e) {}
+      var gate = $('accessGate');
+      if (gate) gate.hidden = true;
+      document.body.classList.remove('gate-locked');
+      gateOpen = false;
+      gateEntry = '';
+      gateShowError(false);
+      renderGateCode();
+    } else {
+      gateEntry = '';
+      renderGateCode();
+      gateShowError(true);
+    }
+  }
+
+  function initAccessGate() {
+    gateOpen = false;
+    try { gateOpen = localStorage.getItem(ACCESS_KEY) === '1'; } catch (e) {}
+    var gate = $('accessGate');
+    if (!gate) return;
+    if (gateOpen) {
+      gate.hidden = true;
+      return;
+    }
+    buildGateKeypad();
+    renderGateCode();
+    gate.hidden = false;
+    document.body.classList.add('gate-locked');
+
+    var keypad = $('gateKeypad');
+    if (keypad) {
+      keypad.addEventListener('click', function (ev) {
+        var btn = ev.target.closest && ev.target.closest('button[data-key]');
+        if (!btn) return;
+        var k = btn.getAttribute('data-key');
+        gateShowError(false);
+        if (k === 'back') {
+          gateEntry = gateEntry.slice(0, -1);
+        } else if (gateEntry.length < 4) {
+          gateEntry += k;
+          if (gateEntry.length === 4) gateTryUnlock();
+        }
+        renderGateCode();
+      });
+    }
+
+    var unlock = $('gateUnlock');
+    if (unlock) unlock.addEventListener('click', gateTryUnlock);
+
+    var input = $('gateInput');
+    if (input) {
+      input.addEventListener('keydown', function (ev) {
+        if (ev.key >= '0' && ev.key <= '9') {
+          ev.preventDefault();
+          gateShowError(false);
+          if (gateEntry.length < 4) {
+            gateEntry += ev.key;
+            if (gateEntry.length === 4) gateTryUnlock();
+          }
+          renderGateCode();
+        } else if (ev.key === 'Backspace') {
+          ev.preventDefault();
+          gateEntry = gateEntry.slice(0, -1);
+          renderGateCode();
+        } else if (ev.key === 'Enter') {
+          ev.preventDefault();
+          gateTryUnlock();
+        }
+      });
+      input.focus();
+    }
+
+    document.addEventListener('keydown', function gateKeys(ev) {
+      var g = $('accessGate');
+      if (!g || g.hidden) return;
+      if (ev.target && ev.target.tagName === 'INPUT') return;
+      if (ev.key >= '0' && ev.key <= '9') {
+        gateShowError(false);
+        if (gateEntry.length < 4) {
+          gateEntry += ev.key;
+          if (gateEntry.length === 4) gateTryUnlock();
+        }
+        renderGateCode();
+      } else if (ev.key === 'Backspace') {
+        gateEntry = gateEntry.slice(0, -1);
+        renderGateCode();
+      }
+    });
+  }
+
+  function buildGateKeypad() {
+    var host = $('gateKeypad');
+    if (!host) return;
+    var keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'back'];
+    var html = '';
+    for (var i = 0; i < keys.length; i++) {
+      var k = keys[i];
+      if (k === '') {
+        html += '<span class="gate-key gate-key-empty"></span>';
+      } else if (k === 'back') {
+        html += '<button type="button" class="gate-key" data-key="back" aria-label="Delete last digit"><i data-lucide="delete"></i></button>';
+      } else {
+        html += '<button type="button" class="gate-key" data-key="' + k + '">' + k + '</button>';
+      }
+    }
+    host.innerHTML = html;
+    refreshIcons();
+  }
+
+  initAccessGate();
   init();
 })();

@@ -19,17 +19,17 @@
   <link rel="canonical" href="https://inakm.github.io/outward-dashboard/">
 
   <!-- Icons -->
-  <link rel="icon" type="image/png" href="logo.png">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="assets/images/logo.png">
+  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+  <link rel="manifest" href="assets/json/manifest.webmanifest">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="SkyLimit Outwards Dashboard">
   <meta property="og:title" content="SkyLimit Outwards Dashboard — Dispatch Intelligence">
   <meta property="og:description" content="Track outward volume, open bottlenecks, dispatch velocity and fulfilment across every customer, branch and location — in near-real time.">
-  <meta property="og:image" content="https://inakm.github.io/outward-dashboard/og-image.png">
-  <meta property="og:image:secure_url" content="https://inakm.github.io/outward-dashboard/og-image.png">
+  <meta property="og:image" content="https://inakm.github.io/outward-dashboard/assets/images/og-image.png">
+  <meta property="og:image:secure_url" content="https://inakm.github.io/outward-dashboard/assets/images/og-image.png">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -43,7 +43,7 @@
   <meta name="twitter:url" content="https://inakm.github.io/outward-dashboard/">
   <meta name="twitter:title" content="SkyLimit Outwards Dashboard — Dispatch Intelligence">
   <meta name="twitter:description" content="Enterprise outward logistics intelligence — volume, bottlenecks, dispatch velocity and fulfilment, visualised live from Google Sheets.">
-  <meta name="twitter:image" content="https://inakm.github.io/outward-dashboard/og-image.png">
+  <meta name="twitter:image" content="https://inakm.github.io/outward-dashboard/assets/images/og-image.png">
   <meta name="twitter:image:alt" content="SkyLimit Outwards Dashboard overview">
 
   <!-- Mobile web app -->
@@ -60,7 +60,7 @@
     "name": "SkyLimit Outwards Dashboard",
     "alternateName": "SkyLimit Outwards",
     "url": "https://inakm.github.io/outward-dashboard/",
-    "image": "https://inakm.github.io/outward-dashboard/og-image.png",
+    "image": "https://inakm.github.io/outward-dashboard/assets/images/og-image.png",
     "description": "Enterprise outward logistics dashboard tracking order volume, open bottlenecks (P1 not yet acknowledged), dispatch velocity and fulfilment rate across customers, branches and locations.",
     "applicationCategory": "BusinessApplication",
     "applicationSubCategory": "Logistics Analytics",
@@ -82,7 +82,7 @@
       "Fleet dispatch planning and route load plans"
     ],
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock" },
-    "publisher": { "@type": "Organization", "name": "SkyLimit", "logo": { "@type": "ImageObject", "url": "https://inakm.github.io/outward-dashboard/logo.png" } },
+    "publisher": { "@type": "Organization", "name": "SkyLimit", "logo": { "@type": "ImageObject", "url": "https://inakm.github.io/outward-dashboard/assets/images/logo.png" } },
     "provider": { "@type": "Organization", "name": "SkyLimit" }
   }
   </script>
@@ -94,15 +94,15 @@
   <link rel="preconnect" href="https://unpkg.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-  <link rel="preload" href="style.css" as="style">
-  <link rel="stylesheet" href="style.css">
+  <link rel="preload" href="assets/css/style.css" as="style">
+  <link rel="stylesheet" href="assets/css/style.css">
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
   <script src="https://unpkg.com/lucide@0.294.0/dist/umd/lucide.js" defer></script>
-  <script src="route-plan.js" defer></script>
-  <script src="fleet.js" defer></script>
-  <script src="script.js" defer></script>
+  <script src="assets/js/route-plan.js" defer></script>
+  <script src="assets/js/fleet.js" defer></script>
+  <script src="assets/js/script.js" defer></script>
 </head>
 <body>
 
@@ -121,10 +121,25 @@
     </div>
   </noscript>
 
+  <div id="accessGate" class="access-gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle" hidden>
+    <div class="gate-card">
+      <div class="gate-logo">
+        <img src="assets/images/logo.png" alt="" width="114" height="52">
+      </div>
+      <h2 class="gate-title" id="gateTitle">SkyLimit Outwards</h2>
+      <p class="gate-sub">Enter the access code to open the dashboard</p>
+      <div class="gate-code" id="gateCode" aria-label="Entered code"></div>
+      <input type="text" id="gateInput" inputmode="numeric" autocomplete="off" aria-hidden="true" tabindex="-1">
+      <div class="gate-keypad" id="gateKeypad" aria-label="Access code keypad"></div>
+      <p class="gate-error" id="gateError" role="alert" hidden>Incorrect code — try again</p>
+      <button type="button" id="gateUnlock" class="btn btn-primary">Unlock</button>
+    </div>
+  </div>
+
   <header class="topnav">
     <div class="topnav-inner">
       <a class="brand" href="index.html" aria-label="SkyLimit Outwards Dashboard home">
-        <span class="brand-mark"><img src="logo.png" alt="SkyLimit" class="brand-logo" width="57" height="26"></span>
+        <span class="brand-mark"><img src="assets/images/logo.png" alt="SkyLimit" class="brand-logo" width="57" height="26"></span>
         <span class="brand-name">Outwards</span>
       </a>
       <div class="topnav-right">
@@ -300,6 +315,50 @@
           <tbody id="tableBody"></tbody>
         </table>
       </div>
+
+      <header class="table-head complete-head">
+        <div>
+          <h2 class="card-title">ALL Complete</h2>
+          <p class="card-sub">Status = Dispatched and Ack = Done — moved below the main matrix</p>
+        </div>
+        <span class="status-badge complete-badge" id="completeCount">0 records</span>
+      </header>
+      <div class="table-wrap">
+        <table id="completeTable">
+          <thead>
+            <tr>
+              <th data-key="orderDate" class="sortable">
+                <span class="th-label">Order Date</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="customer" class="sortable">
+                <span class="th-label">Customer Name</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="branch" class="sortable">
+                <span class="th-label">Branch</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="location" class="sortable">
+                <span class="th-label">Location</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="route" class="sortable">
+                <span class="th-label">Route</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="priority" class="sortable">
+                <span class="th-label">Priority</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="dispatchDate" class="sortable">
+                <span class="th-label">Dispatch Date</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="ack" class="sortable">
+                <span class="th-label">Ack</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="status" class="sortable">
+                <span class="th-label">Status</span><span class="sort-ind"></span>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="completeBody"></tbody>
+        </table>
+      </div>
     </section>
 
     <section class="top-overview">
@@ -337,20 +396,6 @@
           </div>
         </article>
       </section>
-
-      <aside class="panel alert-center" id="alertCenter" aria-label="Priority and aging alerts">
-        <header class="alert-head">
-          <div>
-            <h2 class="card-title">Alerts</h2>
-            <p class="card-sub">Priority pressure · bottleneck aging</p>
-          </div>
-          <span class="status-badge" id="alertMeta">—</span>
-        </header>
-        <p class="alert-section-label">Priority</p>
-        <div id="priorityAlerts" class="alert-list"></div>
-        <p class="alert-section-label">Aging</p>
-        <div id="agingAlerts" class="alert-list"></div>
-      </aside>
     </section>
 
     <section class="panel route-kpis">
@@ -363,6 +408,20 @@
       </header>
       <div id="routeKpiGrid" class="route-kpi-grid"></div>
     </section>
+
+    <aside class="panel alert-center" id="alertCenter" aria-label="Priority and aging alerts">
+      <header class="alert-head">
+        <div>
+          <h2 class="card-title">Alerts</h2>
+          <p class="card-sub">Priority pressure · bottleneck aging</p>
+        </div>
+        <span class="status-badge" id="alertMeta">—</span>
+      </header>
+      <p class="alert-section-label">Priority</p>
+      <div id="priorityAlerts" class="alert-list"></div>
+      <p class="alert-section-label">Aging</p>
+      <div id="agingAlerts" class="alert-list"></div>
+    </aside>
 
     <section class="panel zones-panel">
       <header class="table-head">

@@ -8,9 +8,9 @@ locale: en_IN
 
 # Publish these asset types explicitly so the app can fetch them at runtime.
 include:
-  - "*.xlsx"
-  - "*.json"
-  - "*.webmanifest"
+  - "assets/xcl/*.xlsx"
+  - "assets/json/*.json"
+  - "assets/json/*.webmanifest"
 
 # Never publish internal working files.
 exclude:

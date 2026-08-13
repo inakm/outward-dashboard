@@ -1,0 +1,44 @@
+# SkyLimit Outwards Dashboard
+
+> Enterprise **outward logistics / dispatch intelligence** — a zero-backend web app that tracks outward order volume, open bottlenecks, dispatch velocity and fulfilment across customers, branches and locations, visualised live from Google Sheets.
+
+## About
+
+SkyLimit Outwards is a fully static, client-side dashboard (no build step, no server, no database) built with vanilla HTML/CSS/JS, Chart.js, SheetJS and Lucide. Dispatch data is either dragged-and-dropped as Excel/CSV or pulled live from a public Google Sheet (CSV export with a gviz fallback); results are cached in IndexedDB. Orders are auto-routed into the R1–R7 plan by matching their Branch against the `routes-planning.xlsx` routing authority. The app is gated by an access code (1947) stored in `localStorage` after first unlock.
+
+- Live site: https://inakm.github.io/outward-dashboard/
+- Repo: https://github.com/inakm/outward-dashboard
+- Full context for LLMs: [llms-full.txt](llms-full.txt)
+
+## Core capabilities
+
+- **Data ingestion** — drag & drop `.xlsx` / `.xls` / `.csv` (parsed in-browser, never uploaded), live Google Sheet sync, header aliasing, place-name typo correction, priority/ack normalisation.
+- **Analytics** — KPI grid (total volume, open bottlenecks, dispatch velocity, fulfilment rate), volume-over-time line chart (day/week/month), top-N bar chart (Customer / Location / Branch), Done · In Transit · Pending doughnut.
+- **Operations** — filters for priority (P1–P4), ack state, route (R1–R7), status, order-date range and free text; sortable customer · branch · location matrix table; an "ALL Complete" table (Status = Dispatched and Ack = Done) below the matrix; backlog aging; per-route KPIs; customer directory with branch drawer; fleet dispatch planning and route load plans; SLA escalation queue.
+- **Reliability** — optional 5-minute auto-refresh, last-updated stamp, data-quality report, IndexedDB persistence.
+
+## Docs
+
+- [README](README.md): Setup, features, data model, deployment, SEO notes
+- [DESIGN](DESIGN.md): Original Linear-inspired design-system reference (tokens, colors, typography, components)
+- [404](404.html): Branded not-found page
+- [robots.txt](robots.txt): Crawl rules
+- [sitemap.xml](sitemap.xml): XML sitemap
+
+## Code
+
+- [index.html](index.html): Document shell — markup, SEO/OG meta, JSON-LD structured data
+- [assets/css/style.css](assets/css/style.css): Linear-inspired light design system (CSS variables)
+- [assets/js/script.js](assets/js/script.js): Ingestion, cleaning, persistence, analytics, charts, events (single-file app logic)
+- [assets/js/route-plan.js](assets/js/route-plan.js): R1–R7 route plan bundle (window.ROUTE_PLAN, includes map coordinates)
+- [assets/js/fleet.js](assets/js/fleet.js): Fleet config bundle (window.GHMC_FLEET)
+- [assets/json/manifest.webmanifest](assets/json/manifest.webmanifest): PWA / add-to-home-screen metadata
+- [assets/json/](assets/json/): JSON data — vehicles.json fleet config, route_plan.json, localities.json
+- [assets/images/](assets/images/): Brand mark, iOS/Android icons, Open Graph share card
+- [assets/xcl/](assets/xcl/): Excel workbooks — routing authority, customer and zone mappings
+- [ghmc-routing/build_route_plan.py](ghmc-routing/build_route_plan.py): Generates the R1–R7 route plan JSON + JS bundle from the routing workbook
+- [ghmc-routing/generate_fleet.py](ghmc-routing/generate_fleet.py): Bundles vehicles.json into fleet.js
+
+## Optional
+
+- Full documentation concatenation for LLM context: [llms-full.txt](llms-full.txt)

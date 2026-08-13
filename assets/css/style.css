@@ -302,6 +302,135 @@ textarea {
   padding: 0 var(--s-lg);
 }
 
+/* ---------- Access gate ---------- */
+.access-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: radial-gradient(1200px 600px at 50% -10%, rgba(94, 106, 210, 0.08), transparent 60%), var(--canvas);
+}
+
+body.gate-locked {
+  overflow: hidden;
+}
+
+.gate-card {
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+  background: var(--surface-1);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-xl);
+  padding: var(--s-xl);
+  box-shadow: 0 12px 40px rgba(20, 24, 32, 0.08);
+}
+
+.gate-logo {
+  margin-bottom: var(--s-md);
+}
+
+.gate-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.4px;
+  color: var(--ink);
+  margin-bottom: var(--s-xxs);
+}
+
+.gate-sub {
+  font-size: 13px;
+  color: var(--ink-subtle);
+  margin-bottom: var(--s-lg);
+}
+
+.gate-code {
+  display: flex;
+  justify-content: center;
+  gap: var(--s-sm);
+  margin-bottom: var(--s-lg);
+  min-height: 16px;
+}
+
+.gate-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--hairline-strong);
+  background: transparent;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.gate-dot.is-filled {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.gate-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-sm);
+  margin-bottom: var(--s-md);
+}
+
+.gate-key {
+  height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 500;
+  font-family: var(--font-text);
+  color: var(--ink);
+  background: var(--surface-1);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  transition: background 100ms ease, border-color 100ms ease;
+}
+
+.gate-key:hover {
+  background: var(--surface-2);
+  border-color: var(--hairline-strong);
+}
+
+.gate-key:active {
+  background: var(--surface-3);
+}
+
+.gate-key svg {
+  width: 18px;
+  height: 18px;
+  color: var(--ink-subtle);
+}
+
+.gate-key-empty {
+  pointer-events: none;
+}
+
+.gate-error {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--p1);
+  margin: 0 0 var(--s-md);
+}
+
+.access-gate #gateInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gate-card .btn {
+  width: 100%;
+  justify-content: center;
+}
+
 /* ---------- Hero ---------- */
 .hero {
   padding: var(--s-xxl) 0 var(--s-xl);
@@ -586,10 +715,10 @@ textarea {
   color: var(--ink-tertiary);
 }
 
-/* ---------- Top overview (KPIs + alerts) ---------- */
+/* ---------- Top overview (KPIs) ---------- */
 .top-overview {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--s-md);
   margin-top: var(--s-md);
   align-items: stretch;
@@ -1160,7 +1289,12 @@ thead th {
   color: var(--ink-subtle);
   padding: 10px var(--s-md);
   border-bottom: 1px solid var(--hairline);
+  border-right: 1px solid var(--hairline);
   white-space: nowrap;
+}
+
+thead th:last-child {
+  border-right: none;
 }
 
 th.sortable {
@@ -1199,8 +1333,13 @@ th.sortable.sorted .sort-ind {
 tbody td {
   padding: 10px var(--s-md);
   border-bottom: 1px solid var(--hairline);
+  border-right: 1px solid var(--hairline);
   color: var(--ink-muted);
   vertical-align: middle;
+}
+
+tbody td:last-child {
+  border-right: none;
 }
 
 tbody tr {
@@ -1794,10 +1933,6 @@ tr.cust-row.is-clickable:focus-visible {
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1024px) {
-  .top-overview {
-    grid-template-columns: 1fr;
-  }
-
   .kpis {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1919,6 +2054,27 @@ tr.cust-row.is-clickable:focus-visible {
 
 tr.row-sla-breached { background: rgba(229, 72, 77, 0.05); }
 tr.row-sla-at-risk { background: rgba(245, 166, 35, 0.04); }
+
+/* ---------- ALL Complete table ---------- */
+.complete-head {
+  border-top: 1px solid var(--hairline);
+  margin-top: 0;
+  padding-top: var(--s-lg);
+}
+
+.complete-badge {
+  color: #1f7a37;
+  background: rgba(39, 166, 68, 0.1);
+  border-color: rgba(39, 166, 68, 0.3);
+}
+
+tr.row-complete {
+  background: rgba(39, 166, 68, 0.07);
+}
+
+tr.row-complete:hover {
+  background: rgba(39, 166, 68, 0.12);
+}
 
 /* ---------- Route Ops: map ---------- */
 .map-body {

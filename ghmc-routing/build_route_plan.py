@@ -21,11 +21,11 @@ from pathlib import Path
 import openpyxl
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-XLSX_PATH = REPO_ROOT / "routes-planning.xlsx"
-OUT_DIR = Path(__file__).resolve().parent / "output"
-JSON_PATH = OUT_DIR / "route_plan.json"
-JS_PATH = REPO_ROOT / "route-plan.js"
-LOCALITIES_PATH = Path(__file__).resolve().parent / "localities.json"
+XLSX_PATH = REPO_ROOT / "assets" / "xcl" / "routes-planning.xlsx"
+JSON_DIR = REPO_ROOT / "assets" / "json"
+JSON_PATH = JSON_DIR / "route_plan.json"
+JS_PATH = REPO_ROOT / "assets" / "js" / "route-plan.js"
+LOCALITIES_PATH = JSON_DIR / "localities.json"
 
 # (route_code, column_index, kind) — column index is the 0-based cell index
 # into the Routes sheet row tuple: A=0, B=1, C=2, D=3, E=4, F=5, G=6
@@ -358,7 +358,7 @@ def main():
         "records": records,
     }
 
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    JSON_DIR.mkdir(parents=True, exist_ok=True)
     JSON_PATH.write_text(
         json.dumps(payload, ensure_ascii=False, indent=1), encoding="utf-8"
     )

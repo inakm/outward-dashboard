@@ -65,18 +65,14 @@ Your data is restored automatically from the local cache on reload. Everything r
 
 ```
 index.html              — markup, SEO/OG meta, JSON-LD structured data
-style.css               — Linear-inspired light design system (CSS variables)
-script.js               — ingestion, cleaning, persistence, analytics, charts, events
-route-plan.js           — R1–R7 route plan (window.ROUTE_PLAN, includes map coordinates)
-fleet.js                — fleet config (window.GHMC_FLEET)
-vehicles.json           — fallback fleet config
-routes-planning.xlsx    — routing authority workbook (local; gitignored)
-manifest.webmanifest    — PWA / add-to-home-screen metadata
-logo.png                — brand mark (header)
-apple-touch-icon.png    — iOS home-screen icon (180×180)
-icon-192.png            — manifest icon 192×192
-icon-512.png            — manifest icon 512×512
-og-image.png            — Open Graph / Twitter share card (1200×630)
+assets/css/style.css    — Linear-inspired light design system (CSS variables)
+assets/js/script.js     — ingestion, cleaning, persistence, analytics, charts, events
+assets/js/route-plan.js — R1–R7 route plan (window.ROUTE_PLAN, includes map coordinates)
+assets/js/fleet.js      — fleet config (window.GHMC_FLEET)
+assets/xcl/             — Excel workbooks (routing authority, customer mappings)
+assets/json/            — JSON + manifest (vehicles.json fleet config, route_plan.json, localities.json, manifest.webmanifest)
+assets/images/          — brand mark, iOS/Android icons, share card
+llms.txt / llms-full.txt — LLM-friendly site description and full docs
 robots.txt              — crawl rules (hides raw data files)
 sitemap.xml             — XML sitemap (hosted SPA root)
 404.html                — branded not-found page (noindex)
@@ -114,7 +110,7 @@ The dashboard is a JS-rendered single-page app, so the SEO weight lives in the d
 
 - **Meta & OG/Twitter** — title, description, Open Graph and Twitter Card tags with a 1200×630 share image (`og-image.png`).
 - **JSON-LD** — `WebApplication` structured data (features, versioning, free offer, publisher) in `index.html`.
-- **Manifest** — `manifest.webmanifest` for installability / home-screen metadata with square icons (`icon-192.png`, `icon-512.png`).
+- **Manifest** — `assets/json/manifest.webmanifest` for installability / home-screen metadata with square icons (`icon-192.png`, `icon-512.png`).
 - **Crawl control** — `robots.txt` blocks indexing of raw workbooks (`*.xlsx`) and the customer master; `sitemap.xml` lists the single hosted URL with its image.
 - **Fallbacks** — branded `404.html` (noindex) and a `<noscript>` block with crawlable feature content.
 - **Performance** — preconnect to fonts/CDNs and `preload` of `style.css`.
