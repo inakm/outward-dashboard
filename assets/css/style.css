@@ -67,7 +67,7 @@
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
   --nav-h: 56px;
-  --maxw: 1280px;
+  --maxw: 1600px;
 }
 
 /* ---------- Reset ---------- */
@@ -1336,6 +1336,7 @@ tbody td {
   border-right: 1px solid var(--hairline);
   color: var(--ink-muted);
   vertical-align: middle;
+  overflow-wrap: break-word;
 }
 
 tbody td:last-child {
