@@ -9,7 +9,7 @@ Enterprise **outward logistics / dispatch intelligence** — a zero-backend web 
 ### Data ingestion
 - **Drag & drop** Excel/CSV files (`.xlsx`, `.xls`, `.csv`) — parsed entirely in the browser with SheetJS, never uploaded
 - **Live Google Sheet sync** — pulls the public dispatch sheet via CSV export with a gviz fallback, and loads the customer master from the same workbook's **Location pull** sheet (Primary Zone → R1–R7 routing)
-- **Auto-routing from `routes-planning.xlsx`** — the R1–R7 plan (R1–R4 GHMC circles, R5 Hyderabad fringe, R6 Madhapur belt, R7 non-Hyderabad cities) is the routing authority; orders are auto-routed by matching their **Branch** column, supplemented by the GHMC ward/locality map for fine-grained Hyderabad areas. Orders whose branch isn't in the plan fall back to the customer master's **Primary Zone**.
+- **Auto-routing from `routes-planning.xlsx`** — the R1–R7 plan (R1–R4 GHMC circles, R5 Outside Hyderabad, R6 Madhapur, R7 Outside Telangana) is the routing authority; orders are auto-routed by matching their **Branch** column, supplemented by the GHMC ward/locality map for fine-grained Hyderabad areas. A small **branch override** (`Madhapur→R6`, Andhra cities `Srikakulam/Kakinada/Lalapet Guntur→R7`, Telangana-outside-city `Choutuppal/Tukkuguda/Ramoji Film City→R5`) runs first so the old GHMC scheme (Madhapur→R4) is superseded. Orders whose branch isn't in the plan fall back to the customer master's **Primary Zone** (tolerant match: exact → case-insensitive → whole-phrase → first-token).
 - **Data-cleaning layer** — header aliasing, place-name typo correction (Hyderabad area), priority/ack normalisation
 - **IndexedDB persistence** — reload-safe local cache of records, customer master and branch list
 

@@ -1841,6 +1841,8 @@ tr.cust-row.is-clickable:focus-visible {
 .rg-3 { --rg: #e5484d; --rg-soft: rgba(229, 72, 77, 0.10); }
 .rg-4 { --rg: #b87800; --rg-soft: rgba(245, 166, 35, 0.14); }
 .rg-5 { --rg: #6b7280; --rg-soft: rgba(138, 143, 152, 0.14); }
+.rg-6 { --rg: #9333ea; --rg-soft: rgba(147, 51, 234, 0.12); }
+.rg-7 { --rg: #0d9488; --rg-soft: rgba(13, 148, 136, 0.12); }
 
 .rg-head {
   display: flex;

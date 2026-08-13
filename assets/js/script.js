@@ -191,7 +191,8 @@
     'madhapur': 'Madhapur',
     'madapur': 'Madhapur',
     'uppal': 'Uppal',
-    'abids': 'Abids'
+    'abids': 'Abids',
+    'gunter': 'Guntur'
   };
 
   var PRIORITY_MAP = {
@@ -422,9 +423,34 @@
     idx = idx || routeMap;
     for (var i = 0; i < records.length; i++) {
       if (records[i].route === '—' || records[i].route === '-') records[i].route = '';
-      if (!records[i].route && idx) records[i].route = routeFromBranch(records[i].branch, idx) || '';
+      if (!records[i].route) {
+        records[i].route = branchRouteOverride(records[i].branch, records[i].location);
+        if (!records[i].route && idx) records[i].route = routeFromBranch(records[i].branch, idx) || '';
+      }
     }
     return records;
+  }
+
+  /* Branch/location → R-code override, checked BEFORE the route_plan lookup.
+     Supersedes the old GHMC scheme (which put Madhapur on R4) with the
+     Bowenpally hub plan — R6 = Madhapur — and routes out-of-city branches
+     (Andhra → R7, Telangana-outside-Hyderabad → R5) that the plan lacks. */
+  var BRANCH_ROUTE_OVERRIDE = {
+    'Madhapur': 'R6',
+    'Srikakulam': 'R7',
+    'Kakinada': 'R7',
+    'Lalapet Guntur': 'R7',
+    'Choutuppal': 'R5',
+    'Tukkuguda': 'R5',
+    'Ramoji Film City': 'R5'
+  };
+
+  function branchRouteOverride(branch, location) {
+    for (var i = 0; i < 2; i++) {
+      var key = cleanPlace(i === 0 ? branch : location);
+      if (key && BRANCH_ROUTE_OVERRIDE[key]) return BRANCH_ROUTE_OVERRIDE[key];
+    }
+    return '';
   }
 
   /* Master Primary Zone → R-code fallback. Branch-based route_plan matching
@@ -439,15 +465,46 @@
     'Outside Telangana': 'R7'
   };
 
+  function customerKey(v) {
+    return String(v == null ? '' : v)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  /* Tolerant customer-name match: exact → case-insensitive → whole-phrase →
+     first-token. Master names are formal ("MTX IT Consulting Services Pvt.
+     Ltd.") while dispatch rows are short and mixed-case ("mtx-pending",
+     "etv bharat"), so exact matching alone barely fires. */
   function zoneRouteFromCustomer(customerName, customers) {
     var list = customers || state.customers;
     if (!list || !customerName) return '';
+    var name = String(customerName).trim().replace(/\s+/g, ' ');
+    var key = customerKey(name);
+    if (!key) return '';
+    var nameTokens = key.split(' ').filter(Boolean);
+    var ciMatch = null, phraseMatch = null, tokenMatch = null;
     for (var i = 0; i < list.length; i++) {
-      if (list[i].name === customerName && ZONE_ROUTE[list[i].zone]) {
-        return ZONE_ROUTE[list[i].zone];
+      if (!ZONE_ROUTE[list[i].zone]) continue;
+      if (list[i].name === name) return ZONE_ROUTE[list[i].zone];
+      var mkey = customerKey(list[i].name);
+      if (!mkey) continue;
+      if (ciMatch === null && mkey === key) { ciMatch = ZONE_ROUTE[list[i].zone]; continue; }
+      if (phraseMatch === null && mkey.length >= 4 &&
+          (key.indexOf(mkey) !== -1 || mkey.indexOf(key) !== -1)) {
+        phraseMatch = ZONE_ROUTE[list[i].zone];
+        continue;
+      }
+      if (tokenMatch === null && mkey.length >= 4) {
+        var mt0 = mkey.split(' ').filter(Boolean)[0];
+        var nt0 = nameTokens[0];
+        if (mt0 && nt0 && mt0.length >= 3 && nt0.length >= 3 && mt0 === nt0) {
+          tokenMatch = ZONE_ROUTE[list[i].zone];
+        }
       }
     }
-    return '';
+    return ciMatch || phraseMatch || tokenMatch || '';
   }
 
   function enrichRoutesFromMaster(records, customers) {
@@ -2017,7 +2074,7 @@
     tbody.innerHTML = html;
   }
 
-  var ROUTE_DESCRIPTIONS = { R1: 'North-East', R2: 'North-West', R3: 'South-East', R4: 'South-West', R5: 'Outside GHMC', R6: 'Madhapur', R7: 'Non-Hyderabad' };
+  var ROUTE_DESCRIPTIONS = { R1: 'North-East', R2: 'North-West', R3: 'South-East', R4: 'South-West', R5: 'Outside Hyderabad', R6: 'Madhapur', R7: 'Outside Telangana' };
 
   function renderRouteContext() {
     var strip = $('contextStrip');
@@ -4227,6 +4284,8 @@
     filteredRows: filteredRows,
     routeFromBranch: routeFromBranch,
     enrichRoutes: enrichRoutes,
+    BRANCH_ROUTE_OVERRIDE: BRANCH_ROUTE_OVERRIDE,
+    branchRouteOverride: branchRouteOverride,
     zoneRouteFromCustomer: zoneRouteFromCustomer,
     enrichRoutesFromMaster: enrichRoutesFromMaster,
     ZONE_ROUTE: ZONE_ROUTE,
