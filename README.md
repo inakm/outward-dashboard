@@ -89,6 +89,7 @@ Dispatch records are normalised to a canonical shape:
 | `orderDate` | Order Date | `dd/mm/yyyy` etc. |
 | `invoiceNo` | Invoice No. | invoice reference, searchable via the matrix search box |
 | `customer` | Customer Name | trimmed / line-break cleaned |
+| `customerCode` | _derived_ | resolved customer Code — tolerant name match against the customer master, falling back to the branch workbooks (branch name → owning customer Code); used to align orders with a customer's branches and to route via the master's Primary Zone |
 | `branch` | Branch | place-name typo-corrected |
 | `location` | Location | place-name typo-corrected |
 | `route` | ROUTE | delivery route (R1–R7, filterable) — auto-assigned by matching Branch against the `routes-planning.xlsx` R1–R7 plan; falls back to the customer master's Primary Zone (North-East→R1, North-West→R2, South-East→R3, South-West→R4, Outside Hyderabad→R5, Madhapur→R6, Outside Telangana→R7) when the branch isn't in the plan |

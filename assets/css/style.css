@@ -1045,6 +1045,33 @@ body.gate-locked {
   color: var(--ink-tertiary);
 }
 
+.customer-filter-bar {
+  flex-basis: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--s-sm);
+  padding-top: var(--s-sm);
+  border-top: 1px solid var(--hairline);
+}
+
+.active-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-pill);
+  padding: 3px 10px;
+  max-width: 420px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .pill-row {
   display: flex;
   gap: var(--s-xxs);
@@ -1469,6 +1496,37 @@ td.td-dim {
   color: var(--ink-subtle);
 }
 
+th.th-actions {
+  text-align: right;
+}
+
+td.td-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.jump-link {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--primary);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.jump-link:hover {
+  text-decoration: underline;
+}
+
+.jump-link:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+  border-radius: 3px;
+}
+
 tr.cust-row.is-clickable {
   cursor: pointer;
 }
@@ -1628,6 +1686,30 @@ tr.cust-row.is-clickable:focus-visible {
 }
 
 /* ---------- Date-range filter ---------- */
+.filter-select {
+  min-height: 34px;
+  max-width: 220px;
+  padding: 0 8px;
+  font-family: var(--font-text);
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--surface-1);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.filter-select:hover {
+  border-color: var(--hairline-strong);
+}
+
+.filter-select:focus {
+  border-color: var(--hairline-strong);
+  box-shadow: 0 0 0 2px rgba(94, 105, 209, 0.25);
+}
+
 .date-input {
   min-height: 34px;
   padding: 0 10px;
@@ -2089,6 +2171,17 @@ tr.row-complete {
 
 tr.row-complete:hover {
   background: rgba(39, 166, 68, 0.12);
+}
+
+.complete-more {
+  display: flex;
+  justify-content: center;
+  padding: var(--s-md) 0 var(--s-sm);
+  border-top: 1px solid var(--hairline);
+}
+
+.complete-more[hidden] {
+  display: none;
 }
 
 /* ---------- Route Ops: map ---------- */

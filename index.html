@@ -257,12 +257,19 @@
       </div>
       <div class="filter-group">
         <span class="filter-label">Delivery person</span>
-        <div id="deliveryPersonFilter" class="pill-row"></div>
+        <select id="deliveryPersonFilter" class="filter-select"></select>
       </div>
       <button type="button" id="resetFilters" class="btn btn-tertiary btn-sm">
         <i data-lucide="rotate-ccw"></i>
         <span>Reset</span>
       </button>
+      <div class="customer-filter-bar" id="customerFilterBar" hidden>
+        <span class="filter-label">Customer filter</span>
+        <span class="active-chip" id="customerFilterChip"></span>
+        <button type="button" id="clearCustomerFilter" class="btn btn-tertiary btn-sm">
+          <i data-lucide="x"></i><span>Clear</span>
+        </button>
+      </div>
     </section>
 
     <section class="panel table-panel">
@@ -374,6 +381,12 @@
           </thead>
           <tbody id="completeBody"></tbody>
         </table>
+      </div>
+      <div class="complete-more" id="completeMore" hidden>
+        <button type="button" class="btn btn-secondary btn-sm" id="completeLoadMore">
+          <i data-lucide="chevrons-down"></i>
+          <span id="completeMoreLabel">Load more</span>
+        </button>
       </div>
     </section>
 
@@ -614,6 +627,7 @@
               <th>Branches</th>
               <th>Orders</th>
               <th>Open</th>
+              <th class="th-actions">Orders →</th>
             </tr>
           </thead>
           <tbody id="customerBody"></tbody>
@@ -625,6 +639,9 @@
             <h3 class="card-title" id="drawerTitle">Branches</h3>
             <p class="card-sub" id="drawerSub"></p>
           </div>
+          <button type="button" class="btn btn-tertiary btn-sm" id="drawerOrders">
+            <i data-lucide="layout-grid"></i><span>View orders</span>
+          </button>
           <button type="button" class="btn btn-tertiary btn-sm" id="drawerClose">
             <i data-lucide="x"></i><span>Close</span>
           </button>

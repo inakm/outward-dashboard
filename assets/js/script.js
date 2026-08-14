@@ -218,11 +218,12 @@
     customersSource: null,
     branches: {},
     branchesSource: null,
-    priority: 'ALL',
-    ack: 'ALL',
-    status: 'ALL',
-    route: 'ALL',
-    deliveryPerson: 'ALL',
+    priority: [],
+    ack: [],
+    status: [],
+    route: [],
+    deliveryPerson: [],
+    customerFilter: '',
     query: '',
     customerQuery: '',
     sortKey: 'orderDate',
@@ -239,7 +240,9 @@
     boardScope: 'today',
     boardDate: null,
     autoRefresh: false,
-    lastSyncAt: null
+    lastSyncAt: null,
+    completeLimit: 5,
+    filterSig: ''
   };
 
   var db = null;
@@ -276,6 +279,23 @@
   function cleanCode(v) {
     var s = String(v == null ? '' : v).trim();
     return (s === '—' || s === '-') ? '' : s;
+  }
+
+  /* Invoice cells may bundle several references in one cell ("1374 1375",
+     "1321 1322 1323 1324" or comma/newline separated from Google Sheets).
+     Bare numbers become full SLEIN codes; already-formatted references and
+     non-numeric references (e.g. "DC-52") are kept as-is. */
+  function normalizeInvoiceNo(v) {
+    var s = String(v == null ? '' : v).trim();
+    if (s === '' || s === '—' || s === '-') return '';
+    var tokens = s.split(/[\s,]+/).map(function (x) { return x.trim(); })
+      .filter(function (x) { return x !== ''; });
+    if (!tokens.length) return '';
+    var out = tokens.map(function (t) {
+      if (/^\d+$/.test(t)) return 'SLEIN-' + t + '/26-27';
+      return t;
+    });
+    return out.join(', ');
   }
 
   function normalizePriority(v) {
@@ -317,7 +337,7 @@
 
   function parseDate(v) {
     if (v == null || v === '') return null;
-    if (v instanceof Date) return isNaN(v.getTime()) ? null : v;
+    if (v instanceof Date) return isNaN(v.getTime()) ? null : startOfDay(v);
     if (typeof v === 'number' && isFinite(v)) {
       if (typeof XLSX !== 'undefined' && XLSX.SSF && XLSX.SSF.parse_date_code) {
         var d = XLSX.SSF.parse_date_code(v);
@@ -345,7 +365,7 @@
     }
 
     var iso = new Date(s);
-    return isNaN(iso.getTime()) ? null : iso;
+    return isNaN(iso.getTime()) ? null : startOfDay(iso);
   }
 
   function validDate(y, m, d) {
@@ -359,7 +379,7 @@
     return {
       id: makeId(),
       orderDate: parseDate(raw['Order Date']),
-      invoiceNo: cleanCode(raw['Invoice No.']),
+      invoiceNo: normalizeInvoiceNo(raw['Invoice No.']),
       customer: cleanCustomer(raw['Customer Name']),
       branch: cleanPlace(raw['Branch']),
       location: cleanPlace(raw['Location']),
@@ -507,12 +527,124 @@
     return ciMatch || phraseMatch || tokenMatch || '';
   }
 
+  /* Tolerant customer-name match (returns the best-matching master row).
+     Mirror of the zone matcher above — exact → case-insensitive →
+     whole-phrase → first-token — used to stamp orders with a customer Code. */
+  function matchCustomer(customerName, customers) {
+    var list = customers || state.customers;
+    if (!list || !customerName) return null;
+    var name = String(customerName).trim().replace(/\s+/g, ' ');
+    var key = customerKey(name);
+    if (!key) return null;
+    var nameTokens = key.split(' ').filter(Boolean);
+    var ci = null, phrase = null, token = null;
+    for (var i = 0; i < list.length; i++) {
+      var c = list[i];
+      if (c.name === name) return c;
+      var mkey = customerKey(c.name);
+      if (!mkey) continue;
+      if (ci === null && mkey === key) { ci = c; continue; }
+      if (phrase === null && mkey.length >= 4 &&
+          (key.indexOf(mkey) !== -1 || mkey.indexOf(key) !== -1)) {
+        phrase = c;
+        continue;
+      }
+      if (token === null && mkey.length >= 4) {
+        var mt0 = mkey.split(' ').filter(Boolean)[0];
+        var nt0 = nameTokens[0];
+        if (mt0 && nt0 && mt0.length >= 3 && nt0.length >= 3 && mt0 === nt0) token = c;
+      }
+    }
+    return ci || phrase || token || null;
+  }
+
+  function customerByCode(code, customers) {
+    var list = customers || state.customers;
+    if (!list || !code) return null;
+    var needle = String(code).trim().toUpperCase();
+    for (var i = 0; i < list.length; i++) {
+      if (String(list[i].code == null ? '' : list[i].code).trim().toUpperCase() === needle) return list[i];
+    }
+    return null;
+  }
+
+  /* Reverse index: customer branch name → customer code(s). Branch workbooks
+     are keyed by customer Code (C0374.xlsx), so a dispatch branch can be
+     aligned back to its owning customer even when the customer name differs. */
+  var branchCodeIndex = null;
+  function buildBranchCodeIndex() {
+    branchCodeIndex = {};
+    Object.keys(state.branches).forEach(function (code) {
+      var list = state.branches[code] || [];
+      for (var i = 0; i < list.length; i++) {
+        var name = list[i].branchName;
+        if (!name) continue;
+        var k = customerKey(name);
+        if (k.length < 3) continue;
+        if (!branchCodeIndex[k]) branchCodeIndex[k] = [];
+        if (branchCodeIndex[k].indexOf(code) === -1) branchCodeIndex[k].push(code);
+      }
+    });
+    return branchCodeIndex;
+  }
+
+  function customerCodeByBranch(place) {
+    if (!place) return '';
+    if (!branchCodeIndex) branchCodeIndex = buildBranchCodeIndex();
+    var key = customerKey(place);
+    if (!key) return '';
+    if (branchCodeIndex[key] && branchCodeIndex[key].length) return branchCodeIndex[key][0];
+    var keys = Object.keys(branchCodeIndex);
+    for (var i = 0; i < keys.length; i++) {
+      var mk = keys[i];
+      if (mk.length < 4 || key.length < 4) continue;
+      if (mk.indexOf(key) !== -1 || key.indexOf(mk) !== -1) return branchCodeIndex[mk][0];
+    }
+    return '';
+  }
+
+  /* Stamp each order with the customer Code resolved from its customer name
+     (tolerant master match) or, failing that, its branch/location against the
+     branch workbooks. Also records the formal master name when known. */
+  function enrichCustomerCodes(records, customers) {
+    records = records || state.records;
+    customers = customers || state.customers;
+    if (!branchCodeIndex) branchCodeIndex = buildBranchCodeIndex();
+    var added = 0;
+    for (var i = 0; i < records.length; i++) {
+      var r = records[i];
+      if (!r) continue;
+      var c = matchCustomer(r.customer, customers);
+      if (!c && r.branch) {
+        var bc = customerCodeByBranch(r.branch);
+        if (bc) c = customerByCode(bc, customers) || { code: bc, name: '' };
+      }
+      if (!c && r.location) {
+        var lc = customerCodeByBranch(r.location);
+        if (lc) c = customerByCode(lc, customers) || { code: lc, name: '' };
+      }
+      if (c && c.code) {
+        r.customerCode = c.code;
+        if (c.name) r.customerName = c.name;
+        added++;
+      }
+    }
+    return added;
+  }
+
   function enrichRoutesFromMaster(records, customers) {
     records = records || state.records;
+    customers = customers || state.customers;
+    enrichCustomerCodes(records, customers);
     var added = 0;
     for (var i = 0; i < records.length; i++) {
       if (records[i].route) continue;
-      var rt = zoneRouteFromCustomer(records[i].customer, customers);
+      var rt = '';
+      if (records[i].customerCode) {
+        var c = customerByCode(records[i].customerCode, customers);
+        if (c && ZONE_ROUTE[c.zone]) rt = ZONE_ROUTE[c.zone];
+      }
+      if (!rt) rt = zoneRouteFromCustomer(records[i].customer, customers);
       if (rt) {
         records[i].route = rt;
         added++;
@@ -1328,30 +1460,49 @@
     return { total: records.length, issues: issues };
   }
 
-  function customerOrderStats(customerName, records) {
+  function customerOrderStats(code, customerName, records) {
+    records = records || state.records;
+    var codeKey = String(code == null ? '' : code).trim().toUpperCase();
     var needle = cleanCustomer(customerName).toLowerCase();
     var orders = 0, open = 0;
     for (var i = 0; i < records.length; i++) {
-      if (records[i].customer.toLowerCase() === needle) {
+      var r = records[i];
+      var hit = codeKey && r.customerCode && String(r.customerCode).trim().toUpperCase() === codeKey;
+      if (!hit && needle && r.customer && r.customer.toLowerCase() === needle) hit = true;
+      if (hit) {
         orders++;
-        if (records[i].ack !== 'Done') open++;
+        if (r.ack !== 'Done') open++;
       }
     }
     return { orders: orders, open: open };
   }
 
+  function hasSel(key, value) {
+    return state[key].indexOf(value) !== -1;
+  }
+
+  function toggleSel(key, value) {
+    var idx = state[key].indexOf(value);
+    if (idx === -1) state[key].push(value);
+    else state[key].splice(idx, 1);
+  }
+
   function filteredRows(ignoreRoute) {
     var rows = state.records;
-    if (state.priority !== 'ALL') rows = rows.filter(function (r) { return r.priority === state.priority; });
-    if (state.ack !== 'ALL') rows = rows.filter(function (r) { return r.ack === state.ack; });
-    if (state.status !== 'ALL') rows = rows.filter(function (r) { return r.status === state.status; });
-    if (state.deliveryPerson !== 'ALL') rows = rows.filter(function (r) { return r.deliveryPerson === state.deliveryPerson; });
-    if (!ignoreRoute && state.route !== 'ALL') {
-      if (state.route === '—') {
-        rows = rows.filter(function (r) { return !r.route; });
+    if (state.priority.length) rows = rows.filter(function (r) { return hasSel('priority', r.priority); });
+    if (state.ack.length) rows = rows.filter(function (r) { return hasSel('ack', r.ack); });
+    if (state.status.length) rows = rows.filter(function (r) { return hasSel('status', r.status); });
+    if (state.deliveryPerson.length) rows = rows.filter(function (r) { return hasSel('deliveryPerson', r.deliveryPerson); });
+    if (!ignoreRoute && state.route.length) {
+      if (hasSel('route', '—')) {
+        rows = rows.filter(function (r) { return !r.route || hasSel('route', r.route); });
       } else {
-        rows = rows.filter(function (r) { return r.route === state.route; });
+        rows = rows.filter(function (r) { return r.route && hasSel('route', r.route); });
       }
+    }
+    if (state.customerFilter) {
+      var cf = String(state.customerFilter).trim().toUpperCase();
+      rows = rows.filter(function (r) { return r.customerCode && String(r.customerCode).trim().toUpperCase() === cf; });
     }
     if (state.dateFrom) {
       var from = new Date(state.dateFrom + 'T00:00:00');
@@ -1705,7 +1856,7 @@
     for (var i = 0; i < order.length; i++) {
       var rt = order[i];
       var s = stats[rt] || { route: rt, total: 0, done: 0, transit: 0, pending: 0, openP1: 0, fulfillment: 0 };
-      var active = state.route === rt;
+      var active = hasSel('route', rt);
       var pct = s.total ? Math.round(s.fulfillment) : 0;
       var pctCls = pct < 60 ? ' is-low' : (pct < 90 ? ' is-mid' : '');
       var name = (routeNames && routeNames[rt]) ? routeNames[rt] : (ROUTE_DESCRIPTIONS[rt] || '');
@@ -1985,7 +2136,7 @@
       var n = counts[p];
       var sev = (p === 'P1' || p === 'P2') ? (n ? (p === 'P1' ? 'alert-critical' : 'alert-warn') : 'alert-ok') : 'alert-info';
       var dot = p === 'P1' ? 'dot-p1' : p === 'P2' ? 'dot-p2' : p === 'P3' ? 'dot-p3' : 'dot-p4';
-      var active = state.priority === p;
+      var active = hasSel('priority', p);
       html +=
         '<button type="button" class="alert-item alert-priority ' + sev + (active ? ' is-active' : '') + '" data-alert-priority="' + p + '" aria-pressed="' + active + '" title="Filter to ' + p + ' orders">' +
         '<span class="dot ' + dot + '"></span>' +
@@ -2057,7 +2208,7 @@
     var html = '';
     for (var i = 0; i < stats.length; i++) {
       var s = stats[i];
-      var active = state.route === s.route;
+      var active = hasSel('route', s.route);
       var pct = Math.round(s.fulfillment);
       var pctCls = pct < 60 ? ' is-low' : (pct < 90 ? ' is-mid' : '');
       html +=
@@ -2145,7 +2296,7 @@
       var s = list[i];
       var pct = Math.round(s.fulfillment);
       var pctCls = pct < 60 ? ' is-low' : (pct < 90 ? ' is-mid' : '');
-      var active = state.route === s.route;
+      var active = hasSel('route', s.route);
       html +=
         '<tr class="zone-row' + (active ? ' is-active' : '') + '" data-route="' + escapeHtml(s.route) + '" tabindex="0" aria-label="Filter to route ' + escapeHtml(s.route) + '">' +
         '<td><span class="route-chip">' + escapeHtml(s.route) + '</span></td>' +
@@ -2162,7 +2313,8 @@
   }
 
   function toggleRoute(r) {
-    setRouteFilter(state.route === r ? 'ALL' : r);
+    toggleSel('route', r);
+    renderAll();
   }
 
   /* -------------------------------------------------------------
@@ -2982,7 +3134,7 @@
     var html =
       '<div class="pm-header">' +
       '<div class="pm-title">SkyLimit Outward Dispatch Manifest</div>' +
-      '<div class="pm-sub">Generated ' + new Date().toLocaleString() + ' · ' +
+      '<div class="pm-sub">Generated ' + fmtDateShort(new Date()) + ' · ' +
       state.records.length + ' records · ' + filteredRows().length + ' in scope</div>' +
       '</div>';
     plan.forEach(function (r) {
@@ -3104,7 +3256,8 @@
           '<tr class="' + slaCls + '">' +
           '<td class="td-date">' + formatDate(r.orderDate) + '</td>' +
           '<td class="td-mono">' + invoiceHtml(r.invoiceNo) + '</td>' +
-          '<td class="td-strong">' + escapeHtml(r.customer || '—') + '</td>' +
+          '<td class="td-strong">' + escapeHtml(r.customer || '—') + (r.customerCode
+            ? '<span class="td-mono td-dim"><br><button type="button" class="jump-link" data-jump-code="' + escapeHtml(r.customerCode) + '" title="Open ' + escapeHtml(r.customerCode) + ' in the Customers tab">' + escapeHtml(r.customerCode) + '</button></span>' : '') + '</td>' +
           '<td>' + escapeHtml(r.branch || '—') + '</td>' +
           '<td>' + escapeHtml(r.location || '—') + '</td>' +
           '<td>' + (s.level !== 'none' && s.level !== 'on-track'
@@ -3122,14 +3275,16 @@
     if (!complete.length) {
       cbody.innerHTML = '<tr class="row-empty"><td colspan="11">No complete records (Status = Dispatched and Ack = Done) in the current scope.</td></tr>';
     } else {
+      var visibleComplete = complete.slice(0, state.completeLimit);
       var chtml = '';
-      for (i = 0; i < complete.length; i++) {
-        var c = complete[i];
+      for (i = 0; i < visibleComplete.length; i++) {
+        var c = visibleComplete[i];
         chtml +=
           '<tr class="row-complete">' +
           '<td class="td-date">' + formatDate(c.orderDate) + '</td>' +
           '<td class="td-mono">' + invoiceHtml(c.invoiceNo) + '</td>' +
-          '<td class="td-strong">' + escapeHtml(c.customer || '—') + '</td>' +
+          '<td class="td-strong">' + escapeHtml(c.customer || '—') + (c.customerCode
+            ? '<span class="td-mono td-dim"><br><button type="button" class="jump-link" data-jump-code="' + escapeHtml(c.customerCode) + '" title="Open ' + escapeHtml(c.customerCode) + ' in the Customers tab">' + escapeHtml(c.customerCode) + '</button></span>' : '') + '</td>' +
           '<td>' + escapeHtml(c.branch || '—') + '</td>' +
           '<td>' + escapeHtml(c.location || '—') + '</td>' +
           '<td>' + escapeHtml(c.route || '—') + '</td>' +
@@ -3141,6 +3296,18 @@
           '</tr>';
       }
       cbody.innerHTML = chtml;
+    }
+    var moreWrap = $('completeMore');
+    var moreBtn = $('completeLoadMore');
+    var moreLabel = $('completeMoreLabel');
+    if (moreWrap && moreBtn && moreLabel) {
+      if (complete.length > state.completeLimit) {
+        var remaining = complete.length - state.completeLimit;
+        moreLabel.textContent = 'Load more (' + formatNum(remaining) + ' remaining)';
+        moreWrap.hidden = false;
+      } else {
+        moreWrap.hidden = true;
+      }
     }
   }
 
@@ -3162,7 +3329,7 @@
     el.textContent = label;
     if (state.source && state.source.syncedAt) {
       state.lastSyncAt = state.source.syncedAt;
-      el.title = 'Loaded at ' + new Date(state.source.syncedAt).toLocaleString();
+      el.title = 'Loaded at ' + fmtDateShort(new Date(state.source.syncedAt));
     } else {
       el.removeAttribute('title');
     }
@@ -3193,8 +3360,16 @@
      Filters, search, sort
      ------------------------------------------------------------- */
   function renderAll() {
+    var sig = state.priority.join(',') + '|' + state.ack.join(',') + '|' + state.status.join(',') +
+      '|' + state.route.join(',') + '|' + state.deliveryPerson.join(',') + '|' + state.customerFilter +
+      '|' + state.query + '|' + state.dateFrom + '|' + state.dateTo + '|' + state.sortKey + state.sortDir;
+      if (sig !== state.filterSig) {
+      state.completeLimit = 5;
+      state.filterSig = sig;
+    }
     var rows = filteredRows();
     renderIngestPanel();
+    renderCustomerFilter();
     renderRouteFilter();
     renderStatusFilter();
     renderDeliveryPersonFilter();
@@ -3265,7 +3440,7 @@
         meta.textContent = formatNum(state.customers.length) + ' customers';
         if (state.customersSource && state.customersSource.syncedAt) {
           meta.title = (state.customersSource.name || 'Master') + ' · loaded at ' +
-            new Date(state.customersSource.syncedAt).toLocaleString();
+            fmtDateShort(new Date(state.customersSource.syncedAt));
         } else {
           meta.removeAttribute('title');
         }
@@ -3307,7 +3482,7 @@
       }
     }
     if (!state.customers.length) {
-      tbody.innerHTML = '<tr class="row-empty"><td colspan="10">No customer data yet — use "Upload / replace data" and drop the ALL_Customers master file, plus per-customer branch workbooks.</td></tr>';
+      tbody.innerHTML = '<tr class="row-empty"><td colspan="11">No customer data yet — use "Upload / replace data" and drop the ALL_Customers master file, plus per-customer branch workbooks.</td></tr>';
       return;
     }
     var q = state.customerQuery.toLowerCase();
@@ -3329,7 +3504,7 @@
     for (var i = 0; i < list.length; i++) {
       var c = list[i];
       var branches = state.branches[c.code] || [];
-      var stats = customerOrderStats(c.name, state.records);
+      var stats = customerOrderStats(c.code, c.name, state.records);
       var cls = abc.classes[c.name] || 'C';
       var clickable = branches.length > 0;
       var aria = clickable ? ' role="button" tabindex="0" aria-label="View branches for ' + escapeHtml(c.name) + '"' : '';
@@ -3347,13 +3522,16 @@
           : '<span class="count-chip is-muted">—</span>') + '</td>' +
         '<td class="td-mono">' + (stats.orders ? formatNum(stats.orders) : '<span class="pending-date">—</span>') + '</td>' +
         '<td class="td-mono ' + (stats.open ? 'cust-open' : 'cust-open is-zero') + '">' + formatNum(stats.open) + '</td>' +
+        '<td class="td-actions"><button type="button" class="btn btn-tertiary btn-sm" data-orders-code="' + escapeHtml(c.code) + '" title="Show ' + escapeHtml(c.name || c.code) + ' orders on the Dispatch tab">' +
+        '<i data-lucide="layout-grid"></i><span>Orders</span></button></td>' +
         '</tr>';
     }
     if (!list.length) {
-      tbody.innerHTML = '<tr class="row-empty"><td colspan="10">No customers match the current search.</td></tr>';
+      tbody.innerHTML = '<tr class="row-empty"><td colspan="11">No customers match the current search.</td></tr>';
     } else {
       tbody.innerHTML = html;
     }
+    refreshIcons();
   }
 
   function renderBranches(code) {
@@ -3407,18 +3585,19 @@
     var list = Object.keys(routes).sort(function (a, b) {
       return String(a).localeCompare(String(b), undefined, { numeric: true });
     });
-    var html = '<button type="button" class="pill' + (state.route === 'ALL' ? ' is-active' : '') + '" data-route="ALL">All</button>';
+    var html = '<button type="button" class="pill' + (state.route.length ? '' : ' is-active') + '" data-route="ALL">All</button>';
     if (unmapped) {
-      html += '<button type="button" class="pill' + (state.route === '—' ? ' is-active' : '') + '" data-route="—">Unmapped</button>';
+      html += '<button type="button" class="pill' + (hasSel('route', '—') ? ' is-active' : '') + '" data-route="—">Unmapped</button>';
     }
     for (var i = 0; i < list.length; i++) {
-      html += '<button type="button" class="pill' + (state.route === list[i] ? ' is-active' : '') + '" data-route="' + escapeHtml(list[i]) + '">' + escapeHtml(list[i]) + '</button>';
+      html += '<button type="button" class="pill' + (hasSel('route', list[i]) ? ' is-active' : '') + '" data-route="' + escapeHtml(list[i]) + '">' + escapeHtml(list[i]) + '</button>';
     }
     box.innerHTML = html;
   }
 
   function setRouteFilter(r) {
-    state.route = r;
+    if (r === 'ALL') state.route = [];
+    else toggleSel('route', r);
     renderAll();
   }
 
@@ -3430,15 +3609,16 @@
     var list = Object.keys(statuses).sort(function (a, b) {
       return String(a).localeCompare(String(b), undefined, { numeric: true });
     });
-    var html = '<button type="button" class="pill' + (state.status === 'ALL' ? ' is-active' : '') + '" data-status="ALL">All</button>';
+    var html = '<button type="button" class="pill' + (state.status.length ? '' : ' is-active') + '" data-status="ALL">All</button>';
     for (var i = 0; i < list.length; i++) {
-      html += '<button type="button" class="pill' + (state.status === list[i] ? ' is-active' : '') + '" data-status="' + escapeHtml(list[i]) + '">' + escapeHtml(list[i]) + '</button>';
+      html += '<button type="button" class="pill' + (hasSel('status', list[i]) ? ' is-active' : '') + '" data-status="' + escapeHtml(list[i]) + '">' + escapeHtml(list[i]) + '</button>';
     }
     box.innerHTML = html;
   }
 
   function setStatusFilter(s) {
-    state.status = s;
+    if (s === 'ALL') state.status = [];
+    else toggleSel('status', s);
     renderAll();
   }
 
@@ -3450,28 +3630,75 @@
     var list = Object.keys(people).sort(function (a, b) {
       return String(a).localeCompare(String(b), undefined, { numeric: true });
     });
-    var html = '<button type="button" class="pill' + (state.deliveryPerson === 'ALL' ? ' is-active' : '') + '" data-person="ALL">All</button>';
+    var html = '<option value="ALL">All</option>';
     for (var i = 0; i < list.length; i++) {
-      html += '<button type="button" class="pill' + (state.deliveryPerson === list[i] ? ' is-active' : '') + '" data-person="' + escapeHtml(list[i]) + '">' + escapeHtml(list[i]) + '</button>';
+      html += '<option value="' + escapeHtml(list[i]) + '"' + (hasSel('deliveryPerson', list[i]) ? ' selected' : '') + '>' + escapeHtml(list[i]) + '</option>';
     }
     box.innerHTML = html;
   }
 
   function setDeliveryPersonFilter(p) {
-    state.deliveryPerson = p;
-    var pills = document.querySelectorAll('#deliveryPersonFilter .pill');
-    for (var i = 0; i < pills.length; i++) {
-      pills[i].classList.toggle('is-active', pills[i].getAttribute('data-person') === p);
+    if (p === 'ALL') state.deliveryPerson = [];
+    else {
+      state.deliveryPerson = [p];
+      var box = $('deliveryPersonFilter');
+      if (box && box.value !== p) box.value = p;
     }
     renderAll();
   }
 
+  function syncPills(selector, attrKey, stateKey) {
+    var pills = document.querySelectorAll(selector);
+    for (var i = 0; i < pills.length; i++) {
+      var v = pills[i].getAttribute('data-' + attrKey);
+      pills[i].classList.toggle('is-active', v === 'ALL' ? !state[stateKey].length : state[stateKey].indexOf(v) !== -1);
+    }
+  }
+
+  function renderCustomerFilter() {
+    var bar = $('customerFilterBar');
+    if (!bar) return;
+    if (!state.customerFilter) {
+      bar.hidden = true;
+      return;
+    }
+    var c = customerByCode(state.customerFilter);
+    var chip = $('customerFilterChip');
+    if (chip) {
+      chip.textContent = state.customerFilter + (c && c.name ? ' · ' + c.name : '');
+    }
+    bar.hidden = false;
+  }
+
+  function setCustomerFilter(code) {
+    state.customerFilter = code || '';
+    renderCustomerFilter();
+    renderAll();
+    setView('dispatch');
+  }
+
+  function clearCustomerFilter() {
+    state.customerFilter = '';
+    renderCustomerFilter();
+    renderAll();
+  }
+
+  function showCustomerOrders(code) {
+    setCustomerFilter(code);
+  }
+
+  function openCustomerOrders(code) {
+    setView('customers');
+    renderBranches(code);
+  }
+
   function resetFilters(silent) {
-    state.priority = 'ALL';
-    state.ack = 'ALL';
-    state.status = 'ALL';
-    state.route = 'ALL';
-    state.deliveryPerson = 'ALL';
+    state.priority = [];
+    state.ack = [];
+    state.status = [];
+    state.route = [];
+    state.deliveryPerson = [];
+    state.customerFilter = '';
     state.query = '';
     state.dateFrom = null;
     state.dateTo = null;
@@ -3481,40 +3708,25 @@
     if (df) df.value = '';
     var dt = $('dateTo');
     if (dt) dt.value = '';
-    var priorityPills = document.querySelectorAll('#priorityFilter .pill');
-    for (var i = 0; i < priorityPills.length; i++) {
-      priorityPills[i].classList.toggle('is-active', priorityPills[i].getAttribute('data-priority') === 'ALL');
-    }
-    var ackPills = document.querySelectorAll('#ackFilter .pill');
-    for (var j = 0; j < ackPills.length; j++) {
-      ackPills[j].classList.toggle('is-active', ackPills[j].getAttribute('data-ack') === 'ALL');
-    }
-    var statusPills = document.querySelectorAll('#statusFilter .pill');
-    for (var k = 0; k < statusPills.length; k++) {
-      statusPills[k].classList.toggle('is-active', statusPills[k].getAttribute('data-status') === 'ALL');
-    }
-    var personPills = document.querySelectorAll('#deliveryPersonFilter .pill');
-    for (var m = 0; m < personPills.length; m++) {
-      personPills[m].classList.toggle('is-active', personPills[m].getAttribute('data-person') === 'ALL');
-    }
+    syncPills('#priorityFilter .pill', 'priority', 'priority');
+    syncPills('#ackFilter .pill', 'ack', 'ack');
+    syncPills('#statusFilter .pill', 'status', 'status');
+    var personBox = $('deliveryPersonFilter');
+    if (personBox) personBox.value = 'ALL';
     if (!silent) renderAll();
   }
 
   function setPriorityFilter(p) {
-    state.priority = p;
-    var pills = document.querySelectorAll('#priorityFilter .pill');
-    for (var i = 0; i < pills.length; i++) {
-      pills[i].classList.toggle('is-active', pills[i].getAttribute('data-priority') === p);
-    }
+    if (p === 'ALL') state.priority = [];
+    else toggleSel('priority', p);
+    syncPills('#priorityFilter .pill', 'priority', 'priority');
     renderAll();
   }
 
   function setAckFilter(a) {
-    state.ack = a;
-    var pills = document.querySelectorAll('#ackFilter .pill');
-    for (var i = 0; i < pills.length; i++) {
-      pills[i].classList.toggle('is-active', pills[i].getAttribute('data-ack') === a);
-    }
+    if (a === 'ALL') state.ack = [];
+    else toggleSel('ack', a);
+    syncPills('#ackFilter .pill', 'ack', 'ack');
     renderAll();
   }
 
@@ -3576,6 +3788,7 @@
      ------------------------------------------------------------- */
   function applyRecords(records, source) {
     enrichRoutes(records);
+    enrichCustomerCodes(records);
     state.records = records;
     state.source = source || null;
     resetFilters(true);
@@ -3600,6 +3813,9 @@
     if (!code) return;
     state.branches[code] = list;
     state.branchesSource = source || null;
+    branchCodeIndex = null;
+    enrichCustomerCodes(state.records);
+    enrichRoutesFromMaster(state.records);
     renderCustomers();
     renderDirectoryMeta();
     if (state.openCustomer === code) renderBranches(code);
@@ -3875,9 +4091,8 @@
     }
     var personFilter = $('deliveryPersonFilter');
     if (personFilter) {
-      personFilter.addEventListener('click', function (ev) {
-        var btn = ev.target.closest && ev.target.closest('.pill');
-        if (btn && btn.getAttribute('data-person')) setDeliveryPersonFilter(btn.getAttribute('data-person'));
+      personFilter.addEventListener('change', function () {
+        setDeliveryPersonFilter(personFilter.value);
       });
     }
 
@@ -4073,6 +4288,11 @@
     var customerBody = $('customerBody');
     if (customerBody) {
       customerBody.addEventListener('click', function (ev) {
+        var ordersBtn = ev.target.closest && ev.target.closest('[data-orders-code]');
+        if (ordersBtn) {
+          showCustomerOrders(ordersBtn.getAttribute('data-orders-code'));
+          return;
+        }
         var row = ev.target.closest && ev.target.closest('tr.cust-row');
         if (row && row.getAttribute('data-code')) {
           renderBranches(row.getAttribute('data-code'));
@@ -4080,12 +4300,75 @@
       });
       customerBody.addEventListener('keydown', function (ev) {
         if (ev.key === 'Enter' || ev.key === ' ') {
+          var ordersBtn = ev.target.closest && ev.target.closest('[data-orders-code]');
+          if (ordersBtn) {
+            ev.preventDefault();
+            showCustomerOrders(ordersBtn.getAttribute('data-orders-code'));
+            return;
+          }
           var row = ev.target.closest && ev.target.closest('tr.cust-row');
           if (row && row.getAttribute('data-code')) {
             ev.preventDefault();
             renderBranches(row.getAttribute('data-code'));
           }
         }
+      });
+    }
+
+    var tableBody = $('tableBody');
+    if (tableBody) {
+      tableBody.addEventListener('click', function (ev) {
+        var link = ev.target.closest && ev.target.closest('[data-jump-code]');
+        if (link) {
+          ev.preventDefault();
+          openCustomerOrders(link.getAttribute('data-jump-code'));
+        }
+      });
+      tableBody.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          var link = ev.target.closest && ev.target.closest('[data-jump-code]');
+          if (link) {
+            ev.preventDefault();
+            openCustomerOrders(link.getAttribute('data-jump-code'));
+          }
+        }
+      });
+    }
+    var completeBody = $('completeBody');
+    if (completeBody) {
+      completeBody.addEventListener('click', function (ev) {
+        var link = ev.target.closest && ev.target.closest('[data-jump-code]');
+        if (link) {
+          ev.preventDefault();
+          openCustomerOrders(link.getAttribute('data-jump-code'));
+        }
+      });
+      completeBody.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          var link = ev.target.closest && ev.target.closest('[data-jump-code]');
+          if (link) {
+            ev.preventDefault();
+            openCustomerOrders(link.getAttribute('data-jump-code'));
+          }
+        }
+      });
+    }
+    var completeLoadMore = $('completeLoadMore');
+    if (completeLoadMore) {
+      completeLoadMore.addEventListener('click', function () {
+        state.completeLimit += 5;
+        renderTable();
+      });
+    }
+
+    var clearCustomerFilterBtn = $('clearCustomerFilter');
+    if (clearCustomerFilterBtn) {
+      clearCustomerFilterBtn.addEventListener('click', clearCustomerFilter);
+    }
+    var drawerOrders = $('drawerOrders');
+    if (drawerOrders) {
+      drawerOrders.addEventListener('click', function () {
+        showCustomerOrders(state.openCustomer || '');
       });
     }
 
@@ -4167,6 +4450,8 @@
           ? { name: cached.branchesMeta.name, syncedAt: cached.branchesMeta.syncedAt } : null;
       }
     }
+    enrichCustomerCodes(state.records);
+    enrichRoutesFromMaster(state.records);
     renderAll();
     setView(state.view);
 
@@ -4287,6 +4572,10 @@
     BRANCH_ROUTE_OVERRIDE: BRANCH_ROUTE_OVERRIDE,
     branchRouteOverride: branchRouteOverride,
     zoneRouteFromCustomer: zoneRouteFromCustomer,
+    matchCustomer: matchCustomer,
+    customerByCode: customerByCode,
+    customerCodeByBranch: customerCodeByBranch,
+    enrichCustomerCodes: enrichCustomerCodes,
     enrichRoutesFromMaster: enrichRoutesFromMaster,
     ZONE_ROUTE: ZONE_ROUTE,
     slaTier: slaTier,
