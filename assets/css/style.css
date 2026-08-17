@@ -880,6 +880,10 @@ body.gate-locked {
   min-width: 0;
 }
 
+.alert-center.is-minimized .card-sub {
+  display: none;
+}
+
 .alert-head {
   display: flex;
   align-items: flex-start;

@@ -1,10 +1,21 @@
 # Business data — keep out of the public repo
-ghmc-routing/output/customers_route_map.json
+Customers/
+assets/xcl/
+ghmc-routing/output/
+routing-logic.txt
+prompts.txt
+aug-data.xlsx
+todo.txt
 
 # OS / editor noise
 .DS_Store
 Thumbs.db
 *.log
+
+# Excel / CSV data files
+*.xlsx
+*.xls
+*.csv
 
 # Excel temp / lock files
 ~$*
