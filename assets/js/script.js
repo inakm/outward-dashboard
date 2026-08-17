@@ -3680,20 +3680,17 @@
     var list = Object.keys(people).sort(function (a, b) {
       return String(a).localeCompare(String(b), undefined, { numeric: true });
     });
-    var html = '<option value="ALL">All</option>';
+    var html = '<button type="button" class="pill is-active" data-person="ALL">All</button>';
     for (var i = 0; i < list.length; i++) {
-      html += '<option value="' + escapeHtml(list[i]) + '"' + (hasSel('deliveryPerson', list[i]) ? ' selected' : '') + '>' + escapeHtml(list[i]) + '</option>';
+      var active = hasSel('deliveryPerson', list[i]);
+      html += '<button type="button" class="pill' + (active ? ' is-active' : '') + '" data-person="' + escapeHtml(list[i]) + '">' + escapeHtml(list[i]) + '</button>';
     }
     box.innerHTML = html;
   }
 
   function setDeliveryPersonFilter(p) {
     if (p === 'ALL') state.deliveryPerson = [];
-    else {
-      state.deliveryPerson = [p];
-      var box = $('deliveryPersonFilter');
-      if (box && box.value !== p) box.value = p;
-    }
+    else toggleSel('deliveryPerson', p);
     renderAll();
   }
 
@@ -3761,8 +3758,7 @@
     syncPills('#priorityFilter .pill', 'priority', 'priority');
     syncPills('#ackFilter .pill', 'ack', 'ack');
     syncPills('#statusFilter .pill', 'status', 'status');
-    var personBox = $('deliveryPersonFilter');
-    if (personBox) personBox.value = 'ALL';
+    syncPills('#deliveryPersonFilter .pill', 'person', 'deliveryPerson');
     if (!silent) renderAll();
   }
 
@@ -4141,8 +4137,9 @@
     }
     var personFilter = $('deliveryPersonFilter');
     if (personFilter) {
-      personFilter.addEventListener('change', function () {
-        setDeliveryPersonFilter(personFilter.value);
+      personFilter.addEventListener('click', function (ev) {
+        var btn = ev.target.closest && ev.target.closest('.pill');
+        if (btn && btn.getAttribute('data-person')) setDeliveryPersonFilter(btn.getAttribute('data-person'));
       });
     }
 
