@@ -261,7 +261,18 @@
       </div>
       <div class="filter-group">
         <span class="filter-label">Delivery person</span>
-        <div id="deliveryPersonFilter" class="pill-row"></div>
+        <div class="dropdown-multi" id="deliveryPersonDropdown">
+          <button type="button" class="dropdown-multi-btn" id="deliveryPersonBtn" aria-haspopup="listbox" aria-expanded="false">
+            <span id="deliveryPersonLabel">All</span>
+            <i data-lucide="chevron-down"></i>
+          </button>
+          <div class="dropdown-multi-panel" id="deliveryPersonPanel" hidden>
+            <div class="dropdown-multi-search">
+              <input type="search" id="deliveryPersonSearch" placeholder="Search…" autocomplete="off" spellcheck="false">
+            </div>
+            <div class="dropdown-multi-list" id="deliveryPersonList" role="listbox" aria-label="Select delivery persons" multiple></div>
+          </div>
+        </div>
       </div>
       <button type="button" id="resetFilters" class="btn btn-tertiary btn-sm">
         <i data-lucide="rotate-ccw"></i>
@@ -664,7 +675,7 @@
     </section>
     </div>
 
-    <aside class="panel alert-center alert-floating is-minimized" id="alertCenter" aria-label="Priority and aging alerts">
+    <aside class="panel alert-center alert-floating" id="alertCenter" hidden aria-label="Priority and aging alerts">
       <header class="alert-head">
         <div>
           <h2 class="card-title">Alerts</h2>
@@ -672,8 +683,8 @@
         </div>
         <div class="alert-actions">
           <span class="status-badge" id="alertMeta">—</span>
-          <button type="button" class="btn btn-tertiary btn-sm alert-toggle" id="alertToggle" aria-label="Expand alerts" aria-expanded="false">
-            <i data-lucide="plus"></i>
+          <button type="button" class="btn btn-tertiary btn-sm" id="alertCloseBtn" aria-label="Close alerts">
+            <i data-lucide="x"></i>
           </button>
         </div>
       </header>

@@ -386,10 +386,9 @@
       return isNaN(dt.getTime()) ? null : startOfDay(dt);
     }
 
-    /* dd/mm/yyyy or mm/dd/yyyy (sheet locale, day-first). When both parts
-       are ≤ 12, default to dd/mm (day-first) since the source sheet uses
-       that locale. Month-first is accepted when the second part > 12
-       (e.g. 8/13/2026 → Aug 13). */
+    /* mm/dd/yyyy (Google Sheet default). dd/mm/yyyy is accepted too when the
+       day part is unambiguous (>12); when both parts are <=12 the sheet's
+       mm/dd interpretation wins. */
     var sl = s.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{2,4})$/);
     if (sl) {
       var a = +sl[1], b = +sl[2], yr = +sl[3];
@@ -397,7 +396,7 @@
       var day, mon;
       if (a > 12 && b <= 12) { day = a; mon = b; }
       else if (b > 12 && a <= 12) { day = b; mon = a; }
-      else { day = a; mon = b; }
+      else { mon = a; day = b; }
       return validDate(yr, mon, day);
     }
 
@@ -1556,15 +1555,15 @@
       rows = rows.filter(function (r) { return r.customerCode && String(r.customerCode).trim().toUpperCase() === cf; });
     }
     if (state.dateFrom) {
-      var from = new Date(state.dateFrom + 'T00:00:00');
+      var from = state.dateFrom instanceof Date ? state.dateFrom : new Date(state.dateFrom + 'T00:00:00');
       if (isNaN(from.getTime())) from = null;
       if (from) rows = rows.filter(function (r) { return r.orderDate && r.orderDate.getTime() >= from.getTime(); });
     }
     if (state.dateTo) {
-      var to = new Date(state.dateTo + 'T00:00:00');
+      var to = state.dateTo instanceof Date ? state.dateTo : new Date(state.dateTo + 'T00:00:00');
       if (isNaN(to.getTime())) to = null;
       if (to) {
-        to.setHours(23, 59, 59, 999);
+        to = new Date(to.getFullYear(), to.getMonth(), to.getDate(), 23, 59, 59, 999);
         rows = rows.filter(function (r) { return r.orderDate && r.orderDate.getTime() <= to.getTime(); });
       }
     }
@@ -3802,25 +3801,46 @@
   }
 
   function renderDeliveryPersonFilter() {
-    var box = $('deliveryPersonFilter');
-    if (!box) return;
+    var list = $('deliveryPersonList');
+    var label = $('deliveryPersonLabel');
+    if (!list) return;
     var people = {};
     state.records.forEach(function (r) { if (r.deliveryPerson) people[r.deliveryPerson] = true; });
-    var list = Object.keys(people).sort(function (a, b) {
+    var names = Object.keys(people).sort(function (a, b) {
       return String(a).localeCompare(String(b), undefined, { numeric: true });
     });
-    var html = '<button type="button" class="pill is-active" data-person="ALL">All</button>';
-    for (var i = 0; i < list.length; i++) {
-      var active = hasSel('deliveryPerson', list[i]);
-      html += '<button type="button" class="pill' + (active ? ' is-active' : '') + '" data-person="' + escapeHtml(list[i]) + '">' + escapeHtml(list[i]) + '</button>';
+    var html = '';
+    for (var i = 0; i < names.length; i++) {
+      var checked = state.deliveryPerson.indexOf(names[i]) !== -1;
+      html += '<label class="dropdown-multi-item" data-person="' + escapeHtml(names[i]) + '">' +
+        '<input type="checkbox" value="' + escapeHtml(names[i]) + '"' + (checked ? ' checked' : '') + '>' +
+        '<span class="dm-label">' + escapeHtml(names[i]) + '</span></label>';
     }
-    box.innerHTML = html;
+    list.innerHTML = html || '<div class="dropdown-multi-item" style="color:var(--ink-subtle);pointer-events:none">No delivery persons</div>';
+    if (label) {
+      if (!state.deliveryPerson.length) {
+        label.textContent = 'All';
+      } else if (state.deliveryPerson.length <= 2) {
+        label.textContent = state.deliveryPerson.join(', ');
+      } else {
+        label.textContent = state.deliveryPerson.length + ' selected';
+      }
+    }
   }
 
   function setDeliveryPersonFilter(p) {
     if (p === 'ALL') state.deliveryPerson = [];
     else toggleSel('deliveryPerson', p);
     renderAll();
+  }
+
+  function filterDropdownItems(listEl, q) {
+    if (!listEl) return;
+    var items = listEl.querySelectorAll('.dropdown-multi-item');
+    for (var i = 0; i < items.length; i++) {
+      var lbl = items[i].getAttribute('data-person') || items[i].textContent || '';
+      items[i].style.display = (!q || lbl.toLowerCase().indexOf(q) !== -1) ? '' : 'none';
+    }
   }
 
   function syncPills(selector, attrKey, stateKey) {
@@ -3899,7 +3919,6 @@
     syncPills('#priorityFilter .pill', 'priority', 'priority');
     syncPills('#ackFilter .pill', 'ack', 'ack');
     syncPills('#statusFilter .pill', 'status', 'status');
-    syncPills('#deliveryPersonFilter .pill', 'person', 'deliveryPerson');
     if (!silent) renderAll();
   }
 
@@ -4276,11 +4295,37 @@
         if (btn && btn.getAttribute('data-status')) setStatusFilter(btn.getAttribute('data-status'));
       });
     }
-    var personFilter = $('deliveryPersonFilter');
-    if (personFilter) {
-      personFilter.addEventListener('click', function (ev) {
-        var btn = ev.target.closest && ev.target.closest('.pill');
-        if (btn && btn.getAttribute('data-person')) setDeliveryPersonFilter(btn.getAttribute('data-person'));
+    var personBtn = $('deliveryPersonBtn');
+    var personPanel = $('deliveryPersonPanel');
+    var personSearch = $('deliveryPersonSearch');
+    var personList = $('deliveryPersonList');
+    if (personBtn && personPanel) {
+      personBtn.addEventListener('click', function () {
+        var open = !personPanel.hidden;
+        personPanel.hidden = open;
+        personBtn.setAttribute('aria-expanded', open ? 'false' : 'true');
+        if (!open && personSearch) { personSearch.value = ''; filterDropdownItems(personList, ''); setTimeout(function () { personSearch.focus(); }, 50); }
+      });
+      personList.addEventListener('change', function (ev) {
+        var cb = ev.target.closest && ev.target.closest('input[type="checkbox"]');
+        if (!cb) return;
+        var val = cb.getAttribute('value');
+        if (!val) return;
+        if (cb.checked) { if (state.deliveryPerson.indexOf(val) === -1) state.deliveryPerson.push(val); }
+        else { var idx = state.deliveryPerson.indexOf(val); if (idx !== -1) state.deliveryPerson.splice(idx, 1); }
+        renderAll();
+      });
+      if (personSearch) {
+        personSearch.addEventListener('input', function () {
+          filterDropdownItems(personList, personSearch.value.trim().toLowerCase());
+        });
+      }
+      document.addEventListener('click', function (ev) {
+        if (personPanel.hidden) return;
+        if (!personBtn.contains(ev.target) && !personPanel.contains(ev.target)) {
+          personPanel.hidden = true;
+          personBtn.setAttribute('aria-expanded', 'false');
+        }
       });
     }
 
@@ -4592,18 +4637,6 @@
       });
     }
 
-    var alertToggle = $('alertToggle');
-    if (alertToggle) {
-      alertToggle.addEventListener('click', function () {
-        var panel = $('alertCenter');
-        var isMinimized = panel.classList.toggle('is-minimized');
-        alertToggle.setAttribute('aria-expanded', String(!isMinimized));
-        var icon = alertToggle.querySelector('i');
-        if (icon) icon.setAttribute('data-lucide', isMinimized ? 'plus' : 'minus');
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-      });
-    }
-
     var clearCustomerFilterBtn = $('clearCustomerFilter');
     if (clearCustomerFilterBtn) {
       clearCustomerFilterBtn.addEventListener('click', clearCustomerFilter);
@@ -4694,11 +4727,19 @@
     }
 
     var bellBtn = $('bellBtn');
-    if (bellBtn) {
+    var alertCenter = $('alertCenter');
+    var alertCloseBtn = $('alertCloseBtn');
+    if (bellBtn && alertCenter) {
       bellBtn.addEventListener('click', function () {
-        var alertCenter = $('alertCenter');
-        if (!alertCenter) return;
-        alertCenter.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        var isVisible = !alertCenter.hidden;
+        alertCenter.hidden = isVisible;
+        bellBtn.classList.toggle('is-active', !isVisible);
+      });
+    }
+    if (alertCloseBtn && alertCenter) {
+      alertCloseBtn.addEventListener('click', function () {
+        alertCenter.hidden = true;
+        if (bellBtn) bellBtn.classList.remove('is-active');
       });
     }
 
