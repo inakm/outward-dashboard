@@ -262,6 +262,8 @@
     autoRefresh: false,
     lastSyncAt: null,
     completeLimit: 5,
+    dispatchedLimit: 5,
+    zoneLimit: 5,
     customerLimit: 20,
     customerFilterSig: '',
     filterSig: ''
@@ -2361,29 +2363,42 @@
       });
     }
     if (meta) meta.textContent = list.length ? formatNum(list.length) + ' zones' : 'No zones';
-    if (!list.length) {
+    var visibleList = list.slice(0, state.zoneLimit);
+    if (!visibleList.length) {
       tbody.innerHTML = '<tr class="row-empty"><td colspan="8">No zone data in current scope</td></tr>';
-      return;
+    } else {
+      var html = '';
+      for (var i = 0; i < visibleList.length; i++) {
+        var s = visibleList[i];
+        var pct = Math.round(s.fulfillment);
+        var pctCls = pct < 60 ? ' is-low' : (pct < 90 ? ' is-mid' : '');
+        var active = hasSel('route', s.route);
+        html +=
+          '<tr class="zone-row' + (active ? ' is-active' : '') + '" data-route="' + escapeHtml(s.route) + '" tabindex="0" aria-label="Filter to route ' + escapeHtml(s.route) + '">' +
+          '<td><span class="route-chip">' + escapeHtml(s.route) + '</span></td>' +
+          '<td class="td-strong">' + escapeHtml(s.zone || '—') + '</td>' +
+          '<td class="td-strong">' + formatNum(s.total) + '</td>' +
+          '<td>' + (s.openP1 ? '<span class="badge badge-p1">' + formatNum(s.openP1) + '</span>' : '—') + '</td>' +
+          '<td>' + formatNum(s.done) + '</td>' +
+          '<td>' + formatNum(s.transit) + '</td>' +
+          '<td>' + formatNum(s.pending) + '</td>' +
+          '<td><span class="fulfillment"><span class="fulfillment-track"><span class="fulfillment-fill' + pctCls + '" style="width:' + Math.min(100, Math.max(0, pct)) + '%"></span></span><span class="fulfillment-num">' + pct + '%</span></span></td>' +
+          '</tr>';
+      }
+      tbody.innerHTML = html;
     }
-    var html = '';
-    for (var i = 0; i < list.length; i++) {
-      var s = list[i];
-      var pct = Math.round(s.fulfillment);
-      var pctCls = pct < 60 ? ' is-low' : (pct < 90 ? ' is-mid' : '');
-      var active = hasSel('route', s.route);
-      html +=
-        '<tr class="zone-row' + (active ? ' is-active' : '') + '" data-route="' + escapeHtml(s.route) + '" tabindex="0" aria-label="Filter to route ' + escapeHtml(s.route) + '">' +
-        '<td><span class="route-chip">' + escapeHtml(s.route) + '</span></td>' +
-        '<td class="td-strong">' + escapeHtml(s.zone || '—') + '</td>' +
-        '<td class="td-strong">' + formatNum(s.total) + '</td>' +
-        '<td>' + (s.openP1 ? '<span class="badge badge-p1">' + formatNum(s.openP1) + '</span>' : '—') + '</td>' +
-        '<td>' + formatNum(s.done) + '</td>' +
-        '<td>' + formatNum(s.transit) + '</td>' +
-        '<td>' + formatNum(s.pending) + '</td>' +
-        '<td><span class="fulfillment"><span class="fulfillment-track"><span class="fulfillment-fill' + pctCls + '" style="width:' + Math.min(100, Math.max(0, pct)) + '%"></span></span><span class="fulfillment-num">' + pct + '%</span></span></td>' +
-        '</tr>';
+    var zMoreWrap = $('zonesMore');
+    var zMoreBtn = $('zonesLoadMore');
+    var zMoreLabel = $('zonesMoreLabel');
+    if (zMoreWrap && zMoreBtn && zMoreLabel) {
+      if (list.length > state.zoneLimit) {
+        var zRemaining = list.length - state.zoneLimit;
+        zMoreLabel.textContent = 'Load more (' + formatNum(zRemaining) + ' remaining)';
+        zMoreWrap.hidden = false;
+      } else {
+        zMoreWrap.hidden = true;
+      }
     }
-    tbody.innerHTML = html;
   }
 
   function toggleRoute(r) {
@@ -3303,18 +3318,47 @@
     return r.ack === 'Done' && r.status === 'Dispatched';
   }
 
+  function isDispatched(r) {
+    return r.status === 'Dispatched' && r.ack !== 'Done';
+  }
+
   function renderTable() {
     var tbody = $('tableBody');
     var cbody = $('completeBody');
-    if (!tbody || !cbody) return;
+    var dbody = $('dispatchedBody');
+    if (!tbody) return;
     var rows = sortRows(filteredRows(), state.sortKey, state.sortDir);
     var complete = [];
+    var dispatched = [];
     var open = [];
     for (var i = 0; i < rows.length; i++) {
-      (isComplete(rows[i]) ? complete : open).push(rows[i]);
+      if (isComplete(rows[i])) complete.push(rows[i]);
+      else if (isDispatched(rows[i])) dispatched.push(rows[i]);
+      else open.push(rows[i]);
     }
+
+    if (state.completeQuery) {
+      var cq = state.completeQuery.toLowerCase();
+      complete = complete.filter(function (r) {
+        return (r.invoiceNo || '').toLowerCase().indexOf(cq) !== -1 ||
+          (r.customer || '').toLowerCase().indexOf(cq) !== -1 ||
+          (r.branch || '').toLowerCase().indexOf(cq) !== -1 ||
+          (r.location || '').toLowerCase().indexOf(cq) !== -1;
+      });
+    }
+    if (state.dispatchedQuery) {
+      var dq = state.dispatchedQuery.toLowerCase();
+      dispatched = dispatched.filter(function (r) {
+        return (r.invoiceNo || '').toLowerCase().indexOf(dq) !== -1 ||
+          (r.customer || '').toLowerCase().indexOf(dq) !== -1 ||
+          (r.branch || '').toLowerCase().indexOf(dq) !== -1 ||
+          (r.location || '').toLowerCase().indexOf(dq) !== -1;
+      });
+    }
+
     setText('rowCount', formatNum(open.length) + ' of ' + formatNum(state.records.length) + ' records');
     setText('completeCount', formatNum(complete.length) + ' records');
+    setText('dispatchedCount', formatNum(dispatched.length) + ' records');
     if (!open.length) {
       var msg = state.records.length
         ? 'No records match the current filters'
@@ -3383,6 +3427,45 @@
         moreWrap.hidden = true;
       }
     }
+
+    if (dbody) {
+      if (!dispatched.length) {
+        dbody.innerHTML = '<tr class="row-empty"><td colspan="10">No dispatched records (Status = Dispatched, Ack ≠ Done) in the current scope.</td></tr>';
+      } else {
+        var visibleDispatched = dispatched.slice(0, state.dispatchedLimit);
+        var dhtml = '';
+        for (i = 0; i < visibleDispatched.length; i++) {
+          var d = visibleDispatched[i];
+          dhtml +=
+            '<tr>' +
+            '<td class="td-date">' + formatDate(d.orderDate) + '</td>' +
+            '<td class="td-mono">' + invoiceHtml(d.invoiceNo) + '</td>' +
+            '<td class="td-strong">' + escapeHtml(d.customer || '—') + (d.customerCode
+              ? '<span class="td-mono td-dim"><br><button type="button" class="jump-link" data-jump-code="' + escapeHtml(d.customerCode) + '" title="Open ' + escapeHtml(d.customerCode) + ' in the Customers tab">' + escapeHtml(d.customerCode) + '</button></span>' : '') + '</td>' +
+            '<td>' + escapeHtml(d.branch || '—') + '</td>' +
+            '<td>' + escapeHtml(d.location || '—') + '</td>' +
+            '<td>' + escapeHtml(d.route || '—') + '</td>' +
+            '<td>' + priorityBadge(d.priority) + '</td>' +
+            '<td class="td-date">' + formatDate(d.dispatchDate) + '</td>' +
+            '<td>' + ackBadge(d.ack) + '</td>' +
+            '<td>' + escapeHtml(d.deliveryPerson || '—') + '</td>' +
+            '</tr>';
+        }
+        dbody.innerHTML = dhtml;
+      }
+    }
+    var dMoreWrap = $('dispatchedMore');
+    var dMoreBtn = $('dispatchedLoadMore');
+    var dMoreLabel = $('dispatchedMoreLabel');
+    if (dMoreWrap && dMoreBtn && dMoreLabel) {
+      if (dispatched.length > state.dispatchedLimit) {
+        var dRemaining = dispatched.length - state.dispatchedLimit;
+        dMoreLabel.textContent = 'Load more (' + formatNum(dRemaining) + ' remaining)';
+        dMoreWrap.hidden = false;
+      } else {
+        dMoreWrap.hidden = true;
+      }
+    }
   }
 
   /* -------------------------------------------------------------
@@ -3436,10 +3519,13 @@
   function renderAll() {
     var sig = state.priority.join(',') + '|' + state.ack.join(',') + '|' + state.status.join(',') +
       '|' + state.route.join(',') + '|' + state.deliveryPerson.join(',') + '|' + state.customerFilter +
-      '|' + state.query + '|' + state.zonesQuery + '|' + state.routesQuery +
+      '|' + state.query + '|' + state.dispatchedQuery + '|' + state.completeQuery +
+      '|' + state.zonesQuery + '|' + state.routesQuery +
       '|' + state.dateFrom + '|' + state.dateTo + '|' + state.sortKey + state.sortDir;
       if (sig !== state.filterSig) {
       state.completeLimit = 5;
+      state.dispatchedLimit = 5;
+      state.zoneLimit = 5;
       state.filterSig = sig;
     }
     var rows = filteredRows();
@@ -4463,6 +4549,41 @@
       });
     }
 
+    var dispatchedBody = $('dispatchedBody');
+    if (dispatchedBody) {
+      dispatchedBody.addEventListener('click', function (ev) {
+        var link = ev.target.closest && ev.target.closest('[data-jump-code]');
+        if (link) {
+          ev.preventDefault();
+          openCustomerOrders(link.getAttribute('data-jump-code'));
+        }
+      });
+      dispatchedBody.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          var link = ev.target.closest && ev.target.closest('[data-jump-code]');
+          if (link) {
+            ev.preventDefault();
+            openCustomerOrders(link.getAttribute('data-jump-code'));
+          }
+        }
+      });
+    }
+    var dispatchedLoadMore = $('dispatchedLoadMore');
+    if (dispatchedLoadMore) {
+      dispatchedLoadMore.addEventListener('click', function () {
+        state.dispatchedLimit += 5;
+        renderTable();
+      });
+    }
+
+    var zonesLoadMore = $('zonesLoadMore');
+    if (zonesLoadMore) {
+      zonesLoadMore.addEventListener('click', function () {
+        state.zoneLimit = (state.zoneLimit || 5) + 5;
+        renderZoneTraffic(filteredRows(true));
+      });
+    }
+
     var customerLoadMore = $('customerLoadMore');
     if (customerLoadMore) {
       customerLoadMore.addEventListener('click', function () {
@@ -4511,6 +4632,32 @@
         debounce = setTimeout(function () {
           state.query = search.value.trim();
           renderAll();
+        }, 140);
+      });
+    }
+
+    var completeSearchInput = $('completeSearchInput');
+    if (completeSearchInput) {
+      var ccDebounce = null;
+      completeSearchInput.addEventListener('input', function () {
+        clearTimeout(ccDebounce);
+        ccDebounce = setTimeout(function () {
+          state.completeQuery = completeSearchInput.value.trim();
+          state.completeLimit = 5;
+          renderTable();
+        }, 140);
+      });
+    }
+
+    var dispatchedSearchInput = $('dispatchedSearchInput');
+    if (dispatchedSearchInput) {
+      var ddDebounce = null;
+      dispatchedSearchInput.addEventListener('input', function () {
+        clearTimeout(ddDebounce);
+        ddDebounce = setTimeout(function () {
+          state.dispatchedQuery = dispatchedSearchInput.value.trim();
+          state.dispatchedLimit = 5;
+          renderTable();
         }, 140);
       });
     }

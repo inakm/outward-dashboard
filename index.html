@@ -276,43 +276,6 @@
       </div>
     </section>
 
-    <section class="top-overview">
-      <section class="kpis" id="kpiGrid" aria-label="Key performance indicators">
-        <article class="kpi-card">
-          <div class="kpi-icon"><i data-lucide="package"></i></div>
-          <div class="kpi-body">
-            <p class="kpi-label">Total Outward Volume</p>
-            <p class="kpi-value" id="kpiVolume">—</p>
-            <p class="kpi-note" id="kpiVolumeNote">records in scope</p>
-          </div>
-        </article>
-        <article class="kpi-card">
-          <div class="kpi-icon kpi-icon-danger"><i data-lucide="alert-triangle"></i></div>
-          <div class="kpi-body">
-            <p class="kpi-label">Open Bottlenecks</p>
-            <p class="kpi-value" id="kpiBottleneck">—</p>
-            <p class="kpi-note">P1 orders without a Done ack</p>
-          </div>
-        </article>
-        <article class="kpi-card">
-          <div class="kpi-icon"><i data-lucide="gauge"></i></div>
-          <div class="kpi-body">
-            <p class="kpi-label">Dispatch Velocity</p>
-            <p class="kpi-value kpi-mono" id="kpiVelocity">—</p>
-            <p class="kpi-note">avg. order → dispatch, in days</p>
-          </div>
-        </article>
-        <article class="kpi-card">
-          <div class="kpi-icon kpi-icon-success"><i data-lucide="check-circle-2"></i></div>
-          <div class="kpi-body">
-            <p class="kpi-label">Fulfillment Rate</p>
-            <p class="kpi-value kpi-mono" id="kpiFulfillment">—</p>
-            <p class="kpi-note">rows acked as Done</p>
-          </div>
-        </article>
-      </section>
-    </section>
-
     <section class="panel table-panel">
       <header class="table-head">
         <div>
@@ -374,12 +337,77 @@
         </table>
       </div>
 
+      <header class="table-head dispatched-head">
+        <div>
+          <h2 class="card-title">Dispatched</h2>
+          <p class="card-sub">Status = Dispatched — orders awaiting completion</p>
+        </div>
+        <div class="table-actions">
+          <div class="search-box">
+            <i data-lucide="search"></i>
+            <input type="search" id="dispatchedSearchInput" placeholder="Search invoice, customer…" autocomplete="off" spellcheck="false">
+          </div>
+          <span class="status-badge" id="dispatchedCount">0 records</span>
+        </div>
+      </header>
+      <div class="table-wrap">
+        <table id="dispatchedTable">
+          <thead>
+            <tr>
+              <th data-key="orderDate" class="sortable">
+                <span class="th-label">Order Date</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="invoiceNo" class="sortable">
+                <span class="th-label">Invoice No.</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="customer" class="sortable">
+                <span class="th-label">Customer Name</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="branch" class="sortable">
+                <span class="th-label">Branch</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="location" class="sortable">
+                <span class="th-label">Location</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="route" class="sortable">
+                <span class="th-label">Route</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="priority" class="sortable">
+                <span class="th-label">Priority</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="dispatchDate" class="sortable">
+                <span class="th-label">Dispatch Date</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="ack" class="sortable">
+                <span class="th-label">Ack</span><span class="sort-ind"></span>
+              </th>
+              <th data-key="deliveryPerson" class="sortable">
+                <span class="th-label">Delivery Person</span><span class="sort-ind"></span>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="dispatchedBody"></tbody>
+        </table>
+      </div>
+      <div class="complete-more" id="dispatchedMore" hidden>
+        <button type="button" class="btn btn-secondary btn-sm" id="dispatchedLoadMore">
+          <i data-lucide="chevrons-down"></i>
+          <span id="dispatchedMoreLabel">Load more</span>
+        </button>
+      </div>
+
       <header class="table-head complete-head">
         <div>
           <h2 class="card-title">ALL Complete</h2>
           <p class="card-sub">Status = Dispatched and Ack = Done — moved below the main matrix</p>
         </div>
-        <span class="status-badge complete-badge" id="completeCount">0 records</span>
+        <div class="table-actions">
+          <div class="search-box">
+            <i data-lucide="search"></i>
+            <input type="search" id="completeSearchInput" placeholder="Search invoice, customer…" autocomplete="off" spellcheck="false">
+          </div>
+          <span class="status-badge complete-badge" id="completeCount">0 records</span>
+        </div>
       </header>
       <div class="table-wrap">
         <table id="completeTable">
@@ -431,6 +459,43 @@
       </div>
     </section>
 
+    <section class="top-overview">
+      <section class="kpis" id="kpiGrid" aria-label="Key performance indicators">
+        <article class="kpi-card">
+          <div class="kpi-icon"><i data-lucide="package"></i></div>
+          <div class="kpi-body">
+            <p class="kpi-label">Total Outward Volume</p>
+            <p class="kpi-value" id="kpiVolume">—</p>
+            <p class="kpi-note" id="kpiVolumeNote">records in scope</p>
+          </div>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-icon kpi-icon-danger"><i data-lucide="alert-triangle"></i></div>
+          <div class="kpi-body">
+            <p class="kpi-label">Open Bottlenecks</p>
+            <p class="kpi-value" id="kpiBottleneck">—</p>
+            <p class="kpi-note">P1 orders without a Done ack</p>
+          </div>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-icon"><i data-lucide="gauge"></i></div>
+          <div class="kpi-body">
+            <p class="kpi-label">Dispatch Velocity</p>
+            <p class="kpi-value kpi-mono" id="kpiVelocity">—</p>
+            <p class="kpi-note">avg. order → dispatch, in days</p>
+          </div>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-icon kpi-icon-success"><i data-lucide="check-circle-2"></i></div>
+          <div class="kpi-body">
+            <p class="kpi-label">Fulfillment Rate</p>
+            <p class="kpi-value kpi-mono" id="kpiFulfillment">—</p>
+            <p class="kpi-note">rows acked as Done</p>
+          </div>
+        </article>
+      </section>
+    </section>
+
     <section class="panel route-kpis">
       <header class="table-head">
         <div>
@@ -472,6 +537,12 @@
           </thead>
           <tbody id="zonesBody"></tbody>
         </table>
+      </div>
+      <div class="complete-more" id="zonesMore" hidden>
+        <button type="button" class="btn btn-secondary btn-sm" id="zonesLoadMore">
+          <i data-lucide="chevrons-down"></i>
+          <span id="zonesMoreLabel">Load more</span>
+        </button>
       </div>
     </section>
 
