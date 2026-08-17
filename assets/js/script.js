@@ -241,6 +241,10 @@
     deliveryPerson: [],
     customerFilter: '',
     query: '',
+    completeQuery: '',
+    dispatchedQuery: '',
+    zonesQuery: '',
+    routesQuery: '',
     customerQuery: '',
     sortKey: 'orderDate',
     sortDir: 'desc',
@@ -359,7 +363,10 @@
     if (typeof v === 'number' && isFinite(v)) {
       if (typeof XLSX !== 'undefined' && XLSX.SSF && XLSX.SSF.parse_date_code) {
         var d = XLSX.SSF.parse_date_code(v);
-        if (d) return new Date(d.y, d.m - 1, d.d);
+        if (d) {
+          var dt = new Date(d.y, d.m - 1, d.d);
+          return startOfDay(dt);
+        }
       }
       return null;
     }
@@ -369,16 +376,26 @@
     var gviz = s.match(/^Date\((\d{4}),(\d{1,2}),(\d{1,2})\)$/);
     if (gviz) return validDate(+gviz[1], +gviz[2] + 1, +gviz[3]);
 
-    /* mm/dd/yyyy (Google Sheet format). dd/mm/yyyy is accepted too when the
-       day part is unambiguous (>12); when both parts are <=12 the sheet's
-       mm/dd interpretation wins. */
+    /* ISO 8601: YYYY-MM-DD (or YYYY-MM-DDTHH:MM:SS...) — handle before the
+       ambiguous two-part numeric regex so it isn't mis-parsed as dd-mm-yyyy. */
+    var isoFull = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[T ]|$)/);
+    if (isoFull) {
+      var dt = new Date(+isoFull[1], +isoFull[2] - 1, +isoFull[3]);
+      return isNaN(dt.getTime()) ? null : startOfDay(dt);
+    }
+
+    /* dd/mm/yyyy or mm/dd/yyyy (sheet locale, day-first). When both parts
+       are ≤ 12, default to dd/mm (day-first) since the source sheet uses
+       that locale. Month-first is accepted when the second part > 12
+       (e.g. 8/13/2026 → Aug 13). */
     var sl = s.match(/^(\d{1,2})[/\-.](\d{1,2})[/\-.](\d{2,4})$/);
     if (sl) {
       var a = +sl[1], b = +sl[2], yr = +sl[3];
       if (yr < 100) yr += 2000;
       var day, mon;
-      if (a > 12) { day = a; mon = b; }
-      else { mon = a; day = b; }
+      if (a > 12 && b <= 12) { day = a; mon = b; }
+      else if (b > 12 && a <= 12) { day = b; mon = a; }
+      else { day = a; mon = b; }
       return validDate(yr, mon, day);
     }
 
@@ -2213,10 +2230,23 @@
     renderPriorityAlerts(rows);
     renderAging(rows);
     var meta = $('alertMeta');
-    if (!meta) return;
+    var bellBadge = $('bellBadge');
+    var bellBtn = $('bellBtn');
     var open = 0;
     rows.forEach(function (r) { if (r.ack !== 'Done') open++; });
     var aging = buildAgingData(rows).total;
+    var alertTotal = open + aging;
+    if (bellBadge) {
+      if (alertTotal > 0) {
+        bellBadge.textContent = formatNum(alertTotal);
+        bellBadge.hidden = false;
+        if (bellBtn) bellBtn.classList.add('has-alerts');
+      } else {
+        bellBadge.hidden = true;
+        if (bellBtn) bellBtn.classList.remove('has-alerts');
+      }
+    }
+    if (!meta) return;
     if (!open && !aging) {
       meta.textContent = 'All clear';
     } else {
@@ -2232,6 +2262,12 @@
     var meta = $('routesMeta');
     if (!tbody) return;
     var stats = buildRouteStats(rows);
+    if (state.routesQuery) {
+      var rq = state.routesQuery.toLowerCase();
+      stats = stats.filter(function (s) {
+        return s.route.toLowerCase().indexOf(rq) !== -1;
+      });
+    }
     if (meta) meta.textContent = stats.length ? formatNum(stats.length) + ' routes' : 'No routes';
     if (!stats.length) {
       tbody.innerHTML = '<tr class="row-empty"><td colspan="7">No route data in current scope</td></tr>';
@@ -2318,6 +2354,12 @@
     var meta = $('zonesMeta');
     if (!tbody) return;
     var list = buildZoneTraffic(rows);
+    if (state.zonesQuery) {
+      var zq = state.zonesQuery.toLowerCase();
+      list = list.filter(function (s) {
+        return s.route.toLowerCase().indexOf(zq) !== -1 || (s.zone || '').toLowerCase().indexOf(zq) !== -1;
+      });
+    }
     if (meta) meta.textContent = list.length ? formatNum(list.length) + ' zones' : 'No zones';
     if (!list.length) {
       tbody.innerHTML = '<tr class="row-empty"><td colspan="8">No zone data in current scope</td></tr>';
@@ -3394,7 +3436,8 @@
   function renderAll() {
     var sig = state.priority.join(',') + '|' + state.ack.join(',') + '|' + state.status.join(',') +
       '|' + state.route.join(',') + '|' + state.deliveryPerson.join(',') + '|' + state.customerFilter +
-      '|' + state.query + '|' + state.dateFrom + '|' + state.dateTo + '|' + state.sortKey + state.sortDir;
+      '|' + state.query + '|' + state.zonesQuery + '|' + state.routesQuery +
+      '|' + state.dateFrom + '|' + state.dateTo + '|' + state.sortKey + state.sortDir;
       if (sig !== state.filterSig) {
       state.completeLimit = 5;
       state.filterSig = sig;
@@ -3747,10 +3790,22 @@
     state.deliveryPerson = [];
     state.customerFilter = '';
     state.query = '';
+    state.completeQuery = '';
+    state.dispatchedQuery = '';
+    state.zonesQuery = '';
+    state.routesQuery = '';
     state.dateFrom = null;
     state.dateTo = null;
     var search = $('searchInput');
     if (search) search.value = '';
+    var completeSearch = $('completeSearchInput');
+    if (completeSearch) completeSearch.value = '';
+    var dispatchedSearch = $('dispatchedSearchInput');
+    if (dispatchedSearch) dispatchedSearch.value = '';
+    var zonesSearch = $('zonesSearchInput');
+    if (zonesSearch) zonesSearch.value = '';
+    var routesSearch = $('routesSearchInput');
+    if (routesSearch) routesSearch.value = '';
     var df = $('dateFrom');
     if (df) df.value = '';
     var dt = $('dateTo');
@@ -4472,6 +4527,56 @@
         }
         renderTable();
         renderSortIcons();
+      });
+    }
+
+    var backToTopBtn = $('backToTopBtn');
+    if (backToTopBtn) {
+      window.addEventListener('scroll', function () {
+        if (window.scrollY > 400) {
+          backToTopBtn.hidden = false;
+          backToTopBtn.classList.add('is-visible');
+        } else {
+          backToTopBtn.classList.remove('is-visible');
+          backToTopBtn.hidden = true;
+        }
+      }, { passive: true });
+      backToTopBtn.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    var bellBtn = $('bellBtn');
+    if (bellBtn) {
+      bellBtn.addEventListener('click', function () {
+        var alertCenter = $('alertCenter');
+        if (!alertCenter) return;
+        alertCenter.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+
+    var zonesSearchInput = $('zonesSearchInput');
+    if (zonesSearchInput) {
+      var zDebounce = null;
+      zonesSearchInput.addEventListener('input', function () {
+        clearTimeout(zDebounce);
+        zDebounce = setTimeout(function () {
+          state.zonesQuery = zonesSearchInput.value.trim();
+          state.zoneLimit = 5;
+          renderAll();
+        }, 140);
+      });
+    }
+
+    var routesSearchInput = $('routesSearchInput');
+    if (routesSearchInput) {
+      var rDebounce = null;
+      routesSearchInput.addEventListener('input', function () {
+        clearTimeout(rDebounce);
+        rDebounce = setTimeout(function () {
+          state.routesQuery = routesSearchInput.value.trim();
+          renderAll();
+        }, 140);
       });
     }
   }

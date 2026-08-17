@@ -153,6 +153,10 @@
           <i data-lucide="refresh-cw"></i>
           <span>Sync Google Sheet</span>
         </button>
+        <button type="button" id="bellBtn" class="btn btn-secondary btn-sm bell-btn" title="Alerts">
+          <i data-lucide="bell"></i>
+          <span class="bell-badge" id="bellBadge" hidden>0</span>
+        </button>
       </div>
     </div>
   </header>
@@ -444,7 +448,13 @@
           <h2 class="card-title">Zone-wise Traffic</h2>
           <p class="card-sub">Order volume and dispatch health per circle / zone in current scope — click a row to filter its route</p>
         </div>
-        <span class="status-badge" id="zonesMeta">—</span>
+        <div class="table-actions">
+          <div class="search-box">
+            <i data-lucide="search"></i>
+            <input type="search" id="zonesSearchInput" placeholder="Search route or zone…" autocomplete="off" spellcheck="false">
+          </div>
+          <span class="status-badge" id="zonesMeta">—</span>
+        </div>
       </header>
       <div class="table-wrap">
         <table id="zonesTable">
@@ -537,7 +547,13 @@
           <h2 class="card-title">Routes Overview</h2>
           <p class="card-sub">Per-route dispatch health in current scope — click a route to filter</p>
         </div>
-        <span class="status-badge" id="routesMeta">—</span>
+        <div class="table-actions">
+          <div class="search-box">
+            <i data-lucide="search"></i>
+            <input type="search" id="routesSearchInput" placeholder="Search route…" autocomplete="off" spellcheck="false">
+          </div>
+          <span class="status-badge" id="routesMeta">—</span>
+        </div>
       </header>
       <div class="table-wrap">
         <table id="routesTable">
@@ -1002,13 +1018,18 @@
     <div id="printArea" class="print-only" hidden></div>
 
     <footer class="footer">
-      <span><a href="https://inakm.github.io/outward-dashboard/" class="footer-link">SkyLimit Outwards Dashboard</a> · processed locally with SheetJS · cached in IndexedDB</span>
+      <span>Dashboard developed &amp; maintained by <a href="https://inakm.github.io" class="footer-link">AKM</a> &amp; <a href="https://f9xr.github.io" class="footer-link">F9XR Team</a></span>
+      <span class="footer-meta">Processed locally with <a href="https://sheetjs.com" class="footer-link">SheetJS</a> · cached in <a href="https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API" class="footer-link">IndexedDB</a></span>
       <span class="footer-meta">Linear-grade light canvas · <span class="mono">#f7f8fa</span></span>
     </footer>
 
   </main>
 
   <div id="toastStack" class="toast-stack" aria-live="polite"></div>
+
+  <button type="button" id="backToTopBtn" class="back-to-top" aria-label="Back to top" hidden>
+    <i data-lucide="arrow-up"></i>
+  </button>
 
 </body>
 </html>

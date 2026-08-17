@@ -1673,6 +1673,94 @@ tr.cust-row.is-clickable:focus-visible {
   text-decoration: underline;
 }
 
+/* ---------- Back to top ---------- */
+.back-to-top {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 50;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface-1);
+  border: 1px solid var(--hairline-strong);
+  color: var(--ink-muted);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: background-color 140ms ease, color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+}
+
+.back-to-top.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.back-to-top:hover {
+  background: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
+  box-shadow: 0 6px 20px rgba(94, 106, 210, 0.3);
+}
+
+.back-to-top svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---------- Bell icon button ---------- */
+.bell-btn {
+  position: relative;
+}
+
+.bell-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: var(--r-pill);
+  background: var(--p1);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.bell-btn.has-alerts {
+  border-color: rgba(201, 56, 63, 0.4);
+}
+
+/* ---------- Section spacing ---------- */
+.main > section,
+main > section,
+main > div,
+.container > section,
+.container > div {
+  margin-top: var(--s-lg);
+}
+
+.hero + section,
+.hero + div {
+  margin-top: 0;
+}
+
+.tabs + div,
+.tabs + section {
+  margin-top: var(--s-lg);
+}
+
 /* ---------- Toasts ---------- */
 .toast-stack {
   position: fixed;
