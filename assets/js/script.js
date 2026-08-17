@@ -192,7 +192,23 @@
     'madapur': 'Madhapur',
     'uppal': 'Uppal',
     'abids': 'Abids',
-    'gunter': 'Guntur'
+    'gunter': 'Guntur',
+    'quthbullapur': 'Quthbullapur',
+    'quthbulapur': 'Quthbullapur',
+    'quthullapur': 'Quthbullapur',
+    'rcpuram': 'RC Puram',
+    'rc puram': 'RC Puram',
+    'ramachandrapuram': 'Ramachandra Puram',
+    'ramachandra puram': 'Ramachandra Puram',
+    'suchitra': 'Suchitra',
+    'choutuppal': 'Choutuppal',
+    'chowtuppal': 'Choutuppal',
+    'choutupall': 'Choutuppal',
+    'vizag': 'Vizag',
+    'visakhapatnam': 'Visakhapatnam',
+    'vizianagaram': 'Vizianagaram',
+    'tuni': 'Tuni',
+    'kphb': 'KPHB'
   };
 
   var PRIORITY_MAP = {
@@ -242,6 +258,8 @@
     autoRefresh: false,
     lastSyncAt: null,
     completeLimit: 5,
+    customerLimit: 20,
+    customerFilterSig: '',
     filterSig: ''
   };
 
@@ -454,21 +472,35 @@
   /* Branch/location → R-code override, checked BEFORE the route_plan lookup.
      Supersedes the old GHMC scheme (which put Madhapur on R4) with the
      Bowenpally hub plan — R6 = Madhapur — and routes out-of-city branches
-     (Andhra → R7, Telangana-outside-Hyderabad → R5) that the plan lacks. */
+     (Andhra → R7, Telangana-outside-Hyderabad → R5) and misc locations
+     not yet in the R1-R7 plan that the plan lacks. */
   var BRANCH_ROUTE_OVERRIDE = {
     'Madhapur': 'R6',
+    'Suchitra': 'R1',
+    'Rc Puram': 'R1',
+    'Ramachandra Puram': 'R1',
+    'Quthbullapur': 'R2',
     'Srikakulam': 'R7',
     'Kakinada': 'R7',
     'Lalapet Guntur': 'R7',
-    'Choutuppal': 'R5',
+    'Choutuppal': 'R3',
     'Tukkuguda': 'R5',
-    'Ramoji Film City': 'R5'
+    'Ramoji Film City': 'R5',
+    'Vizag': 'R7',
+    'Visakhapatnam': 'R7',
+    'Tuni': 'R7'
   };
 
   function branchRouteOverride(branch, location) {
     for (var i = 0; i < 2; i++) {
       var key = cleanPlace(i === 0 ? branch : location);
       if (key && BRANCH_ROUTE_OVERRIDE[key]) return BRANCH_ROUTE_OVERRIDE[key];
+      if (key) {
+        var lower = key.toLowerCase();
+        for (var k in BRANCH_ROUTE_OVERRIDE) {
+          if (k.toLowerCase() === lower) return BRANCH_ROUTE_OVERRIDE[k];
+        }
+      }
     }
     return '';
   }
@@ -3471,6 +3503,11 @@
   function renderCustomers() {
     var tbody = $('customerBody');
     if (!tbody) return;
+    var custSig = state.customerQuery + '|' + state.abc;
+    if (custSig !== state.customerFilterSig) {
+      state.customerLimit = 20;
+      state.customerFilterSig = custSig;
+    }
     var abc = abcClassify(state.records);
     var meta = $('abcMeta');
     if (meta) {
@@ -3501,8 +3538,9 @@
       return String(a.name).localeCompare(String(b.name), undefined, { numeric: true, sensitivity: 'base' });
     });
     var html = '';
-    for (var i = 0; i < list.length; i++) {
-      var c = list[i];
+    var visibleList = list.slice(0, state.customerLimit);
+    for (var i = 0; i < visibleList.length; i++) {
+      var c = visibleList[i];
       var branches = state.branches[c.code] || [];
       var stats = customerOrderStats(c.code, c.name, state.records);
       var cls = abc.classes[c.name] || 'C';
@@ -3530,6 +3568,18 @@
       tbody.innerHTML = '<tr class="row-empty"><td colspan="11">No customers match the current search.</td></tr>';
     } else {
       tbody.innerHTML = html;
+    }
+    var moreWrap = $('customerMore');
+    var moreBtn = $('customerLoadMore');
+    var moreLabel = $('customerMoreLabel');
+    if (moreWrap && moreBtn && moreLabel) {
+      if (list.length > state.customerLimit) {
+        var remaining = list.length - state.customerLimit;
+        moreLabel.textContent = 'Load more (' + formatNum(remaining) + ' remaining)';
+        moreWrap.hidden = false;
+      } else {
+        moreWrap.hidden = true;
+      }
     }
     refreshIcons();
   }
@@ -4358,6 +4408,14 @@
       completeLoadMore.addEventListener('click', function () {
         state.completeLimit += 5;
         renderTable();
+      });
+    }
+
+    var customerLoadMore = $('customerLoadMore');
+    if (customerLoadMore) {
+      customerLoadMore.addEventListener('click', function () {
+        state.customerLimit += 20;
+        renderCustomers();
       });
     }
 

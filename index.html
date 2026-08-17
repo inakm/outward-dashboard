@@ -162,7 +162,7 @@
     <section class="hero">
       <p class="eyebrow">Outward Logistics · Enterprise Intelligence</p>
       <h1 class="display">SkyLimit Outwards Dashboard</h1>
-      <p class="subhead">Live outward dispatch — volume, bottlenecks, velocity and fulfilment across every customer, branch and location.</p>
+      <p class="subhead">Track outward dispatch across customers, branches and locations.</p>
     </section>
 
     <section class="panel context-strip" id="contextStrip" hidden>
@@ -270,6 +270,43 @@
           <i data-lucide="x"></i><span>Clear</span>
         </button>
       </div>
+    </section>
+
+    <section class="top-overview">
+      <section class="kpis" id="kpiGrid" aria-label="Key performance indicators">
+        <article class="kpi-card">
+          <div class="kpi-icon"><i data-lucide="package"></i></div>
+          <div class="kpi-body">
+            <p class="kpi-label">Total Outward Volume</p>
+            <p class="kpi-value" id="kpiVolume">—</p>
+            <p class="kpi-note" id="kpiVolumeNote">records in scope</p>
+          </div>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-icon kpi-icon-danger"><i data-lucide="alert-triangle"></i></div>
+          <div class="kpi-body">
+            <p class="kpi-label">Open Bottlenecks</p>
+            <p class="kpi-value" id="kpiBottleneck">—</p>
+            <p class="kpi-note">P1 orders without a Done ack</p>
+          </div>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-icon"><i data-lucide="gauge"></i></div>
+          <div class="kpi-body">
+            <p class="kpi-label">Dispatch Velocity</p>
+            <p class="kpi-value kpi-mono" id="kpiVelocity">—</p>
+            <p class="kpi-note">avg. order → dispatch, in days</p>
+          </div>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-icon kpi-icon-success"><i data-lucide="check-circle-2"></i></div>
+          <div class="kpi-body">
+            <p class="kpi-label">Fulfillment Rate</p>
+            <p class="kpi-value kpi-mono" id="kpiFulfillment">—</p>
+            <p class="kpi-note">rows acked as Done</p>
+          </div>
+        </article>
+      </section>
     </section>
 
     <section class="panel table-panel">
@@ -390,43 +427,6 @@
       </div>
     </section>
 
-    <section class="top-overview">
-      <section class="kpis" id="kpiGrid" aria-label="Key performance indicators">
-        <article class="kpi-card">
-          <div class="kpi-icon"><i data-lucide="package"></i></div>
-          <div class="kpi-body">
-            <p class="kpi-label">Total Outward Volume</p>
-            <p class="kpi-value" id="kpiVolume">—</p>
-            <p class="kpi-note" id="kpiVolumeNote">records in scope</p>
-          </div>
-        </article>
-        <article class="kpi-card">
-          <div class="kpi-icon kpi-icon-danger"><i data-lucide="alert-triangle"></i></div>
-          <div class="kpi-body">
-            <p class="kpi-label">Open Bottlenecks</p>
-            <p class="kpi-value" id="kpiBottleneck">—</p>
-            <p class="kpi-note">P1 orders without a Done ack</p>
-          </div>
-        </article>
-        <article class="kpi-card">
-          <div class="kpi-icon"><i data-lucide="gauge"></i></div>
-          <div class="kpi-body">
-            <p class="kpi-label">Dispatch Velocity</p>
-            <p class="kpi-value kpi-mono" id="kpiVelocity">—</p>
-            <p class="kpi-note">avg. order → dispatch, in days</p>
-          </div>
-        </article>
-        <article class="kpi-card">
-          <div class="kpi-icon kpi-icon-success"><i data-lucide="check-circle-2"></i></div>
-          <div class="kpi-body">
-            <p class="kpi-label">Fulfillment Rate</p>
-            <p class="kpi-value kpi-mono" id="kpiFulfillment">—</p>
-            <p class="kpi-note">rows acked as Done</p>
-          </div>
-        </article>
-      </section>
-    </section>
-
     <section class="panel route-kpis">
       <header class="table-head">
         <div>
@@ -437,20 +437,6 @@
       </header>
       <div id="routeKpiGrid" class="route-kpi-grid"></div>
     </section>
-
-    <aside class="panel alert-center" id="alertCenter" aria-label="Priority and aging alerts">
-      <header class="alert-head">
-        <div>
-          <h2 class="card-title">Alerts</h2>
-          <p class="card-sub">Priority pressure · bottleneck aging</p>
-        </div>
-        <span class="status-badge" id="alertMeta">—</span>
-      </header>
-      <p class="alert-section-label">Priority</p>
-      <div id="priorityAlerts" class="alert-list"></div>
-      <p class="alert-section-label">Aging</p>
-      <div id="agingAlerts" class="alert-list"></div>
-    </aside>
 
     <section class="panel zones-panel">
       <header class="table-head">
@@ -591,6 +577,20 @@
     </section>
     </div>
 
+    <aside class="panel alert-center alert-floating" id="alertCenter" aria-label="Priority and aging alerts">
+      <header class="alert-head">
+        <div>
+          <h2 class="card-title">Alerts</h2>
+          <p class="card-sub">Priority pressure · bottleneck aging</p>
+        </div>
+        <span class="status-badge" id="alertMeta">—</span>
+      </header>
+      <p class="alert-section-label">Priority</p>
+      <div id="priorityAlerts" class="alert-list"></div>
+      <p class="alert-section-label">Aging</p>
+      <div id="agingAlerts" class="alert-list"></div>
+    </aside>
+
     <section class="panel directory-panel" id="customersView" hidden>
       <header class="table-head">
         <div>
@@ -632,6 +632,12 @@
           </thead>
           <tbody id="customerBody"></tbody>
         </table>
+      </div>
+      <div class="complete-more" id="customerMore" hidden>
+        <button type="button" class="btn btn-secondary btn-sm" id="customerLoadMore">
+          <i data-lucide="chevrons-down"></i>
+          <span id="customerMoreLabel">Load more</span>
+        </button>
       </div>
       <div class="branch-drawer" id="branchDrawer" hidden>
         <header class="drawer-head">
