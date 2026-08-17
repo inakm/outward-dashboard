@@ -844,6 +844,40 @@ body.gate-locked {
   overflow-y: auto;
   z-index: 100;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  transition: width 0.2s ease;
+}
+
+.alert-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s-xs);
+}
+
+.alert-toggle {
+  padding: 4px 6px !important;
+}
+
+.alert-toggle i {
+  width: 14px;
+  height: 14px;
+}
+
+.alert-body {
+  overflow: hidden;
+  transition: max-height 0.25s ease, opacity 0.2s ease;
+  max-height: 600px;
+  opacity: 1;
+}
+
+.alert-center.is-minimized .alert-body {
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.alert-center.is-minimized {
+  width: auto;
+  min-width: 0;
 }
 
 .alert-head {
@@ -2086,6 +2120,10 @@ tr.cust-row.is-clickable:focus-visible {
     width: 100%;
     max-height: none;
     box-shadow: none;
+  }
+  .alert-center.is-minimized {
+    width: 100%;
+    min-width: 0;
   }
 }
 

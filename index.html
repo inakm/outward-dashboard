@@ -583,12 +583,19 @@
           <h2 class="card-title">Alerts</h2>
           <p class="card-sub">Priority pressure · bottleneck aging</p>
         </div>
-        <span class="status-badge" id="alertMeta">—</span>
+        <div class="alert-actions">
+          <span class="status-badge" id="alertMeta">—</span>
+          <button type="button" class="btn btn-tertiary btn-sm alert-toggle" id="alertToggle" aria-label="Minimize alerts" aria-expanded="true">
+            <i data-lucide="minus"></i>
+          </button>
+        </div>
       </header>
-      <p class="alert-section-label">Priority</p>
-      <div id="priorityAlerts" class="alert-list"></div>
-      <p class="alert-section-label">Aging</p>
-      <div id="agingAlerts" class="alert-list"></div>
+      <div class="alert-body" id="alertBody">
+        <p class="alert-section-label">Priority</p>
+        <div id="priorityAlerts" class="alert-list"></div>
+        <p class="alert-section-label">Aging</p>
+        <div id="agingAlerts" class="alert-list"></div>
+      </div>
     </aside>
 
     <section class="panel directory-panel" id="customersView" hidden>

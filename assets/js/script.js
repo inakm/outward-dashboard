@@ -4419,6 +4419,18 @@
       });
     }
 
+    var alertToggle = $('alertToggle');
+    if (alertToggle) {
+      alertToggle.addEventListener('click', function () {
+        var panel = $('alertCenter');
+        var isMinimized = panel.classList.toggle('is-minimized');
+        alertToggle.setAttribute('aria-expanded', String(!isMinimized));
+        var icon = alertToggle.querySelector('i');
+        if (icon) icon.setAttribute('data-lucide', isMinimized ? 'plus' : 'minus');
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+      });
+    }
+
     var clearCustomerFilterBtn = $('clearCustomerFilter');
     if (clearCustomerFilterBtn) {
       clearCustomerFilterBtn.addEventListener('click', clearCustomerFilter);
