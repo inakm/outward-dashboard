@@ -97,9 +97,9 @@
   <link rel="preload" href="assets/css/style.css" as="style">
   <link rel="stylesheet" href="assets/css/style.css">
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
-  <script src="https://unpkg.com/lucide@0.294.0/dist/umd/lucide.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" integrity="sha384-9nhczxUqK87bcKHh20fSQcTGD4qq5GhayNYSYWqwBkINBhOfQLg/P5HG5lF1urn4" crossorigin="anonymous" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" integrity="sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw" crossorigin="anonymous" defer></script>
+  <script src="https://unpkg.com/lucide@0.294.0/dist/umd/lucide.js" integrity="sha384-Za4b90rlw1obRxNYl1Jntv0/DtBXvxjn49HyBtncLL7n9UCzGIU9PQplCi/RvGUH" crossorigin="anonymous" defer></script>
   <script src="assets/js/route-plan.js" defer></script>
   <script src="assets/js/fleet.js" defer></script>
   <script src="assets/js/script.js" defer></script>
@@ -124,7 +124,7 @@
   <div id="accessGate" class="access-gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle" hidden>
     <div class="gate-card">
       <div class="gate-logo">
-        <img src="assets/images/logo.png" alt="" width="114" height="52">
+        <img src="assets/images/logo.png" alt="SkyLimit logo" width="114" height="52">
       </div>
       <h2 class="gate-title" id="gateTitle">SkyLimit Outwards</h2>
       <p class="gate-sub">Enter the access code to open the dashboard</p>
@@ -307,6 +307,7 @@
       </header>
       <div class="table-wrap">
         <table id="dataTable">
+          <caption class="sr-only">Customer Branch Location Matrix — open orders</caption>
           <thead>
             <tr>
               <th data-key="orderDate" class="sortable">
@@ -363,6 +364,7 @@
       </header>
       <div class="table-wrap">
         <table id="dispatchedTable">
+          <caption class="sr-only">Dispatched orders awaiting completion</caption>
           <thead>
             <tr>
               <th data-key="orderDate" class="sortable">
@@ -422,6 +424,7 @@
       </header>
       <div class="table-wrap">
         <table id="completeTable">
+          <caption class="sr-only">All complete orders — dispatched with acknowledgement done</caption>
           <thead>
             <tr>
               <th data-key="orderDate" class="sortable">
@@ -534,6 +537,7 @@
       </header>
       <div class="table-wrap">
         <table id="zonesTable">
+          <caption class="sr-only">Zone-wise traffic — order volume and dispatch health per zone</caption>
           <thead>
             <tr>
               <th class="th-mono">Route</th>
@@ -573,7 +577,7 @@
         </div>
       </header>
       <div class="chart-box" id="trendChartBox">
-        <canvas id="trendChart"></canvas>
+        <canvas id="trendChart" role="img" aria-label="Chart showing outward volume over time"></canvas>
         <div id="trendEmpty" class="chart-empty" hidden>
           <i data-lucide="trending-up"></i>
           <p>No records to chart</p>
@@ -598,7 +602,7 @@
           </div>
         </header>
         <div class="chart-box" id="barChartBox">
-          <canvas id="barChart"></canvas>
+          <canvas id="barChart" role="img" aria-label="Chart showing volume by customer"></canvas>
           <div id="barEmpty" class="chart-empty" hidden>
             <i data-lucide="bar-chart-2"></i>
             <p>No records to chart</p>
@@ -614,7 +618,7 @@
           <span class="status-badge" id="doughnutMeta">—</span>
         </header>
         <div class="chart-box" id="doughnutChartBox">
-          <canvas id="doughnutChart"></canvas>
+          <canvas id="doughnutChart" role="img" aria-label="Chart showing acknowledgement state distribution"></canvas>
           <div id="doughnutEmpty" class="chart-empty" hidden>
             <i data-lucide="pie-chart"></i>
             <p>No records to chart</p>
@@ -639,6 +643,7 @@
       </header>
       <div class="table-wrap">
         <table id="routesTable">
+          <caption class="sr-only">Routes overview — per-route dispatch health</caption>
           <thead>
             <tr>
               <th class="th-mono">Route</th>
@@ -720,6 +725,7 @@
       </header>
       <div class="table-wrap">
         <table id="customerTable">
+          <caption class="sr-only">Customer directory with branches and outward activity</caption>
           <thead>
             <tr>
               <th class="th-mono">Class</th>
@@ -759,6 +765,7 @@
         </header>
         <div class="table-wrap">
           <table id="branchTable">
+            <caption class="sr-only">Branch details for selected customer</caption>
             <thead>
               <tr>
                 <th>Branch Name</th>
@@ -803,6 +810,7 @@
         <div id="fleetOverflow"></div>
         <div class="table-wrap">
           <table id="fleetTable">
+            <caption class="sr-only">Fleet vehicle dispatch plan</caption>
             <thead>
               <tr>
                 <th>Vehicle</th>
@@ -876,6 +884,7 @@
         </div>
         <div class="table-wrap">
           <table id="slaTable">
+            <caption class="sr-only">SLA escalation — orders needing attention</caption>
             <thead>
               <tr>
                 <th>Severity</th>
@@ -1021,7 +1030,7 @@
             <span class="rg-name">South-West (SW) Route</span>
             <i data-lucide="arrow-down-left" class="rg-arrow"></i>
           </header>
-          <p class="rg-hub">Old Bowenpally → South-West · 20 circles</p>
+          <p class="rg-hub">Old Bowenpally → South-West · 17 circles</p>
           <div class="rg-zone">
             <p class="rg-zone-name">Serilingampally Zone · South-West Belt</p>
             <p class="rg-circles">Serilingampally · Narsingi</p>
@@ -1033,10 +1042,6 @@
           <div class="rg-zone">
             <p class="rg-zone-name">Secunderabad Zone · West Wing</p>
             <p class="rg-circles">Ameerpet</p>
-          </div>
-          <div class="rg-zone">
-            <p class="rg-zone-name">Khairatabad Zone · West Wing</p>
-            <p class="rg-circles">Jubilee Hills · Yousufguda · Borabanda</p>
           </div>
           <div class="rg-zone">
             <p class="rg-zone-name">Charminar Zone · Old City (South-West)</p>
@@ -1072,10 +1077,14 @@
             <span class="rg-name">Madhapur</span>
             <i data-lucide="building-2" class="rg-arrow"></i>
           </header>
-          <p class="rg-hub">Old Bowenpally → Madhapur corridor</p>
+          <p class="rg-hub">Old Bowenpally → Madhapur corridor · 4 zones</p>
           <div class="rg-zone">
             <p class="rg-zone-name">Madhapur Zone</p>
             <p class="rg-circles">Madhapur · Hitech City · Cyber Towers · Durgam Cheruvu · Gachibowli</p>
+          </div>
+          <div class="rg-zone">
+            <p class="rg-zone-name">Khairatabad Zone · West Wing</p>
+            <p class="rg-circles">Jubilee Hills · Yousufguda · Borabanda</p>
           </div>
           <div class="rg-overlap"></div>
         </article>

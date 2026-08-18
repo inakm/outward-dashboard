@@ -59,7 +59,7 @@ window.GHMC_FLEET = {
       "type": "Tempo",
       "class": "Heavy",
       "capacity": 60,
-      "driver": "",
+      "driver": "Raju",
       "active": true
     },
     {
@@ -75,7 +75,7 @@ window.GHMC_FLEET = {
       "type": "Tempo",
       "class": "Heavy",
       "capacity": 60,
-      "driver": "",
+      "driver": "TBD",
       "active": true
     },
     {
@@ -123,7 +123,7 @@ window.GHMC_FLEET = {
       "type": "Bike",
       "class": "Light",
       "capacity": 25,
-      "driver": "",
+      "driver": "Santosh",
       "active": true,
       "note": "Madhapur-only (will only be used from Madhapur)"
     }

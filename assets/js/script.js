@@ -25,6 +25,7 @@
      Records carry Circle Lat/Lng so the interactive map needs no separate
      GHMC layer. */
   var ROUTE_PLAN_URL = 'assets/json/route_plan.json';
+  var LOCALITIES_URL = 'assets/json/localities.json';
 
   var DB_NAME = 'outward-dashboard';
   var DB_VERSION = 2;
@@ -35,6 +36,12 @@
 
   var AUTO_REFRESH_MS = 300000;
   var AUTO_REFRESH_KEY = 'outward-auto-refresh';
+  var MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024;
+  var PAGE_LIMIT_OPEN = 50;
+  var PAGE_LIMIT_COMPLETE = 5;
+  var PAGE_LIMIT_DISPATCHED = 5;
+  var PAGE_LIMIT_ZONE = 5;
+  var PAGE_LIMIT_CUSTOMER = 20;
 
   var REQUIRED_COLUMNS = ['Order Date', 'Customer Name', 'Branch', 'Location', 'Priority', 'Dispatch date', 'Ack'];
 
@@ -279,6 +286,7 @@
   var routeMap = null;
   var routeMapCircle = null;
   var routePlanData = null;
+  var localityIndex = null;
   var coordsIndex = {};
   var routeNames = {};
 
@@ -482,6 +490,12 @@
       if (!records[i].route) {
         records[i].route = branchRouteOverride(records[i].branch, records[i].location);
         if (!records[i].route && idx) records[i].route = routeFromBranch(records[i].branch, idx) || '';
+        if (!records[i].route && localityIndex) {
+          var locSlug = routeNameSlug(records[i].location || '');
+          var brSlug = routeNameSlug(records[i].branch || '');
+          if (locSlug && localityIndex[locSlug]) records[i].route = localityIndex[locSlug].route;
+          else if (brSlug && localityIndex[brSlug]) records[i].route = localityIndex[brSlug].route;
+        }
       }
     }
     return records;
@@ -1489,6 +1503,7 @@
       { key: 'noCustomer', label: 'Missing customer name', rows: [] },
       { key: 'noBranch', label: 'Missing branch', rows: [] },
       { key: 'noPriority', label: 'Unrecognised priority', rows: [] },
+      { key: 'unmappedRoute', label: 'Unmapped routes (no R1-R7 match)', rows: [] },
       { key: 'dispatchBeforeOrder', label: 'Dispatch before order date', rows: [] },
       { key: 'futureOrder', label: 'Future-dated orders', rows: [] }
     ];
@@ -1500,8 +1515,9 @@
       if (!r.customer) cats[2].rows.push(r);
       if (!r.branch) cats[3].rows.push(r);
       if (r.priority === '—') cats[4].rows.push(r);
-      if (r.orderDate && r.dispatchDate && r.dispatchDate.getTime() < r.orderDate.getTime()) cats[5].rows.push(r);
-      if (r.orderDate && r.orderDate.getTime() > today.getTime() + 86400000) cats[6].rows.push(r);
+      if (!r.route && r.branch) cats[5].rows.push(r);
+      if (r.orderDate && r.dispatchDate && r.dispatchDate.getTime() < r.orderDate.getTime()) cats[6].rows.push(r);
+      if (r.orderDate && r.orderDate.getTime() > today.getTime() + 86400000) cats[7].rows.push(r);
     });
     var issues = cats
       .filter(function (c) { return c.rows.length > 0; })
@@ -3995,6 +4011,9 @@
   function applyRecords(records, source) {
     enrichRoutes(records);
     enrichCustomerCodes(records);
+    if (state.customers && state.customers.length) {
+      enrichRoutesFromMaster(records, state.customers);
+    }
     state.records = records;
     state.source = source || null;
     resetFilters(true);
@@ -4817,6 +4836,7 @@
 
     await loadRoutePlan();
     await loadFleet();
+    await loadLocalities();
 
     if (state.autoRefresh) {
       setAutoRefresh(true);
@@ -4892,6 +4912,70 @@
     renderDispatchBoard();
     renderRouteMap(filteredRows(true));
     renderRouteGuideAdjacency();
+  }
+
+  async function loadLocalities() {
+    var data = null;
+    try {
+      var res = await fetch(LOCALITIES_URL);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      data = await res.json();
+    } catch (e) {
+      console.warn('Localities map unavailable (' + LOCALITIES_URL + '):', e);
+    }
+    if (!data || !data.localities) return;
+
+    if (!routeMap) routeMap = {};
+    if (!routeMapCircle) routeMapCircle = {};
+    localityIndex = {};
+
+    var added = 0;
+    Object.keys(data.localities).forEach(function (name) {
+      var entry = data.localities[name];
+      if (!Array.isArray(entry)) return;
+
+      var route, circle, note, subLocalities;
+
+      if (name.indexOf('|') !== -1) {
+        var parts = name.split('|');
+        route = parts[0];
+        circle = parts[1] || name;
+        note = typeof entry[0] === 'string' ? entry[0] : '';
+        subLocalities = Array.isArray(entry[1]) ? entry[1] : [];
+      } else {
+        if (!entry[0]) return;
+        route = entry[0];
+        circle = entry[1] || name;
+        note = typeof entry[2] === 'string' ? entry[2] : '';
+        subLocalities = Array.isArray(entry[2]) ? entry[2] : [];
+      }
+
+      var slug = routeNameSlug(name.split('|').pop() || name);
+      if (!slug) return;
+
+      if (!routeMap[slug]) { routeMap[slug] = route; added++; }
+      if (!routeMapCircle[slug]) routeMapCircle[slug] = { route: route, circle: circle, note: note };
+      localityIndex[slug] = { route: route, circle: circle, note: note };
+
+      subLocalities.forEach(function (sub) {
+        var subSlug = routeNameSlug(sub);
+        if (!subSlug) return;
+        if (!routeMap[subSlug]) { routeMap[subSlug] = route; added++; }
+        if (!routeMapCircle[subSlug]) routeMapCircle[subSlug] = { route: route, circle: circle, note: note };
+        localityIndex[subSlug] = { route: route, circle: circle, note: note };
+      });
+    });
+
+    var hadRoute = 0;
+    for (var i = 0; i < state.records.length; i++) if (state.records[i].route) hadRoute++;
+    enrichRoutes(state.records, routeMap);
+    enrichRoutesFromMaster(state.records);
+    renderAll();
+    var withRoute = 0;
+    for (var j = 0; j < state.records.length; j++) if (state.records[j].route) withRoute++;
+    if (withRoute > hadRoute) {
+      toast('Auto-routed ' + (withRoute - hadRoute) + ' more orders from locality aliases', 'info');
+    }
   }
 
   /* Expose pure core for debugging + tests */

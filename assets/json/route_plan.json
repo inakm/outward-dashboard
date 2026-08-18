@@ -4,13 +4,14 @@
   "source": "routes-planning.xlsx",
   "generated_at": "2026-08-12T06:12:00.569559+00:00",
   "row_count": 402,
-  "counts": {
-   "R1": 33,
-   "R2": 50,
-   "R3": 120,
-   "R4": 136,
-   "R5": 18,
-   "R7": 45
+   "counts": {
+    "R1": 33,
+    "R2": 50,
+    "R3": 120,
+    "R4": 120,
+    "R5": 18,
+    "R6": 16,
+    "R7": 45
   }
  },
  "records": [
@@ -1998,7 +1999,7 @@
   },
   {
    "name": "AG Colony",
-   "route": "R4",
+   "route": "R6",
    "circle": "Yousufguda",
    "zone": "Khairatabad Zone - West Wing",
    "kind": "locality",
@@ -2122,7 +2123,7 @@
   },
   {
    "name": "Banjara Hills",
-   "route": "R4",
+   "route": "R6",
    "circle": "Jubilee Hills",
    "zone": "Khairatabad Zone - West Wing",
    "kind": "locality",
@@ -2152,7 +2153,7 @@
   },
   {
    "name": "Borabanda",
-   "route": "R4",
+   "route": "R6",
    "zone": "Khairatabad Zone - West Wing",
    "kind": "circle",
    "lat": 17.459069,
@@ -2238,7 +2239,7 @@
   },
   {
    "name": "Erragadda",
-   "route": "R4",
+   "route": "R6",
    "circle": "Yousufguda",
    "zone": "Khairatabad Zone - West Wing",
    "kind": "locality",
@@ -2286,7 +2287,7 @@
   },
   {
    "name": "Film Nagar",
-   "route": "R4",
+   "route": "R6",
    "circle": "Jubilee Hills",
    "zone": "Khairatabad Zone - West Wing",
    "kind": "locality",
@@ -2570,7 +2571,7 @@
   },
   {
    "name": "Jubilee Hills",
-   "route": "R4",
+   "route": "R6",
    "zone": "Khairatabad Zone - West Wing",
    "kind": "circle",
    "lat": 17.430836,
@@ -2578,7 +2579,7 @@
   },
   {
    "name": "Karmika Nagar",
-   "route": "R4",
+   "route": "R6",
    "circle": "Borabanda",
    "zone": "Khairatabad Zone - West Wing",
    "kind": "locality",
@@ -2674,7 +2675,7 @@
   },
   {
    "name": "Krishna Nagar",
-   "route": "R4",
+   "route": "R6",
    "circle": "Borabanda",
    "zone": "Khairatabad Zone - West Wing",
    "kind": "locality",
@@ -3014,7 +3015,7 @@
   },
   {
    "name": "Rahamath Nagar",
-   "route": "R4",
+   "route": "R6",
    "circle": "Borabanda",
    "zone": "Khairatabad Zone - West Wing",
    "kind": "locality",
@@ -3034,7 +3035,7 @@
   },
   {
    "name": "Rajeev Nagar",
-   "route": "R4",
+   "route": "R6",
    "circle": "Borabanda",
    "zone": "Khairatabad Zone - West Wing",
    "kind": "locality",
@@ -3072,7 +3073,7 @@
   },
   {
    "name": "Road No. 12",
-   "route": "R4",
+   "route": "R6",
    "circle": "Jubilee Hills",
    "zone": "Khairatabad Zone - West Wing",
    "kind": "locality",
@@ -3150,7 +3151,7 @@
   },
   {
    "name": "SR Nagar",
-   "route": "R4",
+   "route": "R6",
    "circle": "Yousufguda",
    "zone": "Khairatabad Zone - West Wing",
    "kind": "locality",
@@ -3160,7 +3161,7 @@
   },
   {
    "name": "Srinagar Colony",
-   "route": "R4",
+   "route": "R6",
    "circle": "Yousufguda",
    "zone": "Khairatabad Zone - West Wing",
    "kind": "locality",
@@ -3240,7 +3241,7 @@
   },
   {
    "name": "Vengal Rao Nagar",
-   "route": "R4",
+   "route": "R6",
    "circle": "Yousufguda",
    "zone": "Khairatabad Zone - West Wing",
    "kind": "locality",
@@ -3250,7 +3251,7 @@
   },
   {
    "name": "Venkateshwara Colony",
-   "route": "R4",
+   "route": "R6",
    "circle": "Jubilee Hills",
    "zone": "Khairatabad Zone - West Wing",
    "kind": "locality",
@@ -3280,7 +3281,7 @@
   },
   {
    "name": "Yousufguda",
-   "route": "R4",
+   "route": "R6",
    "zone": "Khairatabad Zone - West Wing",
    "kind": "circle",
    "lat": 17.43875,

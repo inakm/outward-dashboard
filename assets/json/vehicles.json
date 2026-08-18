@@ -33,7 +33,7 @@
       "type": "Tempo",
       "class": "Heavy",
       "capacity": 60,
-      "driver": "",
+      "driver": "TBD",
       "active": true
     },
     {
