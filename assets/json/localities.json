@@ -90,6 +90,11 @@
    "Kukatpally",
    "Alt. spelling of Kukatpally; KPHB high-density; 6-10 AM window."
   ],
+  "KPHB": [
+   "R2",
+   "Kukatpally",
+   "Abbreviation of Kukatpally Housing Board; KPHB high-density residential; 6-10 AM window."
+  ],
   "Malkpet": [
    "R3",
    "Malakpet",
@@ -115,12 +120,47 @@
    "Khairatabad",
    "Alt. spelling of Himayathnagar (ward 220); central corporate; 10 AM-5 PM."
   ],
-  "Suchitra Circle": [
-   "R2",
-   "Jeedimetla",
-   "Alt. spelling of Suchitra; Quthbullapur residential circle; combine Jeedimetla return loop."
-  ]
- },
+   "Suchitra Circle": [
+    "R2",
+    "Jeedimetla",
+    "Alt. spelling of Suchitra; Quthbullapur residential circle; combine Jeedimetla return loop."
+   ],
+   "Adilabad": [
+    "R2",
+    "Adilabad",
+    "Telangana north-west city; far from Hyderabad metro; R2 routing."
+   ],
+   "Nizambad": [
+    "R2",
+    "Nizambad",
+    "Telangana north-west city (Nizamabad); R2 routing."
+   ],
+   "Khajaguda": [
+    "R4",
+    "Serilingampally",
+    "ORR south-west fringe; gated communities; Serilingampally zone."
+   ],
+   "Hubli": [
+    "R7",
+    "",
+    "Karnataka city; outside Telangana; inter-state routing."
+   ],
+   "New Delhi": [
+    "R7",
+    "",
+    "National capital; outside Telangana; inter-state routing."
+   ],
+   "Rajahmundry": [
+    "R7",
+    "",
+    "Andhra Pradesh city (alternate name for Rajamahendravaram); outside Telangana."
+   ],
+   "Vizianagaram": [
+    "R7",
+    "",
+    "Andhra Pradesh city; outside Telangana; inter-state routing."
+   ]
+  },
  "groups": {
   "R1|Bowenpally": [
    "Hub-adjacent (Bowenpally); first sort batch; dispatch before 08:30 AM.",

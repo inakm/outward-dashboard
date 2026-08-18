@@ -308,6 +308,15 @@
     return String(v == null ? '' : v).trim().replace(/\s+/g, ' ').replace(/\r?\n/g, ' ');
   }
 
+  function normalizePerson(v) {
+    var s = cleanCustomer(v);
+    if (!s) return '';
+    return s.split(/\s+/).map(function (w) {
+      if (/^[A-Z]{2,}$/.test(w)) return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+      return w;
+    }).join(' ');
+  }
+
   function cleanCode(v) {
     var s = String(v == null ? '' : v).trim();
     return (s === '—' || s === '-') ? '' : s;
@@ -431,7 +440,7 @@
       dispatchDate: parseDate(raw['Dispatch date']),
       ack: normalizeAck(raw['Ack']),
       status: normalizeStatus(raw['Status']),
-      deliveryPerson: cleanCustomer(raw['Delivery Person']),
+      deliveryPerson: normalizePerson(raw['Delivery Person']),
       route: cleanCode(raw['Route'])
     };
   }
@@ -1558,7 +1567,7 @@
     if (state.priority.length) rows = rows.filter(function (r) { return hasSel('priority', r.priority); });
     if (state.ack.length) rows = rows.filter(function (r) { return hasSel('ack', r.ack); });
     if (state.status.length) rows = rows.filter(function (r) { return hasSel('status', r.status); });
-    if (state.deliveryPerson.length) rows = rows.filter(function (r) { return hasSel('deliveryPerson', r.deliveryPerson); });
+    if (state.deliveryPerson.length) rows = rows.filter(function (r) { return hasSel('deliveryPerson', normalizePerson(r.deliveryPerson)); });
     if (!ignoreRoute && state.route.length) {
       if (hasSel('route', '—')) {
         rows = rows.filter(function (r) { return !r.route || hasSel('route', r.route); });
@@ -2196,6 +2205,8 @@
     rows.forEach(function (r) {
       if (r.ack !== 'Done' && counts[r.priority] != null) counts[r.priority]++;
     });
+    var labels = { P1: 'Critical', P2: 'High', P3: 'Medium', P4: 'Low' };
+    var icons = { P1: 'alert-octagon', P2: 'alert-triangle', P3: 'clock', P4: 'info' };
     var html = '';
     for (var i = 0; i < order.length; i++) {
       var p = order[i];
@@ -2205,8 +2216,11 @@
       var active = hasSel('priority', p);
       html +=
         '<button type="button" class="alert-item alert-priority ' + sev + (active ? ' is-active' : '') + '" data-alert-priority="' + p + '" aria-pressed="' + active + '" title="Filter to ' + p + ' orders">' +
-        '<span class="dot ' + dot + '"></span>' +
-        '<span class="alert-title">' + p + ' open</span>' +
+        '<i data-lucide="' + icons[p] + '"></i>' +
+        '<span class="alert-body">' +
+        '<span class="alert-title">' + p + ' · ' + labels[p] + '</span>' +
+        '<span class="alert-meta">' + (n ? formatNum(n) + ' open order' + (n !== 1 ? 's' : '') : 'All clear') + '</span>' +
+        '</span>' +
         '<span class="alert-count">' + formatNum(n) + '</span>' +
         '</button>';
     }
@@ -2220,7 +2234,7 @@
     var aData = buildAgingData(rows);
     var has = aData.total > 0;
     if (!has) {
-      list.innerHTML = '<div class="alert-item alert-ok"><i data-lucide="shield-check"></i><span class="alert-title">No open P1 bottlenecks in scope</span></div>';
+      list.innerHTML = '<div class="alert-item alert-ok"><i data-lucide="shield-check"></i><span class="alert-body"><span class="alert-title">All clear</span><span class="alert-meta">No aging P1 orders in scope</span></span></div>';
       refreshIcons();
       return;
     }
@@ -2229,12 +2243,15 @@
       var r = aData.oldest[i];
       var sev = r.age >= 15 ? 'alert-critical' : (r.age >= 8 ? 'alert-warn' : 'alert-info');
       var icon = sev === 'alert-critical' ? 'alert-octagon' : (sev === 'alert-warn' ? 'alert-triangle' : 'clock');
+      var parts = [];
+      if (r.branch) parts.push(r.branch);
+      if (r.location) parts.push(r.location);
       html +=
         '<div class="alert-item ' + sev + '">' +
         '<i data-lucide="' + icon + '"></i>' +
         '<span class="alert-body">' +
         '<span class="alert-title">' + escapeHtml(r.customer || '—') + '</span>' +
-        '<span class="alert-meta">' + escapeHtml((r.branch || '—') + (r.location ? ' · ' + r.location : '')) + '</span>' +
+        '<span class="alert-meta">' + escapeHtml(parts.join(' · ') || 'No branch') + '</span>' +
         '</span>' +
         '<span class="alert-age">' + formatNum(r.age) + 'd</span>' +
         '</div>';
@@ -3061,7 +3078,7 @@
             return acc;
           }, { breached: 0, atrisk: 0 });
           var people = {};
-          c.rows.forEach(function (r) { if (r.deliveryPerson) people[r.deliveryPerson] = true; });
+          c.rows.forEach(function (r) { if (r.deliveryPerson) people[normalizePerson(r.deliveryPerson)] = true; });
           var peopleList = Object.keys(people);
           html += '<div class="db-stop">' +
             '<span class="db-stop-num">' + c.stop + '</span>' +
@@ -3821,7 +3838,7 @@
     var label = $('deliveryPersonLabel');
     if (!list) return;
     var people = {};
-    state.records.forEach(function (r) { if (r.deliveryPerson) people[r.deliveryPerson] = true; });
+    state.records.forEach(function (r) { if (r.deliveryPerson) people[normalizePerson(r.deliveryPerson)] = true; });
     var names = Object.keys(people).sort(function (a, b) {
       return String(a).localeCompare(String(b), undefined, { numeric: true });
     });

@@ -6,17 +6,25 @@
   "row_count": 402,
    "counts": {
     "R1": 33,
-    "R2": 50,
+    "R2": 52,
     "R3": 120,
-    "R4": 120,
+    "R4": 121,
     "R5": 18,
     "R6": 16,
-    "R7": 45
+    "R7": 49
   }
  },
- "records": [
-  {
-   "name": "A.S. Rao Nagar",
+  "records": [
+   {
+    "name": "Adilabad",
+    "route": "R2",
+    "zone": "North-West Telangana",
+    "kind": "circle",
+    "lat": 19.6641,
+    "lng": 78.532
+   },
+   {
+    "name": "A.S. Rao Nagar",
    "route": "R1",
    "circle": "Kapra",
    "zone": "Kapra Zone - North-East Belt",
@@ -669,8 +677,16 @@
    "lat": 17.498161,
    "lng": 78.356763
   },
-  {
-   "name": "Nizampet",
+   {
+    "name": "Nizambad",
+    "route": "R2",
+    "zone": "North-West Telangana",
+    "kind": "circle",
+    "lat": 18.6725,
+    "lng": 78.094
+   },
+   {
+    "name": "Nizampet",
    "route": "R2",
    "zone": "Kukatpally/Quthbullapur Zone - North-West Wings",
    "kind": "circle",
@@ -2315,18 +2331,28 @@
    "lat": 17.466717,
    "lng": 78.340421
   },
-  {
-   "name": "Gachibowli",
-   "route": "R4",
-   "circle": "Serilingampally",
-   "zone": "Serilingampally Zone - South-West Belt",
-   "kind": "locality",
-   "note": "ORR/Gachibowli offices; 11 AM-4 PM window; corporate receptions.",
-   "lat": 17.466717,
-   "lng": 78.340421
-  },
-  {
-   "name": "Gandipet",
+   {
+    "name": "Gachibowli",
+    "route": "R4",
+    "circle": "Serilingampally",
+    "zone": "Serilingampally Zone - South-West Belt",
+    "kind": "locality",
+    "note": "ORR/Gachibowli offices; 11 AM-4 PM window; corporate receptions.",
+    "lat": 17.466717,
+    "lng": 78.340421
+   },
+   {
+    "name": "Khajaguda",
+    "route": "R4",
+    "circle": "Serilingampally",
+    "zone": "Serilingampally Zone - South-West Belt",
+    "kind": "locality",
+    "note": "ORR/Serilingampally south-west fringe; gated communities; 11 AM-4 PM.",
+    "lat": 17.4464,
+    "lng": 78.3384
+   },
+   {
+    "name": "Gandipet",
    "route": "R4",
    "circle": "Narsingi",
    "zone": "Serilingampally Zone - South-West Belt",
@@ -3597,14 +3623,22 @@
    "lat": null,
    "lng": null
   },
-  {
-   "name": "Guwahati",
-   "route": "R7",
-   "zone": "Other (non-Hyderabad)",
-   "kind": "city",
-   "lat": null,
-   "lng": null
-  },
+   {
+    "name": "Guwahati",
+    "route": "R7",
+    "zone": "Other (non-Hyderabad)",
+    "kind": "city",
+    "lat": null,
+    "lng": null
+   },
+   {
+    "name": "Hubli",
+    "route": "R7",
+    "zone": "Other (non-Hyderabad)",
+    "kind": "city",
+    "lat": null,
+    "lng": null
+   },
   {
    "name": "Indore",
    "route": "R7",
@@ -3702,16 +3736,24 @@
    "lat": null,
    "lng": null
   },
-  {
-   "name": "Nanded",
-   "route": "R7",
-   "zone": "Other (non-Hyderabad)",
-   "kind": "city",
-   "lat": null,
-   "lng": null
-  },
-  {
-   "name": "Nellore",
+   {
+    "name": "Nanded",
+    "route": "R7",
+    "zone": "Other (non-Hyderabad)",
+    "kind": "city",
+    "lat": null,
+    "lng": null
+   },
+   {
+    "name": "New Delhi",
+    "route": "R7",
+    "zone": "Other (non-Hyderabad)",
+    "kind": "city",
+    "lat": null,
+    "lng": null
+   },
+   {
+    "name": "Nellore",
    "route": "R7",
    "zone": "Other (non-Hyderabad)",
    "kind": "city",
@@ -3758,8 +3800,16 @@
    "lat": null,
    "lng": null
   },
-  {
-   "name": "Rajamahendravaram",
+   {
+    "name": "Rajahmundry",
+    "route": "R7",
+    "zone": "Other (non-Hyderabad)",
+    "kind": "city",
+    "lat": null,
+    "lng": null
+   },
+   {
+    "name": "Rajamahendravaram",
    "route": "R7",
    "zone": "Other (non-Hyderabad)",
    "kind": "city",
@@ -3798,14 +3848,22 @@
    "lat": null,
    "lng": null
   },
-  {
-   "name": "Visakhapatnam",
-   "route": "R7",
-   "zone": "Other (non-Hyderabad)",
-   "kind": "city",
-   "lat": null,
-   "lng": null
-  },
+   {
+    "name": "Visakhapatnam",
+    "route": "R7",
+    "zone": "Other (non-Hyderabad)",
+    "kind": "city",
+    "lat": null,
+    "lng": null
+   },
+   {
+    "name": "Vizianagaram",
+    "route": "R7",
+    "zone": "Other (non-Hyderabad)",
+    "kind": "city",
+    "lat": null,
+    "lng": null
+   },
   {
    "name": "Warangal",
    "route": "R7",

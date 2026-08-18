@@ -75,7 +75,7 @@ window.GHMC_FLEET = {
       "type": "Tempo",
       "class": "Heavy",
       "capacity": 60,
-      "driver": "TBD",
+      "driver": "Anil",
       "active": true
     },
     {
