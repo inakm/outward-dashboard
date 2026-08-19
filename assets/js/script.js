@@ -255,12 +255,13 @@
     ack: [],
     status: [],
     route: [],
-    deliveryPerson: [],
     customerFilter: '',
     query: '',
     completeQuery: '',
     dispatchedQuery: '',
     todayDispatchedQuery: '',
+    dispatchDateFrom: null,
+    dispatchDateTo: null,
     zonesQuery: '',
     routesQuery: '',
     customerQuery: '',
@@ -281,7 +282,6 @@
     lastSyncAt: null,
     completeLimit: 5,
     dispatchedLimit: 5,
-    todayDispatchedLimit: 5,
     zoneLimit: 5,
     customerLimit: 20,
     customerFilterSig: '',
@@ -1603,7 +1603,6 @@
     if (state.priority.length) rows = rows.filter(function (r) { return hasSel('priority', r.priority); });
     if (state.ack.length) rows = rows.filter(function (r) { return hasSel('ack', r.ack); });
     if (state.status.length) rows = rows.filter(function (r) { return hasSel('status', r.status); });
-    if (state.deliveryPerson.length) rows = rows.filter(function (r) { return hasSel('deliveryPerson', normalizePerson(r.deliveryPerson)); });
     if (!ignoreRoute && state.route.length) {
       if (hasSel('route', '—')) {
         rows = rows.filter(function (r) { return !r.route || hasSel('route', r.route); });
@@ -3383,6 +3382,63 @@
     refreshIcons();
   }
 
+  function exportTableCSV(tbodyId, filename) {
+    var tbody = $(tbodyId);
+    if (!tbody) return;
+    var table = tbody.closest('table');
+    if (!table) return;
+    var headers = [];
+    var ths = table.querySelectorAll('thead th');
+    for (var i = 0; i < ths.length; i++) {
+      var lbl = ths[i].querySelector('.th-label');
+      headers.push(lbl ? lbl.textContent.trim() : ths[i].textContent.trim());
+    }
+    var csv = headers.map(function (h) { return '"' + h.replace(/"/g, '""') + '"'; }).join(',') + '\n';
+    var rows = tbody.querySelectorAll('tr');
+    for (var j = 0; j < rows.length; j++) {
+      if (rows[j].classList.contains('row-empty')) continue;
+      var cells = rows[j].querySelectorAll('td');
+      var line = [];
+      for (var k = 0; k < cells.length; k++) {
+        var text = cells[k].textContent.trim().replace(/\s+/g, ' ');
+        line.push('"' + text.replace(/"/g, '""') + '"');
+      }
+      csv += line.join(',') + '\n';
+    }
+    var blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function setTodayDateLabel() {
+    var el = $('todayDateLabel');
+    if (!el) return;
+    var now = new Date();
+    var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    el.textContent = '— ' + days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
+  }
+
+  function renderTodayDispatchedKpi() {
+    var kpiValue = $('todayDispatchedKpiValue');
+    var kpiNote = $('todayDispatchedKpiNote');
+    if (!kpiValue) return;
+    var count = 0;
+    for (var i = 0; i < state.records.length; i++) {
+      if (isTodayDispatched(state.records[i])) count++;
+    }
+    kpiValue.textContent = formatNum(count);
+    if (kpiNote) kpiNote.textContent = 'orders dispatched today';
+    var todayKpi = $('todayDispatchedKpi');
+    if (todayKpi) todayKpi.classList.toggle('kpi-card-danger', count === 0 && state.records.length > 0);
+  }
+
   function isComplete(r) {
     return r.ack === 'Done' && r.status === 'Dispatched';
   }
@@ -3411,12 +3467,17 @@
     var dispatched = [];
     var todayDispatched = [];
     var open = [];
+    var todayDispatchedInScope = [];
     for (var i = 0; i < rows.length; i++) {
       if (isComplete(rows[i])) complete.push(rows[i]);
       else if (isDispatched(rows[i])) dispatched.push(rows[i]);
-      if (isTodayDispatched(rows[i])) todayDispatched.push(rows[i]);
+      if (isTodayDispatched(rows[i])) {
+        todayDispatched.push(rows[i]);
+        todayDispatchedInScope.push(rows[i]);
+      }
       if (!isComplete(rows[i]) && !isDispatched(rows[i])) open.push(rows[i]);
     }
+    dispatched = dispatched.filter(function (r) { return todayDispatchedInScope.indexOf(r) === -1; });
 
     if (state.completeQuery) {
       var cq = state.completeQuery.toLowerCase();
@@ -3444,6 +3505,17 @@
           (r.branch || '').toLowerCase().indexOf(tdq) !== -1 ||
           (r.location || '').toLowerCase().indexOf(tdq) !== -1;
       });
+    }
+    if (state.dispatchDateFrom) {
+      var dFrom = state.dispatchDateFrom instanceof Date ? state.dispatchDateFrom : new Date(state.dispatchDateFrom + 'T00:00:00');
+      if (!isNaN(dFrom.getTime())) todayDispatched = todayDispatched.filter(function (r) { return r.dispatchDate && r.dispatchDate.getTime() >= dFrom.getTime(); });
+    }
+    if (state.dispatchDateTo) {
+      var dTo = state.dispatchDateTo instanceof Date ? state.dispatchDateTo : new Date(state.dispatchDateTo + 'T00:00:00');
+      if (!isNaN(dTo.getTime())) {
+        dTo = new Date(dTo.getFullYear(), dTo.getMonth(), dTo.getDate(), 23, 59, 59, 999);
+        todayDispatched = todayDispatched.filter(function (r) { return r.dispatchDate && r.dispatchDate.getTime() <= dTo.getTime(); });
+      }
     }
 
     setText('rowCount', formatNum(open.length) + ' of ' + formatNum(state.records.length) + ' records');
@@ -3562,10 +3634,9 @@
       if (!todayDispatched.length) {
         tdbody.innerHTML = '<tr class="row-empty"><td colspan="10">No orders dispatched today.</td></tr>';
       } else {
-        var visibleTodayDispatched = todayDispatched.slice(0, state.todayDispatchedLimit);
         var tdhtml = '';
-        for (i = 0; i < visibleTodayDispatched.length; i++) {
-          var td = visibleTodayDispatched[i];
+        for (i = 0; i < todayDispatched.length; i++) {
+          var td = todayDispatched[i];
           tdhtml +=
             '<tr>' +
             '<td class="td-date">' + formatDate(td.orderDate) + '</td>' +
@@ -3582,18 +3653,6 @@
             '</tr>';
         }
         tdbody.innerHTML = tdhtml;
-      }
-    }
-    var tdMoreWrap = $('todayDispatchedMore');
-    var tdMoreBtn = $('todayDispatchedLoadMore');
-    var tdMoreLabel = $('todayDispatchedMoreLabel');
-    if (tdMoreWrap && tdMoreBtn && tdMoreLabel) {
-      if (todayDispatched.length > state.todayDispatchedLimit) {
-        var tdRemaining = todayDispatched.length - state.todayDispatchedLimit;
-        tdMoreLabel.textContent = 'Load more (' + formatNum(tdRemaining) + ' remaining)';
-        tdMoreWrap.hidden = false;
-      } else {
-        tdMoreWrap.hidden = true;
       }
     }
   }
@@ -3648,14 +3707,14 @@
      ------------------------------------------------------------- */
   function renderAll() {
     var sig = state.priority.join(',') + '|' + state.ack.join(',') + '|' + state.status.join(',') +
-      '|' + state.route.join(',') + '|' + state.deliveryPerson.join(',') + '|' + state.customerFilter +
+      '|' + state.route.join(',') + '|' + state.customerFilter +
       '|' + state.query + '|' + state.dispatchedQuery + '|' + state.todayDispatchedQuery + '|' + state.completeQuery +
       '|' + state.zonesQuery + '|' + state.routesQuery +
-      '|' + state.dateFrom + '|' + state.dateTo + '|' + state.sortKey + state.sortDir;
+      '|' + state.dateFrom + '|' + state.dateTo + '|' + state.sortKey + state.sortDir +
+      '|' + state.dispatchDateFrom + '|' + state.dispatchDateTo;
       if (sig !== state.filterSig) {
       state.completeLimit = 5;
       state.dispatchedLimit = 5;
-      state.todayDispatchedLimit = 5;
       state.zoneLimit = 5;
       state.filterSig = sig;
     }
@@ -3665,7 +3724,6 @@
     renderCustomerFilter();
     renderRouteFilter();
     renderStatusFilter();
-    renderDeliveryPersonFilter();
     renderKpis(rows);
     renderRouteKpis(rows);
     renderRouteContext();
@@ -3685,6 +3743,7 @@
     renderRouteOpsTabs();
     renderFleetCenter(routeRows);
     renderDispatchBoard();
+    renderTodayDispatchedKpi();
     refreshIcons();
   }
 
@@ -3933,40 +3992,6 @@
     renderAll();
   }
 
-  function renderDeliveryPersonFilter() {
-    var list = $('deliveryPersonList');
-    var label = $('deliveryPersonLabel');
-    if (!list) return;
-    var people = {};
-    state.records.forEach(function (r) { if (r.deliveryPerson) people[normalizePerson(r.deliveryPerson)] = true; });
-    var names = Object.keys(people).sort(function (a, b) {
-      return String(a).localeCompare(String(b), undefined, { numeric: true });
-    });
-    var html = '';
-    for (var i = 0; i < names.length; i++) {
-      var checked = state.deliveryPerson.indexOf(names[i]) !== -1;
-      html += '<label class="dropdown-multi-item" data-person="' + escapeHtml(names[i]) + '">' +
-        '<input type="checkbox" value="' + escapeHtml(names[i]) + '"' + (checked ? ' checked' : '') + '>' +
-        '<span class="dm-label">' + escapeHtml(names[i]) + '</span></label>';
-    }
-    list.innerHTML = html || '<div class="dropdown-multi-item" style="color:var(--ink-subtle);pointer-events:none">No delivery persons</div>';
-    if (label) {
-      if (!state.deliveryPerson.length) {
-        label.textContent = 'All';
-      } else if (state.deliveryPerson.length <= 2) {
-        label.textContent = state.deliveryPerson.join(', ');
-      } else {
-        label.textContent = state.deliveryPerson.length + ' selected';
-      }
-    }
-  }
-
-  function setDeliveryPersonFilter(p) {
-    if (p === 'ALL') state.deliveryPerson = [];
-    else toggleSel('deliveryPerson', p);
-    renderAll();
-  }
-
   function filterDropdownItems(listEl, q) {
     if (!listEl) return;
     var items = listEl.querySelectorAll('.dropdown-multi-item');
@@ -4026,12 +4051,13 @@
     state.ack = [];
     state.status = [];
     state.route = [];
-    state.deliveryPerson = [];
     state.customerFilter = '';
     state.query = '';
     state.completeQuery = '';
     state.dispatchedQuery = '';
     state.todayDispatchedQuery = '';
+    state.dispatchDateFrom = null;
+    state.dispatchDateTo = null;
     state.zonesQuery = '';
     state.routesQuery = '';
     state.dateFrom = null;
@@ -4052,6 +4078,10 @@
     if (df) df.value = '';
     var dt = $('dateTo');
     if (dt) dt.value = '';
+    var ddf = $('dispatchDateFrom');
+    if (ddf) ddf.value = '';
+    var ddt = $('dispatchDateTo');
+    if (ddt) ddt.value = '';
     syncPills('#priorityFilter .pill', 'priority', 'priority');
     syncPills('#ackFilter .pill', 'ack', 'ack');
     syncPills('#statusFilter .pill', 'status', 'status');
@@ -4434,47 +4464,46 @@
         if (btn && btn.getAttribute('data-status')) setStatusFilter(btn.getAttribute('data-status'));
       });
     }
-    var personBtn = $('deliveryPersonBtn');
-    var personPanel = $('deliveryPersonPanel');
-    var personSearch = $('deliveryPersonSearch');
-    var personList = $('deliveryPersonList');
-    if (personBtn && personPanel) {
-      personBtn.addEventListener('click', function (ev) {
-        ev.stopPropagation();
-        var isOpen = !personPanel.hidden;
-        if (isOpen) {
-          personPanel.hidden = true;
-          personBtn.setAttribute('aria-expanded', 'false');
-        } else {
-          personPanel.hidden = false;
-          personBtn.setAttribute('aria-expanded', 'true');
-          personSearch.value = '';
-          filterDropdownItems(personList, '');
-          setTimeout(function () { personSearch.focus(); }, 50);
-        }
-      });
-      personList.addEventListener('change', function (ev) {
-        var cb = ev.target.closest && ev.target.closest('input[type="checkbox"]');
-        if (!cb) return;
-        var val = cb.getAttribute('value');
-        if (!val) return;
-        if (cb.checked) { if (state.deliveryPerson.indexOf(val) === -1) state.deliveryPerson.push(val); }
-        else { var idx = state.deliveryPerson.indexOf(val); if (idx !== -1) state.deliveryPerson.splice(idx, 1); }
+
+    var dispatchDateFrom = $('dispatchDateFrom');
+    var dispatchDateTo = $('dispatchDateTo');
+    if (dispatchDateFrom) {
+      dispatchDateFrom.addEventListener('change', function () {
+        state.dispatchDateFrom = dispatchDateFrom.value ? new Date(dispatchDateFrom.value + 'T00:00:00') : null;
         renderAll();
       });
-      if (personSearch) {
-        personSearch.addEventListener('input', function () {
-          filterDropdownItems(personList, personSearch.value.trim().toLowerCase());
-        });
-      }
-      document.addEventListener('click', function (ev) {
-        if (personPanel.hidden) return;
-        if (!personBtn.contains(ev.target) && !personPanel.contains(ev.target)) {
-          personPanel.hidden = true;
-          personBtn.setAttribute('aria-expanded', 'false');
-        }
+    }
+    if (dispatchDateTo) {
+      dispatchDateTo.addEventListener('change', function () {
+        state.dispatchDateTo = dispatchDateTo.value ? new Date(dispatchDateTo.value + 'T00:00:00') : null;
+        renderAll();
       });
     }
+
+    document.addEventListener('click', function (ev) {
+      var btn = ev.target.closest && ev.target.closest('.export-btn');
+      if (!btn) return;
+      var tbodyId = btn.getAttribute('data-export-table');
+      var filename = btn.getAttribute('data-export-filename') || 'export.csv';
+      exportTableCSV(tbodyId, filename);
+    });
+
+    document.addEventListener('click', function (ev) {
+      var toggle = ev.target.closest && ev.target.closest('.collapse-toggle');
+      if (!toggle) return;
+      var header = toggle.closest('.table-head');
+      if (!header) return;
+      var controlsId = toggle.getAttribute('aria-controls');
+      var target = controlsId ? document.getElementById(controlsId) : null;
+      if (!target) return;
+      var expanded = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!expanded));
+      target.classList.toggle('collapsed', expanded);
+      refreshIcons();
+    });
+
+    setTodayDateLabel();
+    renderTodayDispatchedKpi();
 
     var routesBody = $('routesBody');
     if (routesBody) {
@@ -4737,14 +4766,6 @@
       });
     }
 
-    var todayDispatchedLoadMore = $('todayDispatchedLoadMore');
-    if (todayDispatchedLoadMore) {
-      todayDispatchedLoadMore.addEventListener('click', function () {
-        state.todayDispatchedLimit += 5;
-        renderTable();
-      });
-    }
-
     var zonesLoadMore = $('zonesLoadMore');
     if (zonesLoadMore) {
       zonesLoadMore.addEventListener('click', function () {
@@ -4826,7 +4847,6 @@
         clearTimeout(tdDebounce);
         tdDebounce = setTimeout(function () {
           state.todayDispatchedQuery = todayDispatchedSearchInput.value.trim();
-          state.todayDispatchedLimit = 5;
           renderTable();
         }, 140);
       });

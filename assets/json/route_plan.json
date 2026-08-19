@@ -3462,10 +3462,10 @@
    "lng": 78.484315
   },
   {
-   "name": "Shamshabad (Rangareddy)",
-   "route": "R5",
-   "zone": "Outside GHMC (non-municipal)",
-   "kind": "area",
+    "name": "Shamshabad (Rangareddy)",
+    "route": "R7",
+    "zone": "Other (non-Hyderabad)",
+    "kind": "area",
    "lat": 17.257207,
    "lng": 78.345104
   },
@@ -3879,6 +3879,118 @@
    "kind": "city",
    "lat": null,
    "lng": null
+  },
+  {
+   "name": "Shamshabad",
+   "route": "R7",
+   "zone": "Other (non-Hyderabad)",
+   "kind": "city",
+   "lat": 17.257207,
+   "lng": 78.345104
+  },
+  {
+   "name": "Kadapa",
+   "route": "R7",
+   "zone": "Other (non-Hyderabad)",
+   "kind": "city",
+   "lat": 14.4674,
+   "lng": 78.8241
+  },
+  {
+   "name": "Machilipatnam",
+   "route": "R7",
+   "zone": "Other (non-Hyderabad)",
+   "kind": "city",
+   "lat": 16.1864,
+   "lng": 81.1333
+  },
+  {
+   "name": "Zaheerabad",
+   "route": "R7",
+   "zone": "Other (non-Hyderabad)",
+   "kind": "city",
+   "lat": 17.6817,
+   "lng": 77.6092
+  },
+  {
+   "name": "Hanumakonda",
+   "route": "R7",
+   "zone": "Other (non-Hyderabad)",
+   "kind": "city",
+   "lat": 17.9937,
+   "lng": 79.5576
+  },
+  {
+   "name": "Karimnagar",
+   "route": "R7",
+   "zone": "Other (non-Hyderabad)",
+   "kind": "city",
+   "lat": 18.4386,
+   "lng": 79.1288
+  },
+  {
+   "name": "Khammam",
+   "route": "R7",
+   "zone": "Other (non-Hyderabad)",
+   "kind": "city",
+   "lat": 17.2473,
+   "lng": 80.1514
+  },
+  {
+   "name": "Mancherial",
+   "route": "R7",
+   "zone": "Other (non-Hyderabad)",
+   "kind": "city",
+   "lat": 18.8696,
+   "lng": 79.4560
+  },
+  {
+   "name": "Nizamabad",
+   "route": "R7",
+   "zone": "Other (non-Hyderabad)",
+   "kind": "city",
+   "lat": 18.6725,
+   "lng": 78.0940
+  },
+  {
+   "name": "Golconda X Roads",
+   "route": "R3",
+   "zone": "Kapra/Uppal Zone - South-East Belt",
+   "kind": "locality",
+   "lat": 17.428548,
+   "lng": 78.537943
+  },
+  {
+   "name": "Kachiguda",
+   "route": "R3",
+   "zone": "Secunderabad Zone - South-East Wing",
+   "kind": "locality",
+   "lat": 17.386178,
+   "lng": 78.511471
+  },
+  {
+   "name": "Adibatla",
+   "route": "R5",
+   "zone": "Outside GHMC (non-municipal)",
+   "kind": "area",
+   "lat": 17.230899,
+   "lng": 78.5559
+  },
+  {
+   "name": "Badangpet",
+   "route": "R5",
+   "zone": "Outside GHMC (non-municipal)",
+   "kind": "area",
+   "lat": 17.2268,
+   "lng": 78.4616
+  },
+  {
+   "name": "Jalpally",
+   "route": "R5",
+   "zone": "Outside GHMC (non-municipal)",
+   "kind": "area",
+   "lat": 17.2268,
+   "lng": 78.4493
   }
  ]
 }

@@ -657,6 +657,14 @@ body.gate-locked {
   background: linear-gradient(90deg, transparent, rgba(26, 29, 33, 0.08), transparent);
 }
 
+.kpi-card-danger {
+  border-color: var(--clr-pending);
+}
+
+.kpi-card-danger .kpi-value {
+  color: var(--clr-pending);
+}
+
 .kpi-icon {
   width: 36px;
   height: 36px;
@@ -1455,6 +1463,68 @@ body.gate-locked {
 .table-wrap {
   overflow-x: auto;
   border-top: 1px solid var(--hairline);
+}
+
+.table-wrap.collapsed {
+  display: none;
+}
+
+.collapse-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: var(--surface-2);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  color: var(--ink-subtle);
+  transition: background 120ms ease, color 120ms ease;
+  vertical-align: middle;
+  margin-right: var(--s-xs);
+  flex-shrink: 0;
+}
+
+.collapse-toggle:hover {
+  background: var(--surface-3);
+  color: var(--ink);
+}
+
+.collapse-toggle svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 200ms ease;
+}
+
+.collapse-toggle[aria-expanded="false"] svg {
+  transform: rotate(-90deg);
+}
+
+.export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-xs);
+}
+
+.today-date {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ink-subtle);
+  margin-left: var(--s-xs);
+}
+
+.dispatch-date-filter {
+  display: flex;
+  align-items: center;
+  gap: var(--s-xs);
+  flex-shrink: 0;
+}
+
+.dispatch-date-filter .filter-label {
+  font-size: 12px;
+  color: var(--ink-subtle);
+  white-space: nowrap;
 }
 
 table {
@@ -2501,6 +2571,10 @@ main > section:first-child {
   .table-actions,
   .table-head {
     width: 100%;
+  }
+
+  .dispatch-date-filter {
+    flex-wrap: wrap;
   }
 
   .filters {

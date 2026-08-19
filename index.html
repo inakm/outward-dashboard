@@ -259,21 +259,6 @@
         <span class="filter-label">Status</span>
         <div id="statusFilter" class="pill-row"></div>
       </div>
-      <div class="filter-group">
-        <span class="filter-label">Delivery person</span>
-        <div class="dropdown-multi" id="deliveryPersonDropdown">
-          <button type="button" class="dropdown-multi-btn" id="deliveryPersonBtn" aria-haspopup="listbox" aria-expanded="false">
-            <span id="deliveryPersonLabel">All</span>
-            <i data-lucide="chevron-down"></i>
-          </button>
-          <div class="dropdown-multi-panel" id="deliveryPersonPanel" hidden>
-            <div class="dropdown-multi-search">
-              <input type="search" id="deliveryPersonSearch" placeholder="Search…" autocomplete="off" spellcheck="false">
-            </div>
-            <div class="dropdown-multi-list" id="deliveryPersonList" role="listbox" aria-label="Select delivery persons" multiple></div>
-          </div>
-        </div>
-      </div>
       <button type="button" id="resetFilters" class="btn btn-tertiary btn-sm">
         <i data-lucide="rotate-ccw"></i>
         <span>Reset</span>
@@ -288,8 +273,11 @@
     </section>
 
     <section class="panel table-panel">
-      <header class="table-head">
+      <header class="table-head" data-section="matrix">
         <div>
+          <button type="button" class="collapse-toggle" aria-expanded="true" aria-controls="matrixTableWrap" title="Collapse/expand">
+            <i data-lucide="chevron-down"></i>
+          </button>
           <h2 class="card-title">Customer · Branch · Location Matrix</h2>
           <p class="card-sub">Sort by clicking a column header, or search across invoice numbers, customers, branches and locations</p>
         </div>
@@ -302,10 +290,13 @@
             <i data-lucide="upload-cloud"></i>
             <span>Upload / replace data</span>
           </button>
+          <button type="button" class="btn btn-tertiary btn-sm export-btn" data-export-table="tableBody" data-export-filename="matrix.csv" title="Export CSV">
+            <i data-lucide="download"></i><span>Export</span>
+          </button>
           <span class="status-badge" id="rowCount">0 records</span>
         </div>
       </header>
-      <div class="table-wrap">
+      <div class="table-wrap" id="matrixTableWrap">
         <table id="dataTable">
           <caption class="sr-only">Customer Branch Location Matrix — open orders</caption>
           <thead>
@@ -349,20 +340,32 @@
         </table>
       </div>
 
-      <header class="table-head dispatched-head">
+      <header class="table-head dispatched-head" data-section="todayDispatched">
         <div>
-          <h2 class="card-title">Today Dispatched</h2>
+          <button type="button" class="collapse-toggle" aria-expanded="false" aria-controls="todayDispatchedWrap" title="Collapse/expand">
+            <i data-lucide="chevron-down"></i>
+          </button>
+          <h2 class="card-title">Today Dispatched <span class="today-date" id="todayDateLabel"></span></h2>
           <p class="card-sub">Orders dispatched today — all statuses</p>
         </div>
         <div class="table-actions">
+          <div class="dispatch-date-filter">
+            <span class="filter-label">Dispatch date</span>
+            <input type="date" id="dispatchDateFrom" class="date-input" aria-label="From dispatch date">
+            <span class="date-sep">→</span>
+            <input type="date" id="dispatchDateTo" class="date-input" aria-label="To dispatch date">
+          </div>
           <div class="search-box">
             <i data-lucide="search"></i>
             <input type="search" id="todayDispatchedSearchInput" placeholder="Search invoice, customer…" autocomplete="off" spellcheck="false">
           </div>
+          <button type="button" class="btn btn-tertiary btn-sm export-btn" data-export-table="todayDispatchedBody" data-export-filename="today-dispatched.csv" title="Export CSV">
+            <i data-lucide="download"></i><span>Export</span>
+          </button>
           <span class="status-badge" id="todayDispatchedCount">0 records</span>
         </div>
       </header>
-      <div class="table-wrap">
+      <div class="table-wrap collapsed" id="todayDispatchedWrap">
         <table id="todayDispatchedTable">
           <caption class="sr-only">Orders dispatched today</caption>
           <thead>
@@ -402,27 +405,27 @@
           <tbody id="todayDispatchedBody"></tbody>
         </table>
       </div>
-      <div class="complete-more" id="todayDispatchedMore" hidden>
-        <button type="button" class="btn btn-secondary btn-sm" id="todayDispatchedLoadMore">
-          <i data-lucide="chevrons-down"></i>
-          <span id="todayDispatchedMoreLabel">Load more</span>
-        </button>
-      </div>
 
-      <header class="table-head dispatched-head">
+      <header class="table-head dispatched-head" data-section="dispatched">
         <div>
+          <button type="button" class="collapse-toggle" aria-expanded="false" aria-controls="dispatchedWrap" title="Collapse/expand">
+            <i data-lucide="chevron-down"></i>
+          </button>
           <h2 class="card-title">Dispatched</h2>
-          <p class="card-sub">Status = Dispatched — orders awaiting completion</p>
+          <p class="card-sub">Status = Dispatched — orders awaiting completion (excludes today's dispatched)</p>
         </div>
         <div class="table-actions">
           <div class="search-box">
             <i data-lucide="search"></i>
             <input type="search" id="dispatchedSearchInput" placeholder="Search invoice, customer…" autocomplete="off" spellcheck="false">
           </div>
+          <button type="button" class="btn btn-tertiary btn-sm export-btn" data-export-table="dispatchedBody" data-export-filename="dispatched.csv" title="Export CSV">
+            <i data-lucide="download"></i><span>Export</span>
+          </button>
           <span class="status-badge" id="dispatchedCount">0 records</span>
         </div>
       </header>
-      <div class="table-wrap">
+      <div class="table-wrap collapsed" id="dispatchedWrap">
         <table id="dispatchedTable">
           <caption class="sr-only">Dispatched orders awaiting completion</caption>
           <thead>
@@ -469,8 +472,11 @@
         </button>
       </div>
 
-      <header class="table-head complete-head">
+      <header class="table-head complete-head" data-section="complete">
         <div>
+          <button type="button" class="collapse-toggle" aria-expanded="false" aria-controls="completeWrap" title="Collapse/expand">
+            <i data-lucide="chevron-down"></i>
+          </button>
           <h2 class="card-title">ALL Complete</h2>
           <p class="card-sub">Status = Dispatched and Ack = Done — moved below the main matrix</p>
         </div>
@@ -479,10 +485,13 @@
             <i data-lucide="search"></i>
             <input type="search" id="completeSearchInput" placeholder="Search invoice, customer…" autocomplete="off" spellcheck="false">
           </div>
+          <button type="button" class="btn btn-tertiary btn-sm export-btn" data-export-table="completeBody" data-export-filename="all-complete.csv" title="Export CSV">
+            <i data-lucide="download"></i><span>Export</span>
+          </button>
           <span class="status-badge complete-badge" id="completeCount">0 records</span>
         </div>
       </header>
-      <div class="table-wrap">
+      <div class="table-wrap collapsed" id="completeWrap">
         <table id="completeTable">
           <caption class="sr-only">All complete orders — dispatched with acknowledgement done</caption>
           <thead>
@@ -565,6 +574,14 @@
             <p class="kpi-label">Fulfillment Rate</p>
             <p class="kpi-value kpi-mono" id="kpiFulfillment">—</p>
             <p class="kpi-note">rows acked as Done</p>
+          </div>
+        </article>
+        <article class="kpi-card" id="todayDispatchedKpi">
+          <div class="kpi-icon"><i data-lucide="truck"></i></div>
+          <div class="kpi-body">
+            <p class="kpi-label">Today Dispatched</p>
+            <p class="kpi-value" id="todayDispatchedKpiValue">—</p>
+            <p class="kpi-note" id="todayDispatchedKpiNote">orders dispatched today</p>
           </div>
         </article>
       </section>
