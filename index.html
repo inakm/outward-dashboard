@@ -310,43 +310,103 @@
           <caption class="sr-only">Customer Branch Location Matrix — open orders</caption>
           <thead>
             <tr>
-              <th data-key="orderDate" class="sortable">
+              <th scope="col" data-key="orderDate" class="sortable" aria-sort="none">
                 <span class="th-label">Order Date</span><span class="sort-ind"></span>
               </th>
-              <th data-key="invoiceNo" class="sortable">
+              <th scope="col" data-key="invoiceNo" class="sortable" aria-sort="none">
                 <span class="th-label">Invoice No.</span><span class="sort-ind"></span>
               </th>
-              <th data-key="customer" class="sortable">
+              <th scope="col" data-key="customer" class="sortable" aria-sort="none">
                 <span class="th-label">Customer Name</span><span class="sort-ind"></span>
               </th>
-              <th data-key="branch" class="sortable">
+              <th scope="col" data-key="branch" class="sortable" aria-sort="none">
                 <span class="th-label">Branch</span><span class="sort-ind"></span>
               </th>
-              <th data-key="location" class="sortable">
+              <th scope="col" data-key="location" class="sortable" aria-sort="none">
                 <span class="th-label">Location</span><span class="sort-ind"></span>
               </th>
-              <th data-key="route" class="sortable">
+              <th scope="col" data-key="route" class="sortable" aria-sort="none">
                 <span class="th-label">Route</span><span class="sort-ind"></span>
               </th>
-              <th data-key="priority" class="sortable">
+              <th scope="col" data-key="priority" class="sortable" aria-sort="none">
                 <span class="th-label">Priority</span><span class="sort-ind"></span>
               </th>
-              <th data-key="dispatchDate" class="sortable">
+              <th scope="col" data-key="dispatchDate" class="sortable" aria-sort="none">
                 <span class="th-label">Dispatch Date</span><span class="sort-ind"></span>
               </th>
-              <th data-key="ack" class="sortable">
+              <th scope="col" data-key="ack" class="sortable" aria-sort="none">
                 <span class="th-label">Ack</span><span class="sort-ind"></span>
               </th>
-              <th data-key="status" class="sortable">
+              <th scope="col" data-key="status" class="sortable" aria-sort="none">
                 <span class="th-label">Status</span><span class="sort-ind"></span>
               </th>
-              <th data-key="deliveryPerson" class="sortable">
+              <th scope="col" data-key="deliveryPerson" class="sortable" aria-sort="none">
                 <span class="th-label">Delivery Person</span><span class="sort-ind"></span>
               </th>
             </tr>
           </thead>
           <tbody id="tableBody"></tbody>
         </table>
+      </div>
+
+      <header class="table-head dispatched-head">
+        <div>
+          <h2 class="card-title">Today Dispatched</h2>
+          <p class="card-sub">Orders dispatched today — all statuses</p>
+        </div>
+        <div class="table-actions">
+          <div class="search-box">
+            <i data-lucide="search"></i>
+            <input type="search" id="todayDispatchedSearchInput" placeholder="Search invoice, customer…" autocomplete="off" spellcheck="false">
+          </div>
+          <span class="status-badge" id="todayDispatchedCount">0 records</span>
+        </div>
+      </header>
+      <div class="table-wrap">
+        <table id="todayDispatchedTable">
+          <caption class="sr-only">Orders dispatched today</caption>
+          <thead>
+            <tr>
+              <th scope="col" data-key="orderDate" class="sortable" aria-sort="none">
+                <span class="th-label">Order Date</span><span class="sort-ind"></span>
+              </th>
+              <th scope="col" data-key="invoiceNo" class="sortable" aria-sort="none">
+                <span class="th-label">Invoice No.</span><span class="sort-ind"></span>
+              </th>
+              <th scope="col" data-key="customer" class="sortable" aria-sort="none">
+                <span class="th-label">Customer Name</span><span class="sort-ind"></span>
+              </th>
+              <th scope="col" data-key="branch" class="sortable" aria-sort="none">
+                <span class="th-label">Branch</span><span class="sort-ind"></span>
+              </th>
+              <th scope="col" data-key="location" class="sortable" aria-sort="none">
+                <span class="th-label">Location</span><span class="sort-ind"></span>
+              </th>
+              <th scope="col" data-key="route" class="sortable" aria-sort="none">
+                <span class="th-label">Route</span><span class="sort-ind"></span>
+              </th>
+              <th scope="col" data-key="priority" class="sortable" aria-sort="none">
+                <span class="th-label">Priority</span><span class="sort-ind"></span>
+              </th>
+              <th scope="col" data-key="dispatchDate" class="sortable" aria-sort="none">
+                <span class="th-label">Dispatch Date</span><span class="sort-ind"></span>
+              </th>
+              <th scope="col" data-key="ack" class="sortable" aria-sort="none">
+                <span class="th-label">Ack</span><span class="sort-ind"></span>
+              </th>
+              <th scope="col" data-key="deliveryPerson" class="sortable" aria-sort="none">
+                <span class="th-label">Delivery Person</span><span class="sort-ind"></span>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="todayDispatchedBody"></tbody>
+        </table>
+      </div>
+      <div class="complete-more" id="todayDispatchedMore" hidden>
+        <button type="button" class="btn btn-secondary btn-sm" id="todayDispatchedLoadMore">
+          <i data-lucide="chevrons-down"></i>
+          <span id="todayDispatchedMoreLabel">Load more</span>
+        </button>
       </div>
 
       <header class="table-head dispatched-head">
@@ -367,34 +427,34 @@
           <caption class="sr-only">Dispatched orders awaiting completion</caption>
           <thead>
             <tr>
-              <th data-key="orderDate" class="sortable">
+              <th scope="col" data-key="orderDate" class="sortable" aria-sort="none">
                 <span class="th-label">Order Date</span><span class="sort-ind"></span>
               </th>
-              <th data-key="invoiceNo" class="sortable">
+              <th scope="col" data-key="invoiceNo" class="sortable" aria-sort="none">
                 <span class="th-label">Invoice No.</span><span class="sort-ind"></span>
               </th>
-              <th data-key="customer" class="sortable">
+              <th scope="col" data-key="customer" class="sortable" aria-sort="none">
                 <span class="th-label">Customer Name</span><span class="sort-ind"></span>
               </th>
-              <th data-key="branch" class="sortable">
+              <th scope="col" data-key="branch" class="sortable" aria-sort="none">
                 <span class="th-label">Branch</span><span class="sort-ind"></span>
               </th>
-              <th data-key="location" class="sortable">
+              <th scope="col" data-key="location" class="sortable" aria-sort="none">
                 <span class="th-label">Location</span><span class="sort-ind"></span>
               </th>
-              <th data-key="route" class="sortable">
+              <th scope="col" data-key="route" class="sortable" aria-sort="none">
                 <span class="th-label">Route</span><span class="sort-ind"></span>
               </th>
-              <th data-key="priority" class="sortable">
+              <th scope="col" data-key="priority" class="sortable" aria-sort="none">
                 <span class="th-label">Priority</span><span class="sort-ind"></span>
               </th>
-              <th data-key="dispatchDate" class="sortable">
+              <th scope="col" data-key="dispatchDate" class="sortable" aria-sort="none">
                 <span class="th-label">Dispatch Date</span><span class="sort-ind"></span>
               </th>
-              <th data-key="ack" class="sortable">
+              <th scope="col" data-key="ack" class="sortable" aria-sort="none">
                 <span class="th-label">Ack</span><span class="sort-ind"></span>
               </th>
-              <th data-key="deliveryPerson" class="sortable">
+              <th scope="col" data-key="deliveryPerson" class="sortable" aria-sort="none">
                 <span class="th-label">Delivery Person</span><span class="sort-ind"></span>
               </th>
             </tr>
@@ -427,37 +487,37 @@
           <caption class="sr-only">All complete orders — dispatched with acknowledgement done</caption>
           <thead>
             <tr>
-              <th data-key="orderDate" class="sortable">
+              <th scope="col" data-key="orderDate" class="sortable" aria-sort="none">
                 <span class="th-label">Order Date</span><span class="sort-ind"></span>
               </th>
-              <th data-key="invoiceNo" class="sortable">
+              <th scope="col" data-key="invoiceNo" class="sortable" aria-sort="none">
                 <span class="th-label">Invoice No.</span><span class="sort-ind"></span>
               </th>
-              <th data-key="customer" class="sortable">
+              <th scope="col" data-key="customer" class="sortable" aria-sort="none">
                 <span class="th-label">Customer Name</span><span class="sort-ind"></span>
               </th>
-              <th data-key="branch" class="sortable">
+              <th scope="col" data-key="branch" class="sortable" aria-sort="none">
                 <span class="th-label">Branch</span><span class="sort-ind"></span>
               </th>
-              <th data-key="location" class="sortable">
+              <th scope="col" data-key="location" class="sortable" aria-sort="none">
                 <span class="th-label">Location</span><span class="sort-ind"></span>
               </th>
-              <th data-key="route" class="sortable">
+              <th scope="col" data-key="route" class="sortable" aria-sort="none">
                 <span class="th-label">Route</span><span class="sort-ind"></span>
               </th>
-              <th data-key="priority" class="sortable">
+              <th scope="col" data-key="priority" class="sortable" aria-sort="none">
                 <span class="th-label">Priority</span><span class="sort-ind"></span>
               </th>
-              <th data-key="dispatchDate" class="sortable">
+              <th scope="col" data-key="dispatchDate" class="sortable" aria-sort="none">
                 <span class="th-label">Dispatch Date</span><span class="sort-ind"></span>
               </th>
-              <th data-key="ack" class="sortable">
+              <th scope="col" data-key="ack" class="sortable" aria-sort="none">
                 <span class="th-label">Ack</span><span class="sort-ind"></span>
               </th>
-              <th data-key="status" class="sortable">
+              <th scope="col" data-key="status" class="sortable" aria-sort="none">
                 <span class="th-label">Status</span><span class="sort-ind"></span>
               </th>
-              <th data-key="deliveryPerson" class="sortable">
+              <th scope="col" data-key="deliveryPerson" class="sortable" aria-sort="none">
                 <span class="th-label">Delivery Person</span><span class="sort-ind"></span>
               </th>
             </tr>
@@ -540,14 +600,14 @@
           <caption class="sr-only">Zone-wise traffic — order volume and dispatch health per zone</caption>
           <thead>
             <tr>
-              <th class="th-mono">Route</th>
-              <th>Zone / Circle</th>
-              <th>Orders</th>
-              <th>Open P1</th>
-              <th>Done</th>
-              <th>In Transit</th>
-              <th>Pending</th>
-              <th>Fulfillment</th>
+              <th scope="col" class="th-mono">Route</th>
+              <th scope="col">Zone / Circle</th>
+              <th scope="col">Orders</th>
+              <th scope="col">Open P1</th>
+              <th scope="col">Done</th>
+              <th scope="col">In Transit</th>
+              <th scope="col">Pending</th>
+              <th scope="col">Fulfillment</th>
             </tr>
           </thead>
           <tbody id="zonesBody"></tbody>
@@ -646,13 +706,13 @@
           <caption class="sr-only">Routes overview — per-route dispatch health</caption>
           <thead>
             <tr>
-              <th class="th-mono">Route</th>
-              <th>Orders</th>
-              <th>Open P1</th>
-              <th>Done</th>
-              <th>In Transit</th>
-              <th>Pending</th>
-              <th>Fulfillment</th>
+              <th scope="col" class="th-mono">Route</th>
+              <th scope="col">Orders</th>
+              <th scope="col">Open P1</th>
+              <th scope="col">Done</th>
+              <th scope="col">In Transit</th>
+              <th scope="col">Pending</th>
+              <th scope="col">Fulfillment</th>
             </tr>
           </thead>
           <tbody id="routesBody"></tbody>
@@ -729,17 +789,17 @@
           <caption class="sr-only">Customer directory with branches and outward activity</caption>
           <thead>
             <tr>
-              <th class="th-mono">Class</th>
-              <th class="th-mono">Code</th>
-              <th>Customer Name</th>
-              <th>City</th>
-              <th>Primary Zone</th>
-              <th>Contact</th>
-              <th class="th-mono">GST No</th>
-              <th>Branches</th>
-              <th>Orders</th>
-              <th>Open</th>
-              <th class="th-actions">Orders →</th>
+              <th scope="col" class="th-mono">Class</th>
+              <th scope="col" class="th-mono">Code</th>
+              <th scope="col">Customer Name</th>
+              <th scope="col">City</th>
+              <th scope="col">Primary Zone</th>
+              <th scope="col">Contact</th>
+              <th scope="col" class="th-mono">GST No</th>
+              <th scope="col">Branches</th>
+              <th scope="col">Orders</th>
+              <th scope="col">Open</th>
+              <th scope="col" class="th-actions">Orders →</th>
             </tr>
           </thead>
           <tbody id="customerBody"></tbody>
@@ -769,12 +829,12 @@
             <caption class="sr-only">Branch details for selected customer</caption>
             <thead>
               <tr>
-                <th>Branch Name</th>
-                <th>Contact</th>
-                <th>Mobile</th>
-                <th>Address</th>
-                <th>State</th>
-                <th>Pincode</th>
+                <th scope="col">Branch Name</th>
+                <th scope="col">Contact</th>
+                <th scope="col">Mobile</th>
+                <th scope="col">Address</th>
+                <th scope="col">State</th>
+                <th scope="col">Pincode</th>
               </tr>
             </thead>
             <tbody id="branchBody"></tbody>
@@ -814,15 +874,15 @@
             <caption class="sr-only">Fleet vehicle dispatch plan</caption>
             <thead>
               <tr>
-                <th>Vehicle</th>
-                <th>Route</th>
-                <th>Type</th>
-                <th>Driver</th>
-                <th>Capacity</th>
-                <th>Assigned</th>
-                <th>Load</th>
-                <th>Load order (P1 first)</th>
-                <th>Window</th>
+                <th scope="col">Vehicle</th>
+                <th scope="col">Route</th>
+                <th scope="col">Type</th>
+                <th scope="col">Driver</th>
+                <th scope="col">Capacity</th>
+                <th scope="col">Assigned</th>
+                <th scope="col">Load</th>
+                <th scope="col">Load order (P1 first)</th>
+                <th scope="col">Window</th>
               </tr>
             </thead>
             <tbody id="fleetBody"></tbody>
@@ -888,14 +948,14 @@
             <caption class="sr-only">SLA escalation — orders needing attention</caption>
             <thead>
               <tr>
-                <th>Severity</th>
-                <th>Age</th>
-                <th>Priority</th>
-                <th>Route</th>
-                <th>Customer Name</th>
-                <th>Branch</th>
-                <th>Location</th>
-                <th>Ack</th>
+                <th scope="col">Severity</th>
+                <th scope="col">Age</th>
+                <th scope="col">Priority</th>
+                <th scope="col">Route</th>
+                <th scope="col">Customer Name</th>
+                <th scope="col">Branch</th>
+                <th scope="col">Location</th>
+                <th scope="col">Ack</th>
               </tr>
             </thead>
             <tbody id="slaBody"></tbody>
@@ -1116,6 +1176,16 @@
     <footer class="footer">
       <span>Dashboard developed &amp; maintained by <a href="https://inakm.github.io" class="footer-link">AKM</a> &amp; <a href="https://f9xr.github.io" class="footer-link">F9XR Team</a></span>
       <span class="footer-meta">Processed locally with <a href="https://sheetjs.com" class="footer-link">SheetJS</a> · cached in <a href="https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API" class="footer-link">IndexedDB</a></span>
+      <div class="footer-dashboards">
+        <span class="footer-dashboards-label">SkyLIMIT Dashboards</span>
+        <nav class="footer-dashboards-links" aria-label="SkyLIMIT Dashboards">
+          <a href="https://inakm.github.io/page/projects/dashboards/skylimit-ardash.html" class="footer-link" target="_blank" rel="noopener noreferrer">AR Aging Dashboard</a>
+          <a href="https://inakm.github.io/outward-dashboard" class="footer-link" target="_blank" rel="noopener noreferrer">Outwards Dashboard</a>
+          <a href="https://inakm.github.io/skylimit-telecalling-dash/receivables.html" class="footer-link" target="_blank" rel="noopener noreferrer">AR Telecalling Dashboard</a>
+          <a href="https://inakm.github.io/skylimit-telecalling-dash/quotations.html" class="footer-link" target="_blank" rel="noopener noreferrer">Marketing Dashboard</a>
+          <a href="https://inakm.github.io/marketing-performance-dash/" class="footer-link" target="_blank" rel="noopener noreferrer">Marketing Performance Dashboard</a>
+        </nav>
+      </div>
       <span class="footer-meta">Linear-grade light canvas · <span class="mono">#f7f8fa</span></span>
     </footer>
 

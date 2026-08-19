@@ -4,7 +4,7 @@
 
 ## About
 
-SkyLimit Outwards is a fully static, client-side dashboard (no build step, no server, no database) built with vanilla HTML/CSS/JS, Chart.js, SheetJS and Lucide. Dispatch data is either dragged-and-dropped as Excel/CSV or pulled live from a public Google Sheet (CSV export with a gviz fallback); results are cached in IndexedDB. Orders are auto-routed into the R1–R7 plan by matching their Branch against the `routes-planning.xlsx` routing authority. The app is gated by an access code (1947) stored in `localStorage` after first unlock.
+SkyLimit Outwards is a fully static, client-side dashboard (no build step, no server, no database) built with vanilla HTML/CSS/JS, Chart.js, SheetJS and Lucide. Dispatch data is either dragged-and-dropped as Excel/CSV or pulled live from a public Google Sheet (CSV export with a gviz fallback); results are cached in IndexedDB. Orders are auto-routed into the R1–R7 plan by matching their Branch against the `routes-planning.xlsx` routing authority. The app is gated by a configurable access code stored in `localStorage` after first unlock.
 
 - Live site: https://inakm.github.io/outward-dashboard/
 - Repo: https://github.com/inakm/outward-dashboard

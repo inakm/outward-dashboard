@@ -215,7 +215,17 @@
     'visakhapatnam': 'Visakhapatnam',
     'vizianagaram': 'Vizianagaram',
     'tuni': 'Tuni',
-    'kphb': 'KPHB'
+    'kphb': 'KPHB',
+    'ananthapur': 'Anantapur',
+    'anantapur': 'Anantapur',
+    'anathapur': 'Anantapur',
+    'ananthapoor': 'Anantapur',
+    'dairy farm road': 'Dairy Farm Road',
+    'dairy farm rd': 'Dairy Farm Road',
+    'dairyfarmroad': 'Dairy Farm Road',
+    'bowenpally': 'Bowenpally',
+    'bowenapally': 'Bowenpally',
+    'bowenpalli': 'Bowenpally'
   };
 
   var PRIORITY_MAP = {
@@ -250,6 +260,7 @@
     query: '',
     completeQuery: '',
     dispatchedQuery: '',
+    todayDispatchedQuery: '',
     zonesQuery: '',
     routesQuery: '',
     customerQuery: '',
@@ -270,6 +281,7 @@
     lastSyncAt: null,
     completeLimit: 5,
     dispatchedLimit: 5,
+    todayDispatchedLimit: 5,
     zoneLimit: 5,
     customerLimit: 20,
     customerFilterSig: '',
@@ -305,7 +317,12 @@
   }
 
   function cleanCustomer(v) {
-    return String(v == null ? '' : v).trim().replace(/\s+/g, ' ').replace(/\r?\n/g, ' ');
+    var s = String(v == null ? '' : v).trim().replace(/\s+/g, ' ').replace(/\r?\n/g, ' ');
+    if (!s) return '';
+    return s.split(/\s+/).filter(Boolean).map(function (w) {
+      if (w === w.toUpperCase() && w.length > 1) return w;
+      return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+    }).join(' ');
   }
 
   function normalizePerson(v) {
@@ -326,14 +343,23 @@
      "1321 1322 1323 1324" or comma/newline separated from Google Sheets).
      Bare numbers become full SLEIN codes; already-formatted references and
      non-numeric references (e.g. "DC-52") are kept as-is. */
+  function currentFiscalYear() {
+    var now = new Date();
+    var yr = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
+    var yy1 = String(yr % 100).padStart(2, '0');
+    var yy2 = String((yr + 1) % 100).padStart(2, '0');
+    return yy1 + '-' + yy2;
+  }
+
   function normalizeInvoiceNo(v) {
     var s = String(v == null ? '' : v).trim();
     if (s === '' || s === '—' || s === '-') return '';
     var tokens = s.split(/[\s,]+/).map(function (x) { return x.trim(); })
       .filter(function (x) { return x !== ''; });
     if (!tokens.length) return '';
+    var fy = currentFiscalYear();
     var out = tokens.map(function (t) {
-      if (/^\d+$/.test(t)) return 'SLEIN-' + t + '/26-27';
+      if (/^\d+$/.test(t)) return 'SLEIN-' + t + '/' + fy;
       return t;
     });
     return out.join(', ');
@@ -489,6 +515,14 @@
       var cand = routeNameSlug(tokens.join(' '));
       if (cand && idx[cand]) return idx[cand];
     }
+    if (tokens.length >= 2) {
+      for (var start = 0; start < tokens.length - 1; start++) {
+        for (var end = tokens.length; end > start + 1; end--) {
+          var subSlug = routeNameSlug(tokens.slice(start, end).join(' '));
+          if (subSlug && idx[subSlug]) return idx[subSlug];
+        }
+      }
+    }
     return null;
   }
 
@@ -529,7 +563,8 @@
     'Ramoji Film City': 'R5',
     'Vizag': 'R7',
     'Visakhapatnam': 'R7',
-    'Tuni': 'R7'
+    'Tuni': 'R7',
+    'Dairy Farm Road': 'R1'
   };
 
   function branchRouteOverride(branch, location) {
@@ -538,8 +573,9 @@
       if (key && BRANCH_ROUTE_OVERRIDE[key]) return BRANCH_ROUTE_OVERRIDE[key];
       if (key) {
         var lower = key.toLowerCase();
-        for (var k in BRANCH_ROUTE_OVERRIDE) {
-          if (k.toLowerCase() === lower) return BRANCH_ROUTE_OVERRIDE[k];
+        var overrideKeys = Object.keys(BRANCH_ROUTE_OVERRIDE);
+        for (var ki = 0; ki < overrideKeys.length; ki++) {
+          if (overrideKeys[ki].toLowerCase() === lower) return BRANCH_ROUTE_OVERRIDE[overrideKeys[ki]];
         }
       }
     }
@@ -1831,6 +1867,7 @@
     if (!stack) return;
     var el = document.createElement('div');
     el.className = 'toast toast-' + type;
+    el.setAttribute('role', 'status');
     var icon = type === 'success' ? 'check-circle-2' : (type === 'error' ? 'alert-triangle' : 'info');
     el.innerHTML = '<i data-lucide="' + icon + '"></i><span></span>';
     el.querySelector('span').textContent = message;
@@ -3354,19 +3391,31 @@
     return r.status === 'Dispatched' && r.ack !== 'Done';
   }
 
+  function isTodayDispatched(r) {
+    if (!r.dispatchDate) return false;
+    var now = new Date();
+    var d = r.dispatchDate instanceof Date ? r.dispatchDate : new Date(r.dispatchDate);
+    return d.getFullYear() === now.getFullYear() &&
+      d.getMonth() === now.getMonth() &&
+      d.getDate() === now.getDate();
+  }
+
   function renderTable() {
     var tbody = $('tableBody');
     var cbody = $('completeBody');
     var dbody = $('dispatchedBody');
+    var tdbody = $('todayDispatchedBody');
     if (!tbody) return;
     var rows = sortRows(filteredRows(), state.sortKey, state.sortDir);
     var complete = [];
     var dispatched = [];
+    var todayDispatched = [];
     var open = [];
     for (var i = 0; i < rows.length; i++) {
       if (isComplete(rows[i])) complete.push(rows[i]);
       else if (isDispatched(rows[i])) dispatched.push(rows[i]);
-      else open.push(rows[i]);
+      if (isTodayDispatched(rows[i])) todayDispatched.push(rows[i]);
+      if (!isComplete(rows[i]) && !isDispatched(rows[i])) open.push(rows[i]);
     }
 
     if (state.completeQuery) {
@@ -3387,10 +3436,20 @@
           (r.location || '').toLowerCase().indexOf(dq) !== -1;
       });
     }
+    if (state.todayDispatchedQuery) {
+      var tdq = state.todayDispatchedQuery.toLowerCase();
+      todayDispatched = todayDispatched.filter(function (r) {
+        return (r.invoiceNo || '').toLowerCase().indexOf(tdq) !== -1 ||
+          (r.customer || '').toLowerCase().indexOf(tdq) !== -1 ||
+          (r.branch || '').toLowerCase().indexOf(tdq) !== -1 ||
+          (r.location || '').toLowerCase().indexOf(tdq) !== -1;
+      });
+    }
 
     setText('rowCount', formatNum(open.length) + ' of ' + formatNum(state.records.length) + ' records');
     setText('completeCount', formatNum(complete.length) + ' records');
     setText('dispatchedCount', formatNum(dispatched.length) + ' records');
+    setText('todayDispatchedCount', formatNum(todayDispatched.length) + ' records');
     if (!open.length) {
       var msg = state.records.length
         ? 'No records match the current filters'
@@ -3498,6 +3557,45 @@
         dMoreWrap.hidden = true;
       }
     }
+
+    if (tdbody) {
+      if (!todayDispatched.length) {
+        tdbody.innerHTML = '<tr class="row-empty"><td colspan="10">No orders dispatched today.</td></tr>';
+      } else {
+        var visibleTodayDispatched = todayDispatched.slice(0, state.todayDispatchedLimit);
+        var tdhtml = '';
+        for (i = 0; i < visibleTodayDispatched.length; i++) {
+          var td = visibleTodayDispatched[i];
+          tdhtml +=
+            '<tr>' +
+            '<td class="td-date">' + formatDate(td.orderDate) + '</td>' +
+            '<td class="td-mono">' + invoiceHtml(td.invoiceNo) + '</td>' +
+            '<td class="td-strong">' + escapeHtml(td.customer || '—') + (td.customerCode
+              ? '<span class="td-mono td-dim"><br><button type="button" class="jump-link" data-jump-code="' + escapeHtml(td.customerCode) + '" title="Open ' + escapeHtml(td.customerCode) + ' in the Customers tab">' + escapeHtml(td.customerCode) + '</button></span>' : '') + '</td>' +
+            '<td>' + escapeHtml(td.branch || '—') + '</td>' +
+            '<td>' + escapeHtml(td.location || '—') + '</td>' +
+            '<td>' + escapeHtml(td.route || '—') + '</td>' +
+            '<td>' + priorityBadge(td.priority) + '</td>' +
+            '<td class="td-date">' + formatDate(td.dispatchDate) + '</td>' +
+            '<td>' + ackBadge(td.ack) + '</td>' +
+            '<td>' + escapeHtml(td.deliveryPerson || '—') + '</td>' +
+            '</tr>';
+        }
+        tdbody.innerHTML = tdhtml;
+      }
+    }
+    var tdMoreWrap = $('todayDispatchedMore');
+    var tdMoreBtn = $('todayDispatchedLoadMore');
+    var tdMoreLabel = $('todayDispatchedMoreLabel');
+    if (tdMoreWrap && tdMoreBtn && tdMoreLabel) {
+      if (todayDispatched.length > state.todayDispatchedLimit) {
+        var tdRemaining = todayDispatched.length - state.todayDispatchedLimit;
+        tdMoreLabel.textContent = 'Load more (' + formatNum(tdRemaining) + ' remaining)';
+        tdMoreWrap.hidden = false;
+      } else {
+        tdMoreWrap.hidden = true;
+      }
+    }
   }
 
   /* -------------------------------------------------------------
@@ -3551,16 +3649,18 @@
   function renderAll() {
     var sig = state.priority.join(',') + '|' + state.ack.join(',') + '|' + state.status.join(',') +
       '|' + state.route.join(',') + '|' + state.deliveryPerson.join(',') + '|' + state.customerFilter +
-      '|' + state.query + '|' + state.dispatchedQuery + '|' + state.completeQuery +
+      '|' + state.query + '|' + state.dispatchedQuery + '|' + state.todayDispatchedQuery + '|' + state.completeQuery +
       '|' + state.zonesQuery + '|' + state.routesQuery +
       '|' + state.dateFrom + '|' + state.dateTo + '|' + state.sortKey + state.sortDir;
       if (sig !== state.filterSig) {
       state.completeLimit = 5;
       state.dispatchedLimit = 5;
+      state.todayDispatchedLimit = 5;
       state.zoneLimit = 5;
       state.filterSig = sig;
     }
     var rows = filteredRows();
+    var routeRows = filteredRows(true);
     renderIngestPanel();
     renderCustomerFilter();
     renderRouteFilter();
@@ -3576,14 +3676,14 @@
     renderSource();
     renderCustomers();
     renderDirectoryMeta();
-    renderZoneTraffic(filteredRows(true));
-    renderRouteOverview(filteredRows(true));
+    renderZoneTraffic(routeRows);
+    renderRouteOverview(routeRows);
     renderQuality(rows);
     renderSla(rows);
-    renderRouteMap(filteredRows(true));
-    renderLoadPlan(filteredRows(true));
+    renderRouteMap(routeRows);
+    renderLoadPlan(routeRows);
     renderRouteOpsTabs();
-    renderFleetCenter(filteredRows(true));
+    renderFleetCenter(routeRows);
     renderDispatchBoard();
     refreshIcons();
   }
@@ -3931,6 +4031,7 @@
     state.query = '';
     state.completeQuery = '';
     state.dispatchedQuery = '';
+    state.todayDispatchedQuery = '';
     state.zonesQuery = '';
     state.routesQuery = '';
     state.dateFrom = null;
@@ -3941,6 +4042,8 @@
     if (completeSearch) completeSearch.value = '';
     var dispatchedSearch = $('dispatchedSearchInput');
     if (dispatchedSearch) dispatchedSearch.value = '';
+    var todayDispatchedSearch = $('todayDispatchedSearchInput');
+    if (todayDispatchedSearch) todayDispatchedSearch.value = '';
     var zonesSearch = $('zonesSearchInput');
     if (zonesSearch) zonesSearch.value = '';
     var routesSearch = $('routesSearchInput');
@@ -4336,11 +4439,19 @@
     var personSearch = $('deliveryPersonSearch');
     var personList = $('deliveryPersonList');
     if (personBtn && personPanel) {
-      personBtn.addEventListener('click', function () {
-        var open = !personPanel.hidden;
-        personPanel.hidden = open;
-        personBtn.setAttribute('aria-expanded', open ? 'false' : 'true');
-        if (!open && personSearch) { personSearch.value = ''; filterDropdownItems(personList, ''); setTimeout(function () { personSearch.focus(); }, 50); }
+      personBtn.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        var isOpen = !personPanel.hidden;
+        if (isOpen) {
+          personPanel.hidden = true;
+          personBtn.setAttribute('aria-expanded', 'false');
+        } else {
+          personPanel.hidden = false;
+          personBtn.setAttribute('aria-expanded', 'true');
+          personSearch.value = '';
+          filterDropdownItems(personList, '');
+          setTimeout(function () { personSearch.focus(); }, 50);
+        }
       });
       personList.addEventListener('change', function (ev) {
         var cb = ev.target.closest && ev.target.closest('input[type="checkbox"]');
@@ -4585,42 +4696,30 @@
     }
 
     var tableBody = $('tableBody');
-    if (tableBody) {
-      tableBody.addEventListener('click', function (ev) {
-        var link = ev.target.closest && ev.target.closest('[data-jump-code]');
-        if (link) {
-          ev.preventDefault();
-          openCustomerOrders(link.getAttribute('data-jump-code'));
-        }
-      });
-      tableBody.addEventListener('keydown', function (ev) {
-        if (ev.key === 'Enter' || ev.key === ' ') {
-          var link = ev.target.closest && ev.target.closest('[data-jump-code]');
-          if (link) {
-            ev.preventDefault();
-            openCustomerOrders(link.getAttribute('data-jump-code'));
-          }
-        }
-      });
-    }
     var completeBody = $('completeBody');
-    if (completeBody) {
-      completeBody.addEventListener('click', function (ev) {
-        var link = ev.target.closest && ev.target.closest('[data-jump-code]');
-        if (link) {
-          ev.preventDefault();
-          openCustomerOrders(link.getAttribute('data-jump-code'));
-        }
-      });
-      completeBody.addEventListener('keydown', function (ev) {
-        if (ev.key === 'Enter' || ev.key === ' ') {
+    var dispatchedBody = $('dispatchedBody');
+    var todayDispatchedBody = $('todayDispatchedBody');
+    var jumpBodies = [tableBody, completeBody, dispatchedBody, todayDispatchedBody];
+    for (var jb = 0; jb < jumpBodies.length; jb++) {
+      if (!jumpBodies[jb]) continue;
+      (function (tbody) {
+        tbody.addEventListener('click', function (ev) {
           var link = ev.target.closest && ev.target.closest('[data-jump-code]');
           if (link) {
             ev.preventDefault();
             openCustomerOrders(link.getAttribute('data-jump-code'));
           }
-        }
-      });
+        });
+        tbody.addEventListener('keydown', function (ev) {
+          if (ev.key === 'Enter' || ev.key === ' ') {
+            var link = ev.target.closest && ev.target.closest('[data-jump-code]');
+            if (link) {
+              ev.preventDefault();
+              openCustomerOrders(link.getAttribute('data-jump-code'));
+            }
+          }
+        });
+      })(jumpBodies[jb]);
     }
     var completeLoadMore = $('completeLoadMore');
     if (completeLoadMore) {
@@ -4630,29 +4729,18 @@
       });
     }
 
-    var dispatchedBody = $('dispatchedBody');
-    if (dispatchedBody) {
-      dispatchedBody.addEventListener('click', function (ev) {
-        var link = ev.target.closest && ev.target.closest('[data-jump-code]');
-        if (link) {
-          ev.preventDefault();
-          openCustomerOrders(link.getAttribute('data-jump-code'));
-        }
-      });
-      dispatchedBody.addEventListener('keydown', function (ev) {
-        if (ev.key === 'Enter' || ev.key === ' ') {
-          var link = ev.target.closest && ev.target.closest('[data-jump-code]');
-          if (link) {
-            ev.preventDefault();
-            openCustomerOrders(link.getAttribute('data-jump-code'));
-          }
-        }
-      });
-    }
     var dispatchedLoadMore = $('dispatchedLoadMore');
     if (dispatchedLoadMore) {
       dispatchedLoadMore.addEventListener('click', function () {
         state.dispatchedLimit += 5;
+        renderTable();
+      });
+    }
+
+    var todayDispatchedLoadMore = $('todayDispatchedLoadMore');
+    if (todayDispatchedLoadMore) {
+      todayDispatchedLoadMore.addEventListener('click', function () {
+        state.todayDispatchedLimit += 5;
         renderTable();
       });
     }
@@ -4731,7 +4819,21 @@
       });
     }
 
+    var todayDispatchedSearchInput = $('todayDispatchedSearchInput');
+    if (todayDispatchedSearchInput) {
+      var tdDebounce = null;
+      todayDispatchedSearchInput.addEventListener('input', function () {
+        clearTimeout(tdDebounce);
+        tdDebounce = setTimeout(function () {
+          state.todayDispatchedQuery = todayDispatchedSearchInput.value.trim();
+          state.todayDispatchedLimit = 5;
+          renderTable();
+        }, 140);
+      });
+    }
+
     var sortHeaders = document.querySelectorAll('th.sortable');
+    var sortDebounce = null;
     for (var k = 0; k < sortHeaders.length; k++) {
       sortHeaders[k].addEventListener('click', function (ev) {
         var key = ev.currentTarget.getAttribute('data-key');
@@ -4741,8 +4843,11 @@
           state.sortKey = key;
           state.sortDir = (key === 'orderDate' || key === 'dispatchDate') ? 'desc' : 'asc';
         }
-        renderTable();
-        renderSortIcons();
+        clearTimeout(sortDebounce);
+        sortDebounce = setTimeout(function () {
+          renderTable();
+          renderSortIcons();
+        }, 50);
       });
     }
 
@@ -4995,8 +5100,9 @@
     }
   }
 
-  /* Expose pure core for debugging + tests */
-  window.DashboardCore = {
+  /* Expose pure core for debugging + tests — only when DEBUG is enabled */
+  if (window.DASHBOARD_DEBUG) {
+    window.DashboardCore = {
     REQUIRED_COLUMNS: REQUIRED_COLUMNS,
     HEADER_ALIASES: HEADER_ALIASES,
     PLACE_TYPO_MAP: PLACE_TYPO_MAP,
@@ -5057,11 +5163,13 @@
     buildRouteStops: buildRouteStops,
     boardScopeRows: boardScopeRows
   };
+  }
 
   /* -------------------------------------------------------------
-     Access gate (code: 1947)
+     Access gate — PIN is read from window.DASHBOARD_CONFIG.accessCode
+     or defaults to '1947'. Override via: window.DASHBOARD_CONFIG = { accessCode: 'XXXX' }
      ------------------------------------------------------------- */
-  var ACCESS_CODE = '1947';
+  var ACCESS_CODE = (window.DASHBOARD_CONFIG && window.DASHBOARD_CONFIG.accessCode) || '1947';
   var ACCESS_KEY = 'outward-access-unlocked';
   var gateEntry = '';
   var gateOpen = false;

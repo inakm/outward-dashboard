@@ -1785,6 +1785,27 @@ tr.cust-row.is-clickable:focus-visible {
   text-decoration: underline;
 }
 
+.footer-dashboards {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-sm);
+  flex-wrap: wrap;
+  padding-top: var(--s-sm);
+  border-top: 1px solid var(--hairline);
+  margin-top: var(--s-xs);
+}
+.footer-dashboards-label {
+  font-weight: 700;
+  color: var(--ink-secondary);
+  white-space: nowrap;
+}
+.footer-dashboards-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-xs) var(--s-md);
+}
+
 /* ---------- Back to top ---------- */
 .back-to-top {
   position: fixed;
