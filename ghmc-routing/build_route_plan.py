@@ -118,14 +118,14 @@ CIRCLE_COORDS = {
 # noise tokens ("Branch", "Road No 12", "2nd Floor", …) are stripped.
 EXTRA_LOCALITIES = {
     "Gachibowli": (
-        "R4",
-        "Serilingampally",
-        "ORR/Gachibowli offices; 11 AM-4 PM window; corporate receptions.",
+        "R6",
+        "Madhapur",
+        "Madhapur corridor; 11 AM-4 PM window; corporate receptions.",
     ),
     "Gacchibowli": (
-        "R4",
-        "Serilingampally",
-        "Alt. spelling of Gachibowli (live sheet); ORR tech belt; 11 AM-4 PM.",
+        "R6",
+        "Madhapur",
+        "Alt. spelling of Gachibowli (live sheet); Madhapur corridor; 11 AM-4 PM.",
     ),
     "Kondapur": (
         "R4",

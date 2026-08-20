@@ -153,6 +153,9 @@
   var PLACE_TYPO_MAP = {
     'gcachibowli': 'Gachibowli',
     'gachibowli': 'Gachibowli',
+    'gacchibowli': 'Gachibowli',
+    'zaheerabad': 'Zaheerabad',
+    'zahirabad': 'Zaheerabad',
     'kkatpally': 'Kukatpally',
     'kukatpally': 'Kukatpally',
     'malkpet': 'Malakpet',
@@ -551,6 +554,7 @@
      not yet in the R1-R7 plan that the plan lacks. */
   var BRANCH_ROUTE_OVERRIDE = {
     'Madhapur': 'R6',
+    'Gachibowli': 'R6',
     'Suchitra': 'R1',
     'Rc Puram': 'R1',
     'Ramachandra Puram': 'R1',
